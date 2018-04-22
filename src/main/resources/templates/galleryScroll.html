@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html class="" lang="en-US" prefix=
+"og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
+<head>
+    <meta charset="UTF-8">
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Gallery-Scroll</title>
+    <link rel="icon" href="assets/img/content/icon.png">
+    <!-- ========== CSS INCLUDES ========== -->
+    <link rel="stylesheet" href="assets/css/master.css">
+   
+</head>
+<body  style="margin:0!important;">
+
+<!-- =============== START PLAYER ================ -->
+    <div class="main-music-player hide-player">
+        <a class="hide-player-button">
+            <i class="fa fa-plus"></i>
+            <i class="fa fa-minus"></i>
+        </a>
+        <div id="mesh-main-player" class="jp-jplayer" data-audio-src="assets/audio/flute.mp3" data-title="See right through ft. Fiora" data-artist="Tensnake"></div>
+        
+        <div id="mesh-main-player-content" class="mesh-main-player" role="application" aria-label="media player">
+            <div class="container">
+                <div class="row">
+                    <div class="left-player-side">
+                        <div class="mesh-prev">
+                            <i class="fa fa-step-backward"></i>
+                        </div>
+                        <div class="mesh-play">
+                            <i class="fa fa-play"></i>
+                        </div>
+                        <div class="mesh-pause">
+                            <i class="fa fa-pause"></i>
+                        </div>
+                        <div class="mesh-next">
+                            <i class="fa fa-step-forward"></i>
+                        </div>
+                        <button id="playlist-toggle" class="jplayerButton">
+                            <span class="span-1"></span>
+                            <span class="span-2"></span>
+                            <span class="span-3"></span>
+                        </button>
+                    </div>
+                    <div class="center-side">
+                        <div class="mesh-current-time">
+                        </div>
+                        <div class="mesh-seek-bar">
+                            <div class="mesh-play-bar">
+                            </div>
+                        </div>
+                        <div class="mesh-duration">
+                        </div>
+                    </div>
+                    <div class="right-player-side">
+                        <div class="mesh-thumbnail">
+                            <img src="assets/img/albums/cover3.jpg" alt="">
+                        </div>
+                        <div class="mesh-title">
+                        </div>
+                        <div class="mesh-artist">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- =============== END PLAYER ================ -->
+
+    <!-- =============== START PLAYLIST ================ -->
+    <div class="playlist-wrapper" id="playlist-wrapper">
+        <div class="jp-playlist container">
+            <div class="about-list clearfix">
+                <span class="about-name">NAME</span>
+                <span class="about-length">LENGTH</span>
+                <span class="about-available">AVAILABLE ON</span>
+            </div>
+            <div class="trak-item" data-audio="assets/audio/flute.mp3" data-artist="Tensnake" data-thumbnail="assets/img/albums/cover1.jpg" data-id="trak-200">
+                <audio preload="metadata" src="assets/audio/flute.mp3" title="See right through ft. Fiora"></audio>
+                <div class="additional-button">
+                    <div class="center-y-table">
+                        <a href="#">
+                            <i class="fa fa-headphones"></i>
+                        </a>
+                        <a href="#">
+                            <i class="fa fa-apple"></i>
+                        </a>
+                        <a href="#">
+                            <i class="fa fa-soundcloud"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="play-pause-button">
+                    <div class="center-y-table">
+                        <i class="fa fa-play"></i>
+                    </div>
+                </div>
+                <div class="name-artist">
+                    <div class="center-y-table">
+                        <h2>
+                            Tensnake - See Right Through Ft. Fiora
+                        </h2>
+                    </div>
+                </div>
+                <time class="trak-duration">
+                    00:00
+                </time>
+            </div>
+            <div class="trak-item" data-audio="assets/audio/2.mp3" data-artist="Jack U ft. Kiesza" data-thumbnail="assets/img/albums/cover2.jpg" data-id="trak-201">
+                <audio preload="metadata" src="assets/audio/2.mp3" title="Take You There"></audio>
+                <div class="additional-button">
+                    <div class="center-y-table">
+                        <a href="#">
+                            <i class="fa fa-headphones"></i>
+                        </a>
+                        <a href="#">
+                            <i class="fa fa-apple"></i>
+                        </a>
+                        <a href="#">
+                            <i class="fa fa-soundcloud"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="play-pause-button">
+                    <div class="center-y-table">
+                        <i class="fa fa-play"></i>
+                    </div>
+                </div>
+                <div class="name-artist">
+                    <div class="center-y-table">
+                        <h2>
+                            Jack U ft. Kiesza - Take You There
+                        </h2>
+                    </div>
+                </div>
+                <time class="trak-duration">
+                    00:00
+                </time>
+            </div>
+            <div class="trak-item" data-audio="assets/audio/3.mp3" data-artist="Bob Sinclair" data-thumbnail="assets/img/albums/cover3.jpg" data-id="trak-201">
+                <audio preload="metadata" src="assets/audio/3.mp3" title="Cinderella"></audio>
+                <div class="additional-button">
+                    <div class="center-y-table">
+                        <a href="#">
+                            <i class="fa fa-headphones"></i>
+                        </a>
+                        <a href="#">
+                            <i class="fa fa-apple"></i>
+                        </a>
+                        <a href="#">
+                            <i class="fa fa-soundcloud"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="play-pause-button">
+                    <div class="center-y-table">
+                        <i class="fa fa-play"></i>
+                    </div>
+                </div>
+                <div class="name-artist">
+                    <div class="center-y-table">
+                        <h2>
+                            Bob Sinclair - Cinderella
+                        </h2>
+                    </div>
+                </div>
+                <time class="trak-duration">
+                    00:00
+                </time>
+            </div>
+            <div class="trak-item" data-audio="assets/audio/4.mp3" data-artist="Yuna" data-thumbnail="assets/img/albums/cover4.jpg" data-id="trak-201">
+                <audio preload="metadata" src="assets/audio/4.mp3" title="Lullabies"></audio>
+                <div class="additional-button">
+                    <div class="center-y-table">
+                        <a href="#">
+                            <i class="fa fa-headphones"></i>
+                        </a>
+                        <a href="#">
+                            <i class="fa fa-apple"></i>
+                        </a>
+                        <a href="#">
+                            <i class="fa fa-soundcloud"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="play-pause-button">
+                    <div class="center-y-table">
+                        <i class="fa fa-play"></i>
+                    </div>
+                </div>
+                <div class="name-artist">
+                    <div class="center-y-table">
+                        <h2>
+                            Yuna - Lullabies
+                        </h2>
+                    </div>
+                </div>
+                <time class="trak-duration">
+                    00:00
+                </time>
+            </div>
+        </div>
+    </div>
+    <!-- =============== END PLAYLIST ================ -->
+
+    <!-- =============== START TOP HEADER ================ -->
+    <div class="topHeader" >
+        <div class="header">
+            <div class="rightTopHeader">
+                <div class="cartContainer">
+                    <div class="myCart">
+                        <ul>
+                            <li class="cartTitle"><img src="assets/img/shop/cart.png" alt=""><span>0</span></li>
+                        </ul>
+                    </div><!-- end myCart -->
+                    <div class="cartParent">
+                        <div class="cartItems">
+                            <ul>
+                                <li>
+                                    <div class="priceCart">
+                                        <img src="assets/img/shop/cart1.jpg" alt="">
+                                        <a href="#">Hoodie T.Brothers <!-- <span><i class="fa fa-times"></i></span> --></a>
+                                        <p>Price:&nbsp;<span>&pound;15,99</span></p>
+                                        <p class="quantity">Quantity: <span>1</span></p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="priceCart">
+                                        <img src="assets/img/shop/cart2.jpg" alt="">
+                                        <a href="#">Hoodie T.Brothers <!-- <span><i class="fa fa-times"></i></span> --></a>
+                                        <p>Price:&nbsp;<span>&pound;15,99</span></p>
+                                        <p class="quantity">Quantity: <span>1</span></p>
+                                    </div>                      
+                                </li>
+                                <li>
+                                    <div class="total">
+                                        <a href="#">Sub Total<span>31,98&pound;</span></a>
+                                    </div>
+                                </li>
+                            </ul>
+                            <button type="submit" class="single_add_to_cart_button button alt buttonView">
+                                                View Cart
+                            </button>
+                            <button type="submit" class="single_add_to_cart_button button alt buttonCheck">
+                                Checkout
+                            </button>
+                        </div><!-- end cartItems -->
+                    </div><!-- end cartParent -->
+                </div><!--end cartContainer  -->
+                <!-- Open Menu Button -->
+                <a class="open-menu">
+                    <!-- Buttons Bars -->
+                    <span class="span-1"></span>
+                    <span class="span-2"></span>
+                    <span class="span-3"></span>
+                </a>
+            </div><!-- end rightTopHeader -->
+        </div><!-- end header -->
+        <!-- Menu Fixed Container -->
+        <div class="menu-fixed-container">
+            <!-- Menu Fixed Centred Container -->
+            <nav>
+                <!-- Menu Fixed Close Button -->
+                <div class="x-filter">
+                    <span></span>
+                    <span></span>
+                </div>
+                <!-- Menu Fixed Primary List -->
+                <ul>
+                    <!-- Menu Fixed Item -->
+                    <li>
+                        <a href="index.html">
+                            home
+                        </a>
+                        <ul class="sub-menu">
+                            <!-- Menu Fixed Sub Menu Item -->
+                            <li>
+                                <a href="index.html">
+                                    home star
+                                </a>
+                            </li>
+                            <li>
+                                <a href="index-royal-slider.html">
+                                    home royal slider
+                                </a>
+                            </li>
+                            <!-- Menu Fixed Sub Menu Item -->
+                            <li>
+                                <a href="index-video.html">
+                                    home video 
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="albumsGrid.html">
+                            discography
+                        </a>
+                        <ul class="sub-menu">
+                            <!-- Menu Fixed Sub Menu Item -->
+                            <li>
+                                <a href="albumsFullBackground.html">
+                                    albums full background
+                                </a>
+                            </li>
+                            <!-- Menu Fixed Sub Menu Item -->
+                            <li>
+                                <a href="albumsGrid.html">
+                                    albums grid
+                                </a>
+                            </li>
+                            <!-- Menu Fixed Sub Menu Item -->
+                            <li>
+                                <a href="albumsSingle1.html">
+                                    album description
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- Menu Fixed Item -->
+                    <li>
+                        <a href="events.html">
+                            events
+                        </a>
+                    </li>
+                    <!-- Menu Fixed Item -->
+                    <li>
+                        <a href="#">
+                            blog
+                        </a>
+                        <ul class="sub-menu">
+                            <!-- Menu Fixed Sub Menu Item -->
+                            <li>
+                                <a href="blogGrid.html">
+                                    blog grid
+                                </a>
+                            </li>
+                            <!-- Menu Fixed Sub Menu Item -->
+                            <li>
+                                <a href="blogSidebarRight.html">
+                                    blog sidebar
+                                </a>
+                            </li>
+                            <!-- Menu Fixed Sub Menu Item -->
+                            <li>
+                                <a href="blogSingle.html">
+                                    blog single
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- Menu Fixed Item -->
+                    <li>
+                        <a href="#">
+                            gallery
+                        </a>
+                        <ul class="sub-menu">
+                            <!-- Menu Fixed Sub Menu Item -->
+                            <li>
+                                <a href="galleryGrid.html">
+                                    albums grid
+                                </a>
+                            </li>
+                            <!-- Menu Fixed Sub Menu Item -->
+                            <li>
+                                <a href="galleryScroll.html">
+                                    albums scroll
+                                </a>
+                            </li>
+                            <!-- Menu Fixed Sub Menu Item -->
+                            <li>
+                                <a href="gallerySingle.html">
+                                    gallery single
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- Menu Fixed Item -->
+                    <li>
+                        <a href="#">
+                            Other Pages
+                        </a>
+                        <ul class="sub-menu">
+                            <!-- Menu Fixed Sub Menu Item -->
+                            <li>
+                                <a href="biography.html">
+                                    Biography
+                                </a>
+                            </li>
+                            <!-- Menu Fixed Sub Menu Item -->
+                            <li>
+                                <a href="video.html">
+                                    Video
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- Menu Fixed Item -->
+                    <li>
+                        <a href="contact.html">
+                            contact
+                        </a>
+                    </li>
+                    <!-- Menu Fixed Item -->
+                    <li>
+                        <a href="shop.html">
+                            shop
+                        </a>
+                    </li>
+                </ul>
+                <!-- Menu Fixed Close Button -->
+                <div class="x-filter">
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div><!-- end menu-fixed-container -->
+        <!-- =============== STAR LOGO ================ -->
+        <div class="logo-container-top">
+            <a href="index.html"><img src="assets/img/logo/whiteLogo.png" alt="Aqura"></a>
+        </div><!-- end logo-container-top -->
+        <!-- =============== END LOGO ================ -->
+    </div><!-- end topHeader -->
+    <!-- =============== END TOP HEADER ================ -->
+
+    <div class="fusion-bg-parallax" data-bg-align=
+    "center center" data-bg-image=
+    "assets/img/content/1.jpg"
+    data-bg-repeat="false" data-break-parents="0"
+    data-direction="left" data-mobile-enabled="false"
+    data-mute="yes" data-opacity="100" data-velocity=
+    "-0.7"></div>
+    <div class="fusion-fullwidth fullwidth-box fusion-fullwidth-2 fusion-parallax-left nonhundred-percent-fullwidth"
+    style="border-color:transparent;border-bottom-width: 0px;border-top-width: 0px;border-bottom-style: solid;border-top-style: solid;padding-bottom:130px;padding-top:130px;padding-left:40px;padding-right:40px;padding-left:40px !important;padding-right:40px !important;">
+        <div class="fusion-row">
+            <a href="gallerySingle.html">Album <span>Example</span></a>
+            <p>December 15, 2016</p>
+        </div>
+    </div>
+    <div class="fusion-bg-parallax" data-bg-align=
+    "center center" data-bg-image=
+    "assets/img/content/2.jpg"
+    data-bg-repeat="false" data-break-parents="0"
+    data-direction="right" data-mobile-enabled="false"
+    data-mute="yes" data-opacity="100" data-velocity=
+    "-0.7"></div>
+    <div class="fusion-fullwidth fullwidth-box fusion-fullwidth-3 fusion-parallax-right nonhundred-percent-fullwidth"
+    style="border-color:transparent;border-bottom-width: 0px;border-top-width: 0px;border-bottom-style: solid;border-top-style: solid;padding-bottom:130px;padding-top:130px;padding-left:40px;padding-right:40px;padding-left:40px !important;padding-right:40px !important;">
+        <div class="fusion-row">
+            <a href="gallerySingle.html">Album <span>Example</span></a>
+            <p>December 15, 2016</p>
+        </div>
+    </div>
+    <div class="fusion-sep-clear"></div>
+    <div class="fusion-separator fusion-full-width-sep sep-none"
+    style="border-color:#e0dede;margin-top:-5px;">
+    </div>
+    <div class="fusion-bg-parallax" data-bg-align=
+    "center center" data-bg-image=
+    "assets/img/content/3.jpg"
+    data-bg-repeat="false" data-break-parents="0"
+    data-direction="left" data-mobile-enabled="false"
+    data-mute="yes" data-opacity="100" data-velocity=
+    "-0.7"></div>
+    <div class=
+    "fusion-fullwidth fullwidth-box fusion-fullwidth-4 fusion-parallax-left nonhundred-percent-fullwidth"
+    style=
+    "border-color:transparent;border-bottom-width: 0px;border-top-width: 0px;border-bottom-style: solid;border-top-style: solid;padding-bottom:130px;padding-top:130px;padding-left:40px;padding-right:40px;padding-left:40px !important;padding-right:40px !important;">
+        <div class="fusion-row">
+            <a href="gallerySingle.html">Album <span>Example</span></a>
+            <p>December 15, 2016</p>
+        </div>
+    </div>
+    <div class="fusion-bg-parallax" data-bg-align=
+    "center bottom" data-bg-image=
+    "assets/img/content/4.jpg"
+    data-bg-repeat="false" data-break-parents="0"
+    data-direction="right" data-mobile-enabled="false"
+    data-mute="yes" data-opacity="100" data-velocity=
+    "-0.7"></div>
+    <div class=
+    "fusion-fullwidth fullwidth-box fusion-fullwidth-5 fusion-parallax-right nonhundred-percent-fullwidth"
+    style=
+    "border-color:transparent;border-bottom-width: 0px;border-top-width: 0px;border-bottom-style: solid;border-top-style: solid;padding-bottom:130px;padding-top:130px;padding-left:40px;padding-right:40px;padding-left:40px !important;padding-right:40px !important;">
+        <div class="fusion-row">
+            <a href="gallerySingle.html">Album <span>Example</span></a>
+            <p>December 15, 2016</p>
+        </div>
+    </div>
+    <div class="fusion-bg-parallax" data-bg-align=
+    "center center" data-bg-image=
+    "assets/img/content/5.jpg"
+    data-bg-repeat="false" data-break-parents="0"
+    data-direction="left" data-mobile-enabled="false"
+    data-mute="yes" data-opacity="100" data-velocity=
+    "-0.7"></div>
+    <div class=
+    "fusion-fullwidth fullwidth-box fusion-fullwidth-6 fusion-parallax-left nonhundred-percent-fullwidth"
+    style=
+    "border-color:transparent;border-bottom-width: 0px;border-top-width: 0px;border-bottom-style: solid;border-top-style: solid;padding-bottom:130px;padding-top:130px;padding-left:40px;padding-right:40px;padding-left:40px !important;padding-right:40px !important;">
+        <div class="fusion-row">
+            <a href="gallerySingle.html">Album <span>Example</span></a>
+            <p>December 15, 2016</p>
+        </div>
+    </div>
+
+    <!-- =============== START FOOTER ================ -->
+    <section style="background-color:#eeeeee;position: relative;z-index: 1;">
+        <div class="footer footerPadding">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="copyFooter">
+                            <a href="#">&copy; Aqura 2016</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <nav class="social-icons">
+                            <ul class="clearfix">
+                                <li><a href="#" class="icon-button shopIcon"><i class="fa fa-twitter"></i><span></span></a></li>
+                                <li><a href="#" class="icon-button shopIcon"><i class="fa fa-facebook"></i><span></span></a></li>
+                                <li><a href="#" class="icon-button shopIcon"><i class="fa fa-apple"></i><span></span></a></li>
+                                <li><a href="#" class="icon-button shopIcon"><i class="fa fa-lastfm"></i><span></span></a></li>
+                                <li><a href="#" class="icon-button shopIcon"><i class="fa fa-soundcloud"></i><span></span></a></li>
+                                <li><a href="#" class="icon-button shopIcon"><i class="fa fa-youtube-play"></i><span></span></a></li>
+                                <li><a href="#" class="icon-button shopIcon"><i class="fa fa-vimeo"></i><span></span></a></li>  
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="goTop" id="back-to-top">
+                            <i class="fa fa-angle-up"></i>
+                            <a href="#">Go Top</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- =============== END FOOTER ================ -->
+    
+    <script type='text/javascript'>
+    /*  */
+    var toTopscreenReaderText = {"label":"Go to Top"};
+    var avadaVars = {"admin_ajax":"https:\/\/avada.theme-fusion.com\/architecture\/wp-admin\/admin-ajax.php","admin_ajax_nonce":"7393b5c0a6","protocol":"1","theme_url":"https:\/\/avada.theme-fusion.com\/architecture\/wp-content\/themes\/Avada","dropdown_goto":"Go to...","mobile_nav_cart":"Shopping Cart","page_smoothHeight":"false","flex_smoothHeight":"true","language_flag":"","infinite_blog_finished_msg":"<em>All posts displayed.<\/em>","infinite_finished_msg":"<em>All items displayed.<\/em>","infinite_blog_text":"<em>Loading the next set of posts...<\/em>","portfolio_loading_text":"<em>Loading Portfolio Items...<\/em>","faqs_loading_text":"<em>Loading FAQ Items...<\/em>","order_actions":"Details","avada_rev_styles":"1","avada_styles_dropdowns":"1","blog_grid_column_spacing":"40","blog_pagination_type":"Pagination","carousel_speed":"2500","counter_box_speed":"1000","content_break_point":"800","disable_mobile_animate_css":"0","disable_mobile_image_hovers":"1","portfolio_pagination_type":"Infinite Scroll","form_bg_color":"#373d4d","header_transparency":"0","header_padding_bottom":"0px","header_padding_top":"0px","header_position":"Top","header_sticky":"1","header_sticky_tablet":"0","header_sticky_mobile":"0","header_sticky_type2_layout":"menu_only","sticky_header_shrinkage":"0","is_responsive":"1","is_ssl":"true","isotope_type":"masonry","layout_mode":"wide","lightbox_animation_speed":"Fast","lightbox_arrows":"1","lightbox_autoplay":"0","lightbox_behavior":"all","lightbox_desc":"0","lightbox_deeplinking":"1","lightbox_gallery":"1","lightbox_opacity":"0.925","lightbox_path":"vertical","lightbox_post_images":"1","lightbox_skin":"metro-black","lightbox_slideshow_speed":"5000","lightbox_social":"0","lightbox_title":"0","lightbox_video_height":"720","lightbox_video_width":"1280","logo_alignment":"Left","logo_margin_bottom":"31px","logo_margin_top":"31px","megamenu_max_width":"1100","mobile_menu_design":"modern","nav_height":"95","nav_highlight_border":"1","page_title_fading":"0","pagination_video_slide":"0","related_posts_speed":"2500","submenu_slideout":"1","side_header_break_point":"920","sidenav_behavior":"Hover","site_width":"1170px","slider_position":"above","slideshow_autoplay":"1","slideshow_speed":"7000","smooth_scrolling":"0","status_lightbox":"1","status_totop_mobile":"1","status_vimeo":"1","status_yt":"1","testimonials_speed":"4000","tfes_animation":"sides","tfes_autoplay":"1","tfes_interval":"3000","tfes_speed":"800","tfes_width":"150","title_style_type":"none","title_margin_top":"0px","title_margin_bottom":"30px","typography_responsive":"1","typography_sensitivity":"0.6","typography_factor":"1.5","woocommerce_shop_page_columns":"","woocommerce_checkout_error":"Not all fields have been filled in correctly.","side_header_width":"0"};
+    /*  */
+    </script> 
+    <!--[if lte IE 8]> <script type="text/javascript" src="http://avada.theme-fusion.com/architecture/wp-content/themes/Avada/assets/js/respond.js"></script> <![endif]-->
+    
+    <script type='text/javascript' src='http://theme-fusion.com/avada/architecture/wp-content/themes/Avada/assets/js/main.min.js?ver=3.8.8' async></script>
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/plugins.js"></script>
+    <script type="text/javascript" src="assets/jplayer/jplayer/jquery.jplayer.js"></script>
+    <script src="assets/js/jPlayer.js"></script>
+    <script src="assets/js/mainScrollGalleryJs.js"></script>
+
+</body>
+</html>
