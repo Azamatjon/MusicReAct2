@@ -52,6 +52,15 @@ public class LoginController {
         return modelAndView;
     }
 
+    @RequestMapping("/galleryScroll")
+    public ModelAndView scroll(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("galleryScroll.html");
+        return modelAndView;
+    }
+
+
+
 
     @RequestMapping(value="/registration", method = RequestMethod.GET)
     public ModelAndView registration(){

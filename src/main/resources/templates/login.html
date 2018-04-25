@@ -1,85 +1,36 @@
-<!--Author: W3layouts
-Author URL: http://w3layouts.com
-License: Creative Commons Attribution 3.0 Unported
-License URL: http://creativecommons.org/licenses/by/3.0/
--->
-<!DOCTYPE HTML>
-<html lang="zxx">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<title>Simple Signin Form Responsive Widget Template :: w3layouts</title>
-	<!-- Meta tag Keywords -->
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="keywords" content="Simple Signin Form Responsive Widget,Login form widgets, Sign up Web forms , Login signup Responsive web form,Flat Pricing table,Flat Drop downs,Registration Forms,News letter Forms,Elements"
-	/>
-	<script>
-		addEventListener("load", function () {
-			setTimeout(hideURLbar, 0);
-		}, false);
-
-		function hideURLbar() {
-			window.scrollTo(0, 1);
-		}
-	</script>
-	<!-- Meta tag Keywords -->
-	<!-- css files -->
-	<link rel="stylesheet" href="./assets/css/login-style.css" type="text/css" media="all" />
-	<!-- Style-CSS -->
-	<link rel="stylesheet" href="./assets/css/font-awesome.css">
-	<!-- Font-Awesome-Icons-CSS -->
-	<!-- //css files -->
-	<!-- web-fonts -->
-	<link href="https://fonts.googleapis.com/css?family=Play:400,700" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
-	<!-- //web-fonts -->
+	<title>Spring Security Tutorial</title>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/login.css}" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 
 <body>
-	<!--header-->
-	<div class="header-w3l">
-		<h1>
-			Si<span>m</span>ple Si<span>g</span>nin Fo<span>r</span>m
-		</h1>
+	<form th:action="@{/registration}" method="get">
+		<button class="btn btn-md btn-warning btn-block" type="Submit">Go To Registration Page</button>
+	</form>	
+	
+	<div class="container">
+		<img th:src="@{/images/login.jpg}" class="img-responsive center-block" width="300" height="300" alt="Logo" />
+		<form th:action="@{/login}" method="POST" class="form-signin">
+			<h3 class="form-signin-heading" th:text="Welcome"></h3>
+			<br/>
+			 
+			<input type="text" id="email" name="email"  th:placeholder="Email"
+				class="form-control" /> <br/> 
+			<input type="password"  th:placeholder="Password"
+				id="password" name="password" class="form-control" /> <br /> 
+				
+			<div align="center" th:if="${param.error}">
+				<p style="font-size: 20; color: #FF1C19;">Email or Password invalid, please verify</p>
+			</div>
+			<button class="btn btn-lg btn-primary btn-block" name="Submit" value="Login" type="Submit" th:text="Login"></button>
+		</form>
 	</div>
-	<!--//header-->
-	<div class="main-content-agile">
-		<div class="sub-main-w3">
-			<h2>Sign In Now</h2>
-			<form action="#" method="post">
-				<label>Email</label>
-				<div class="pom-agile">
-					<span class="fa fa-envelope" aria-hidden="true"></span>
-					<input placeholder="Username" name="Name" class="user" type="email" required="">
-				</div>
-				<label>Password</label>
-				<div class="pom-agile">
-					<span class="fa fa-key" aria-hidden="true"></span>
-					<input placeholder="Password" name="Password" class="pass" type="password" required="">
-				</div>
-				<div class="sub-w3l">
-					<div class="sub-agile">
-						<input type="checkbox" id="brand1" value="">
-						<label for="brand1">
-							<span></span>Keep me Signed in</label>
-					</div>
-					<a href="#">Forgot Password?</a>
-					<div class="clear"></div>
-				</div>
-				<div class="right-w3l">
-					<input type="submit" value="Signin">
-				</div>
-			</form>
-		</div>
-	</div>
-	<!--//main-->
-	<!--footer-->
-	<div class="footer">
-		<p>&copy; 2018 Simple Signin Form. All rights reserved | Design by
-			<a href="http://w3layouts.com">W3layouts</a>
-		</p>
-	</div>
-	<!--//footer-->
 </body>
-
 </html>

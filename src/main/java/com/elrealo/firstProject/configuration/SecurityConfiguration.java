@@ -44,10 +44,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
+        System.out.println("pass: "+bCryptPasswordEncoder.encode("azamatjon98"));
         http.
                 authorizeRequests()
-                .antMatchers("/", "/assets/**", "/upload", "/saved", "/gellallfiles", "/music/**").permitAll()
+                .antMatchers("/", "/assets/**", "/upload", "/saved", "/gellallfiles", "/music/**", "/galleryScroll").permitAll()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/registration").permitAll()
                 .antMatchers("/admin/**").hasAuthority("ADMIN").anyRequest()
