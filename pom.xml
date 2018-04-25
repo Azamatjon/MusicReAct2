@@ -78,6 +78,12 @@
 			<version>2.9.5</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.mpatric/mp3agic -->
+		<dependency>
+			<groupId>com.mpatric</groupId>
+			<artifactId>mp3agic</artifactId>
+			<version>0.9.1</version>
+		</dependency>
 
 
 	</dependencies>

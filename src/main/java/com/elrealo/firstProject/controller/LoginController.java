@@ -37,13 +37,13 @@ public class LoginController {
 
         return records;
     }
-
+/*
     @RequestMapping(value={"/"}, method = RequestMethod.GET)
     public ModelAndView homePage(){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("index");
         return modelAndView;
-    }
+    }*/
 
     @RequestMapping(value={"/login"}, method = RequestMethod.GET)
     public ModelAndView login(){
