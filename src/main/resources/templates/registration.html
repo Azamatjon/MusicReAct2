@@ -1,72 +1,111 @@
-<!DOCTYPE html>
+<!--Author: W3layouts
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE HTML>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
+	  xmlns:th="http://www.thymeleaf.org">
+
 <head>
-	<title>Registration Form</title>
-	<link rel="stylesheet" type="text/css" th:href="@{/css/registration.css}" />
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<title>Simple Registration Form Responsive Widget Template :: w3layouts</title>
+	<!-- Meta tag Keywords -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="keywords" content="Simple Signin Form Responsive Widget,Login form widgets, Sign up Web forms , Login signup Responsive web form,Flat Pricing table,Flat Drop downs,Registration Forms,News letter Forms,Elements"
+	/>
+	<script>
+		addEventListener("load", function () {
+			setTimeout(hideURLbar, 0);
+		}, false);
+
+		function hideURLbar() {
+			window.scrollTo(0, 1);
+		}
+	</script>
+	<!-- Meta tag Keywords -->
+	<!-- css files -->
+	<link rel="stylesheet" href="./assets/css/login-style.css" type="text/css" media="all" />
+	<!-- Style-CSS -->
+	<link rel="stylesheet" href="./assets/css/font-awesome.css">
+	<script src="assets/js/bootstrap.min.js"></script>
+	<!-- Font-Awesome-Icons-CSS -->
+	<!-- //css files -->
+	<!-- web-fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Play:400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+	<!-- //web-fonts -->
 </head>
+
 <body>
-	<form th:action="@{/}" method="get">
-		<button class="btn btn-md btn-warning btn-block" type="Submit">Go To Login Page</button>
-	</form>	
-	
-	<div class="container">
-		<div class="row">
-			<div class="col-md-6 col-md-offset-3">
-				<form autocomplete="off" action="#" th:action="@{/registration}"
-					th:object="${user}" method="post" class="form-horizontal"
-					role="form">
-					<h2>Registration Form</h2>
-					<div class="form-group">
-						<div class="col-sm-9">
-						<label th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
-								class="validation-message"></label>
-						<input type="text" th:field="*{name}" placeholder="Name"
-								class="form-control" /> 
-						</div>
+	<!--header-->
+	<div class="header-w3l">
+		<h1>
+			Si<span>m</span>ple Reg<span>istr</span>ation Fo<span>r</span>m
+		</h1>
+	</div>
+	<!--//header-->
+	<div class="main-content-agile">
+		<div class="sub-main-w3">
+			<h2>Register Now</h2>
+			<form autocomplete="off" th:action="@{/registration}" th:object="${user}" method="post">
+				<span th:utext="${successMessage}"></span>
+				<label>Email</label>
+				<div class="pom-agile">
+					<span class="fa fa-envelope" aria-hidden="true"></span>
+					<input placeholder="Email" th:field="*{email}" class="user" type="email" required="">
+					<label
+							th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
+							class="validation-message"></label>
+				</div>
+
+				<label>First Name</label>
+				<div class="pom-agile">
+					<span class="fa fa-tag" aria-hidden="true"></span>
+					<input placeholder="First Name" th:field="*{name}" class="user" type="text" required="">
+					<label th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
+						   class="validation-message"></label>
+				</div>
+				<label>Last Name</label>
+				<div class="pom-agile">
+					<span class="fa fa-pencil" aria-hidden="true"></span>
+					<input placeholder="Last Name" th:field="*{lastName}" class="user" type="text" required="">
+					<label	th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"
+							  class="validation-message"></label>
+				</div>
+				<label>Password</label>
+				<div class="pom-agile">
+					<span class="fa fa-key" aria-hidden="true"></span>
+					<input placeholder="Password" th:field="*{password}" class="pass" type="password" required="">
+					<label th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
+							class="validation-message"></label>
+				</div>
+				<div class="sub-w3l">
+					<!--
+					<div class="sub-agile">
+						<input type="checkbox" id="brand1" value="">
+						<label for="brand1">
+							<span></span>Keep me Signed in</label>
 					</div>
 
-					<div class="form-group">
-						<div class="col-sm-9">
-						<label	th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"
-								class="validation-message"></label>
-							<input type="text" th:field="*{lastName}"
-								placeholder="Last Name" class="form-control" /> 
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-9">
-							<input type="text" th:field="*{email}" placeholder="Email"
-								class="form-control" /> <label
-								th:if="${#fields.hasErrors('email')}" th:errors="*{email}"
-								class="validation-message"></label>
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-9">
-							<input type="password" th:field="*{password}"
-								placeholder="Password" class="form-control" /> <label
-								th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
-								class="validation-message"></label>
-						</div>
-					</div>
-
-					<div class="form-group">
-						<div class="col-sm-9">
-							<button type="submit" class="btn btn-primary btn-block">Register User</button>
-						</div>
-					</div>
-					
-					<span th:utext="${successMessage}"></span>
-					
-					
-				</form>
-			</div>
+					<a href="#">Forgot Password?</a>
+					-->
+					<div class="clear"></div>
+				</div>
+				<div class="right-w3l">
+					<input type="submit" value="Registrate">
+				</div>
+			</form>
 		</div>
 	</div>
-
+	<!--//main-->
+	<!--footer-->
+	<div class="footer">
+		<p>&copy; 2018 Simple Signin Form. All rights reserved | Design by
+			<a href="http://w3layouts.com">W3layouts</a>
+		</p>
+	</div>
+	<!--//footer-->
 </body>
+
 </html>
