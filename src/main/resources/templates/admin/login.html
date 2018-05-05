@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html   xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <!-- Title -->
+    <title>Modern | Login - Sign in</title>
+
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <meta charset="UTF-8">
+    <meta name="description" content="Admin Dashboard Template" />
+    <meta name="keywords" content="admin,dashboard" />
+    <meta name="author" content="Steelcoders" />
+
+    <!-- Styles -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600' rel='stylesheet' type='text/css'>
+    <link href="/adm/assets/plugins/pace-master/themes/blue/pace-theme-flash.css" rel="stylesheet"/>
+    <link href="/adm/assets/plugins/uniform/css/uniform.default.min.css" rel="stylesheet"/>
+    <link href="/adm/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/plugins/fontawesome/css/font-awesome.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/plugins/line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/plugins/offcanvasmenueffects/css/menu_cornerbox.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/plugins/waves/waves.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/plugins/switchery/switchery.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/plugins/3d-bold-navigation/css/style.css" rel="stylesheet" type="text/css"/>
+
+    <!-- Theme Styles -->
+    <link href="/adm/assets/css/modern.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/css/themes/white.css" class="theme-color" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/css/custom.css" rel="stylesheet" type="text/css"/>
+
+    <script src="/adm/assets/plugins/3d-bold-navigation/js/modernizr.js"></script>
+    <script src="/adm/assets/plugins/offcanvasmenueffects/js/snap.svg-min.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+<body class="page-login">
+<main class="page-content">
+    <div class="page-inner">
+        <div id="main-wrapper">
+            <div class="row">
+                <div class="col-md-3 center">
+                    <div class="login-box">
+                        <a href="index.html" class="logo-name text-lg text-center">Modern</a>
+                        <p class="text-center m-t-md">Please login into your account.</p>
+                        <form class="m-t-md" id="ajax-login" action="">
+                            <div class="form-group">
+                                <input type="email" class="form-control" placeholder="Email" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" placeholder="Password" required>
+                            </div>
+                            <!--
+                            <div class="checkbox">
+                                <label style="margin-left: -20px;">
+                                    <input type="checkbox"> Remember me
+                                </label>
+                            </div>
+                            -->
+                            <button type="submit" class="btn btn-success btn-block">Login</button>
+                            <a href="/login.php?op=recover" class="display-block text-center m-t-md text-sm">Forgot Password?</a>
+                            <p class="text-center m-t-xs text-sm">Do not have an account?</p>
+                            <a href="/registration.php" class="btn btn-default btn-block m-t-md">Create an account</a>
+                        </form>
+                        <button type="button" style="display: none;" id="modal_" data-toggle="modal" data-target=".bs-example-modal-sm"></button>
+
+                        <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-sm">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="mySmallModalLabel">Oops!</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div id="textmodal"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-center m-t-xs text-sm">2015 &copy; Modern by Steelcoders.</p>
+                    </div>
+                </div>
+            </div><!-- Row -->
+        </div><!-- Main Wrapper -->
+    </div><!-- Page Inner -->
+</main><!-- Page Content -->
+
+<!-- Javascripts -->
+<script src="/adm/assets/plugins/jquery/jquery-2.1.3.min.js"></script>
+<script type="text/javascript">
+    $('#ajax-login').submit(function(event) {
+        email = $('input[type=email]').val();
+        password = $('input[type=password]').val();
+        if ($('span[class=checked]').val() == "") checkbox = 1;
+        else checkbox = 0;
+        error = "";
+        var expEmail = /[-0-9a-z_.]+@[-0-9a-z_]+\.[a-z]{2,6}/i;
+        var resEmail = email.search(expEmail);
+        if(resEmail == -1){
+            error = "invalid_email";
+        } else if (password.length < 6) {
+            error = "invalid_password";
+        } else {
+            $.post('/ajax/login', {
+                email: email,
+                password: password/*,
+                remember: checkbox*/
+            }, function(data, status) {
+                if (!navigator.onLine) {
+                    document.getElementById("textmodal").innerHTML = "Check your internet connection...";
+                    document.getElementById("modal_").click();
+                    return;
+                }
+                if (status == 'success') {
+                    if (data.status == 'success2') {
+                        window.location.href = "/admin/home";
+                    } else {
+                        document.getElementById("textmodal").innerHTML = "Incorrect username and / or password";
+                        document.getElementById("modal_").click();
+                    }
+                } else {
+                    document.getElementById("textmodal").innerHTML = "Error, I can't connect with the server...";
+                    document.getElementById("modal_").click();
+                }
+            });
+        }
+        event.preventDefault();
+    });
+</script>
+<script src="/adm/assets/plugins/jquery-ui/jquery-ui.min.js"></script>
+<script src="/adm/assets/plugins/pace-master/pace.min.js"></script>
+<script src="/adm/assets/plugins/jquery-blockui/jquery.blockui.js"></script>
+<script src="/adm/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="/adm/assets/plugins/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<script src="/adm/assets/plugins/switchery/switchery.min.js"></script>
+<script src="/adm/assets/plugins/uniform/jquery.uniform.min.js"></script>
+<script src="/adm/assets/plugins/offcanvasmenueffects/js/classie.js"></script>
+<script src="/adm/assets/plugins/waves/waves.min.js"></script>
+<script src="/adm/assets/js/modern.min.js"></script>
+
+</body>
+</html>

@@ -1,8 +1,12 @@
 package com.elrealo.firstProject.controller;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.elrealo.firstProject.service.StorageService;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.imageio.ImageIO;
 
 
@@ -37,7 +42,7 @@ public class UploadController {
     public String listUploadedFiles(Model model) {
         return "uploadForm";
     }
-
+/*
     @PostMapping("/saved")
     public String handleFileUpload(@RequestParam("file") MultipartFile file, Model model) {
         try {
@@ -45,19 +50,7 @@ public class UploadController {
             model.addAttribute("message", "You successfully uploaded " + file.getOriginalFilename() + "!");
 
             files.add(file.getOriginalFilename());
-            try {
-                Mp3File song = new Mp3File(StorageService.rootLocation.resolve(file.getOriginalFilename()));
 
-                if (song.hasId3v2Tag()){
-                    ID3v2 id3v2tag = song.getId3v2Tag();
-                    String artist = id3v2tag.getArtist();
-                    String title = id3v2tag.getTitle();
-
-                    System.out.println("artist: " + artist + ", title: " + title);
-                }
-            } catch (Exception e){
-                System.out.println(e.getMessage());
-            }
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -65,26 +58,107 @@ public class UploadController {
         }
         return "uploadForm";
     }
+*/
+    @PostMapping("/upload")
+    @ResponseBody
+    public Map<String, String> handleFileUpload(@RequestParam(value = "file", required = false) MultipartFile file, @RequestParam(value = "type", required = false) String type) {
+        boolean isUploaded = true;
+        try {
+            switch (type){
+                case "avatar":
+                    storageService.storeAvatar(file);
+                    break;
+                case "music":
+                    storageService.storeMusic(file);
+                    break;
+                case "image":
+                    storageService.storeImage(file);
+                    break;
+                case "video":
+                    storageService.storeVideo(file);
+                    break;
+                default:
+                    isUploaded = false;
+                    break;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            isUploaded = false;
+        }
 
-    @GetMapping("/gellallfiles")
-    public String getListFiles(Model model) {
-        model.addAttribute("files",
-                files.stream()
-                        .map(fileName -> MvcUriComponentsBuilder
-                                .fromMethodName(UploadController.class, "getFile", fileName).build().toString())
-                        .collect(Collectors.toList()));
-        model.addAttribute("totalFiles", "TotalFiles: " + files.size());
-        return "listFiles";
+        HashMap<String, String> map = new HashMap<>();
+
+        if (isUploaded){
+            map.put("status", "ok");
+        } else {
+            map.put("status", "error");
+        }
+        return map;
     }
 
 
-    @GetMapping("/music/{filename:.+}")
+
+    @GetMapping("/musics/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
-        Resource file = storageService.loadFile(filename);
+    public ResponseEntity<Resource> getMusic(@PathVariable String filename) {
+        Resource file = storageService.loadMusic(filename);
+        String mimeType = "";
+        try {
+            mimeType = Files.probeContentType(file.getFile().toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + file.getFilename() + "\"")
-                .header(HttpHeaders.CONTENT_TYPE, "audio/mpeg")
+                .header(HttpHeaders.CONTENT_TYPE, mimeType)
+                .body(file);
+    }
+
+    @GetMapping("/avatars/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getAvatar(@PathVariable String filename) {
+        Resource file = storageService.loadAvatar(filename);
+        String mimeType = "";
+        try {
+            mimeType = Files.probeContentType(file.getFile().toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + file.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, mimeType)
+                .body(file);
+    }
+
+    @GetMapping("/images/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getImage(@PathVariable String filename) {
+        Resource file = storageService.loadImage(filename);
+        String mimeType = "";
+        try {
+            mimeType = Files.probeContentType(file.getFile().toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + file.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, mimeType)
+                .body(file);
+    }
+
+    @GetMapping("/videos/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getVideo(@PathVariable String filename) {
+        Resource file = storageService.loadVideo(filename);
+        String mimeType = "";
+        try {
+            mimeType = Files.probeContentType(file.getFile().toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + file.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, mimeType)
                 .body(file);
     }
 }

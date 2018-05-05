@@ -34,8 +34,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth)
             throws Exception {
-        auth.
-                jdbcAuthentication()
+        auth
+                .jdbcAuthentication()
                 .usersByUsernameQuery(usersQuery)
                 .authoritiesByUsernameQuery(rolesQuery)
                 .dataSource(dataSource)
@@ -56,7 +56,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     * */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        System.out.println("pass: "+bCryptPasswordEncoder.encode("azamatjon98"));
+
         http
                 .csrf().disable()
                 .formLogin().loginPage("/login").failureUrl("/login?error=true")
@@ -73,7 +73,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web
                 .ignoring()
-                .antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**");
+                .antMatchers("/resources/**", "/static/**", "/adm/**", "/js/**", "/assets/**");
     }
 
 }

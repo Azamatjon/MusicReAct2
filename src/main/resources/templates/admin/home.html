@@ -21,7 +21,16 @@
 		<div class="panel-group" style="margin-top:40px">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
-					<span th:utext="${userName}"></span>
+					<span th:utext="${user.getName()}"></span>
+
+					<table>
+						<th:block th:each="role : ${user.getRoles()}">
+							<tr>
+								<td th:text="${role.getRole()}">...</td>
+							</tr>
+						</th:block>
+					</table>
+
 				</div>
 				<div class="panel-body">
 					<img th:src="@{/images/beer.jpg}" class="img-responsive center-block" width="400" height="400" alt="Beer" /> 
