@@ -1,27 +1,36 @@
 package com.elrealo.firstProject.controller;
 
+import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import javax.validation.constraints.Null;
 
+import com.elrealo.firstProject.Helper.CssSwitcher;
+import com.elrealo.firstProject.Helper.RandomString;
 import com.elrealo.firstProject.model.AdminStyle;
+import com.elrealo.firstProject.model.Role;
+import com.elrealo.firstProject.model.VerificationToken;
 import com.elrealo.firstProject.repository.AdminStyleRepository;
+import com.elrealo.firstProject.repository.RoleRepository;
 import com.elrealo.firstProject.repository.UserRepository;
+import com.elrealo.firstProject.repository.VerificationTokenRepository;
+import com.elrealo.firstProject.service.MailClient;
+import com.elrealo.firstProject.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import java.util.*;
 
 
 import java.io.IOException;
@@ -51,6 +60,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import org.springframework.web.servlet.ModelAndView;
 
@@ -68,24 +78,41 @@ public class LoginController {
     @Autowired
     private UserRepository userRepository;
 
+    @Qualifier("roleRepository")
+    @Autowired
+    private RoleRepository roleRepository;
+
     @Qualifier("adminStyleRepository")
     @Autowired
-    private AdminStyleRepository adminStyleRepository, adminStyleRepository_;
+    private AdminStyleRepository adminStyleRepository;
+
+
+    @Autowired
+    private MailClient mailClient;
 
     private RequestCache requestCache = new HttpSessionRequestCache();
 
+    @Autowired
+    private VerificationTokenRepository verificationTokenRepository;
 
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, String> del(@RequestParam(value = "startPoint", required = false) Integer startPoint,
+                                   @RequestParam(value = "numberOfResults", required = false) Integer numberOfResults) {
 
+        HashMap<String, String> map = new HashMap<>();
+/*
+        for (User usr:userRepository.getPagination(0,2)) {
+            System.out.println(usr.getEmail());
+        }*/
 
-
-
-
-
-
-
+        return map;
+    }
 
 
 
@@ -124,26 +151,43 @@ public class LoginController {
                                      HttpServletResponse response,
                                      @RequestParam(value = "email", required = false) String email,
                                      @RequestParam(value = "password", required = false) String password
-                        ) throws ServletException {
+    ) throws ServletException {
         HashMap<String, String> map = new HashMap<>();
 
         try {
-            request.login(email, password);
-            SavedRequest savedRequest = requestCache.getRequest(request, response);
 
+            System.out.printf("email: %s, password: %s\n", email, password);
+            request.logout();
+            System.out.println(1);
+            request.login(email, password);
+            System.out.println(2);
+            //System.out.println(request.getUserPrincipal().getName());
+            requestCache.saveRequest(request, response);
+
+            System.out.println("isAdmin: " + request.isUserInRole("ADMIN"));
+            SavedRequest savedRequest = requestCache.getRequest(request, response);
+            //System.out.println("" + request.isUserInRole("ADMIN"));
             if (savedRequest != null) {
                 map.put("status", "success");
             } else {
                 map.put("status", "success2");
             }
+            User user = userService.findUserByEmail(request.getUserPrincipal().getName());
+            if (user.isAdmin()){
+                map.put("redirect", "/admin/home");
+            } else {
+                map.put("redirect", "/");
+            }
+
 
         } catch (ServletException authenticationFailed) {
             map.put("status", "failed");
+            map.put("error_code", authenticationFailed.getMessage());
         }
         return map;
     }
 
-    
+
     /**
      * Demonstrates that invoking {@link HttpServletRequest#logout()} will log the user out.
      * We then redirect the user to the home page.
@@ -171,12 +215,12 @@ public class LoginController {
 
 
     /* Ajax */
-    @RequestMapping(value = "/ajaxtest", method = RequestMethod.GET)
+    @RequestMapping(value = "/email", method = RequestMethod.GET)
     @ResponseBody
     public Set<String> ajaxTest() {
         Set<String> records = new HashSet<String>();
-        records.add("Record #1");
-        records.add("Record #2");
+        records.add("sent");
+
 
         return records;
     }
@@ -210,33 +254,400 @@ public class LoginController {
         ModelAndView modelAndView = new ModelAndView();
         User user = new User();
         modelAndView.addObject("user", user);
-        modelAndView.setViewName("registration");
+        modelAndView.setViewName("admin/register");
         return modelAndView;
     }
 
-    @RequestMapping(value = "/registration", method = RequestMethod.POST)
-    public ModelAndView createNewUser(@Valid User user, BindingResult bindingResult) {
+
+    @RequestMapping(value="/confirmRegistration", method = RequestMethod.GET)
+    public ModelAndView confirmationRegistration(@RequestParam(value = "token", required = false) String token){
+
         ModelAndView modelAndView = new ModelAndView();
-        User userExists = userService.findUserByEmail(user.getEmail());
-        if (userExists != null) {
-            bindingResult
-                    .rejectValue("email", "error.user",
-                            "There is already a user registered with the email provided");
-        }
-        if (bindingResult.hasErrors()) {
-            modelAndView.setViewName("registration");
-        } else {
-            userService.saveUser(user);
-            modelAndView.addObject("successMessage", "User has been registered successfully");
-            modelAndView.addObject("user", new User());
-            modelAndView.setViewName("registration");
 
+        VerificationToken checkToken = verificationTokenRepository.findByToken(token);
+
+        try {
+            if (checkToken.getUser().getActive() != 1 && checkToken.getType() == 1) {
+                modelAndView.addObject("token", token);
+                modelAndView.addObject("email", checkToken.getUser().getEmail());
+                modelAndView.setViewName("admin/confirmRegistration");
+            } else if (checkToken.getType() != 1) {
+                throw new NullPointerException();
+            }  else {
+                modelAndView.addObject("error_code", "403");
+                modelAndView.addObject("error_context", "Oops! Something went wrong");
+                modelAndView.addObject("error_message", "This email is already confirmed.");
+                modelAndView.setViewName("admin/errorPage");
+            }
+        } catch (NullPointerException e){
+            modelAndView.addObject("error_code", "403");
+            modelAndView.addObject("error_context", "Oops! Something went wrong");
+            modelAndView.addObject("error_message", "This token is not valid.");
+            modelAndView.setViewName("admin/errorPage");
         }
         return modelAndView;
     }
+
+    @RequestMapping(value="/ajax/confirmRegistration", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> confirmationRegistrationLastStep(@RequestParam(value = "token", required = false) String token,
+                                                @RequestParam(value = "firstName", required = false) String firstName,
+                                                @RequestParam(value = "lastName", required = false) String lastName,
+                                                @RequestParam(value = "password", required = false) String password){
+
+        HashMap<String, String> map = new HashMap<>();
+
+        VerificationToken checkToken = verificationTokenRepository.findByToken(token);
+
+        try {
+            if (checkToken.getUser().getActive() != 1 && checkToken.getType() == 1){
+                User user = userRepository.findByEmail(checkToken.getUser().getEmail());
+                user.setActive(1);
+                user.setName(firstName);
+                user.setLastName(lastName);
+                user.setPassword(bCryptPasswordEncoder.encode(password));
+
+                userRepository.save(user);
+                verificationTokenRepository.delete(checkToken);
+                map.put("status", "success");
+            } else if (checkToken.getType() != 1) {
+                map.put("status", "error");
+                map.put("error_description", "This token is not valid.");
+            } else {
+                map.put("status", "error");
+                map.put("error_description", "This email is already confirmed.");
+            }
+        } catch (NullPointerException e){
+            map.put("status", "error");
+            map.put("error_description", "This token is not valid / or: " + e.getMessage());
+        }
+        return map;
+    }
+
+
+
+
+
+    @RequestMapping(value="/confirmChangingEmail", method = RequestMethod.GET)
+    public ModelAndView confirmChangingEmail(@RequestParam(value = "token", required = false) String token){
+
+        ModelAndView modelAndView = new ModelAndView();
+
+        VerificationToken checkToken = verificationTokenRepository.findByToken(token);
+
+        try {
+            if (checkToken.getType() == 2) {
+                modelAndView.addObject("token", token);
+                modelAndView.addObject("oldEmail", checkToken.getUser().getEmail());
+                modelAndView.addObject("newEmail", checkToken.getEmail());
+                modelAndView.setViewName("admin/confirmChangingEmail");
+            } else {
+                throw new NullPointerException();
+            }
+        } catch (NullPointerException e){
+            modelAndView.addObject("error_code", "403");
+            modelAndView.addObject("error_context", "Oops! Something went wrong");
+            modelAndView.addObject("error_message", "This token is not valid.");
+            modelAndView.setViewName("admin/errorPage");
+        }
+        return modelAndView;
+    }
+
+    @RequestMapping(value="/confirmChangingEmail", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> confirmChangingEmailLastStep(@RequestParam(value = "token", required = false) String token,
+                                                            @RequestParam(value = "newEmail", required = false) String newEmail,
+                                                            @RequestParam(value = "password", required = false) String password,
+                                                            HttpServletRequest request,
+                                                            HttpServletResponse response){
+
+        HashMap<String, String> map = new HashMap<>();
+
+        VerificationToken checkToken = verificationTokenRepository.findByToken(token);
+        boolean isPasswordValid = bCryptPasswordEncoder.matches(password, checkToken.getUser().getPassword());
+        try {
+            if (isPasswordValid && checkToken.getType() == 2){
+                User user = checkToken.getUser();
+                user.setEmail(newEmail);
+
+                userRepository.save(user);
+
+                verificationTokenRepository.delete(checkToken);
+
+                request.logout();
+                request.login(user.getEmail(), password);
+
+                requestCache.saveRequest(request, response);
+                SavedRequest savedRequest = requestCache.getRequest(request, response);
+
+                if (savedRequest != null) {
+                    map.put("status2", "success");
+                } else {
+                    map.put("status2", "success2");
+                }
+
+                if (user.isAdmin()){
+                    map.put("redirect", "/admin/home?goTo=profile");
+                } else {
+                    map.put("redirect", "/admin/home?goTo=profile");
+                }
+
+
+                map.put("status", "success");
+            } else if (!isPasswordValid){
+                map.put("status", "error");
+                map.put("error_description", "Password you've entered is not valid!");
+            } else {
+                throw new NullPointerException();
+            }
+        } catch (NullPointerException e){
+            map.put("status", "error");
+            map.put("error_description", "This token is not valid / or: " + e.getMessage());
+        } catch (ServletException e){
+            map.put("status", "error");
+            map.put("error_description", "Error occured while logging in / or: " + e.getMessage());
+        }
+        return map;
+    }
+
+    @RequestMapping(value="/forgotPassword", method = RequestMethod.GET)
+    public ModelAndView forgotPassword() {
+
+        ModelAndView modelAndView = new ModelAndView();
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByEmail(auth.getName());
+
+        if (user == null) {
+            modelAndView.setViewName("admin/forgotPassword");
+        } else {
+            modelAndView.addObject("error_code", "403");
+            modelAndView.addObject("error_context", "Oops! Something went wrong");
+            modelAndView.addObject("error_message", "You have alreay logged in.");
+            modelAndView.setViewName("admin/errorPage");
+        }
+
+        return modelAndView;
+    }
+
+
+    @RequestMapping(value="/confirmForgotPassword", method = RequestMethod.GET)
+    public ModelAndView confirmForgotPassword(@RequestParam(value = "token", required = false) String token){
+
+        ModelAndView modelAndView = new ModelAndView();
+
+        VerificationToken checkToken = verificationTokenRepository.findByToken(token);
+
+        try {
+            if (checkToken.getType() == 3) {
+                modelAndView.addObject("token", token);
+                modelAndView.addObject("email", checkToken.getUser().getEmail());
+                modelAndView.setViewName("admin/confirmForgotPassword");
+            } else {
+                throw new NullPointerException();
+            }
+        } catch (NullPointerException e){
+            modelAndView.addObject("error_code", "403");
+            modelAndView.addObject("error_context", "Oops! Something went wrong");
+            modelAndView.addObject("error_message", "This token is not valid.");
+            modelAndView.setViewName("admin/errorPage");
+        }
+        return modelAndView;
+    }
+
+    @RequestMapping(value="/ajax/confirmForgotPassword", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> confirmForgotPasswordLastStep(@RequestParam(value = "token", required = false) String token,
+                                                             @RequestParam(value = "newPassword", required = false) String newPassword,
+                                                            HttpServletRequest request,
+                                                            HttpServletResponse response){
+
+        HashMap<String, String> map = new HashMap<>();
+
+        VerificationToken checkToken = verificationTokenRepository.findByToken(token);
+
+        try {
+            if (checkToken.getType() == 3){
+                User user = checkToken.getUser();
+                user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+
+                userRepository.save(user);
+
+                verificationTokenRepository.delete(checkToken);
+
+                request.logout();
+                request.login(user.getEmail(), newPassword);
+                requestCache.saveRequest(request, response);
+                SavedRequest savedRequest = requestCache.getRequest(request, response);
+
+                if (savedRequest != null) {
+                    map.put("status2", "success");
+                } else {
+                    map.put("status2", "success2");
+                }
+
+                if (user.isAdmin()){
+                    map.put("redirect", "/admin/home");
+                } else {
+                    map.put("redirect", "/admin/home");
+                }
+
+
+                map.put("status", "success");
+            } else {
+                throw new NullPointerException();
+            }
+        } catch (NullPointerException e){
+            map.put("status", "error");
+            map.put("error_description", "This token is not valid / or: " + e.getMessage());
+        } catch (ServletException e){
+            map.put("status", "error");
+            map.put("error_description", "Error occured while logging in / or: " + e.getMessage());
+        }
+        return map;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @RequestMapping(value = "/ajax/registration", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> createNewUser(@RequestParam(value = "email", required = false) String email) {
+
+        HashMap<String, String> map = new HashMap<>();
+
+        User userExists = userService.findUserByEmail(email);
+
+
+        if (userExists != null && userExists.getActive() == 1) {
+            map.put("status", "error");
+            map.put("error_description", "User exists");
+        } else {
+            /*try {*/
+            try {
+                if (userExists != null && userExists.getActive() == 0){
+                    VerificationToken prevousToken = verificationTokenRepository.findByUserAndAndType(userExists, 1);
+                    if (prevousToken != null){
+                        verificationTokenRepository.delete(prevousToken);
+                        System.out.println("Previous confirm registration token was deleted");
+                    }
+                    userRepository.delete(userExists);
+                }
+            } catch (Exception e){
+                System.out.println("isNull: ");
+                userRepository.delete(userExists);
+            }
+            User user = new User();
+            user.setEmail(email);
+            user.setLocked(false);
+            user.setActive(0);
+            user.setPassword(bCryptPasswordEncoder.encode("temporary"));
+
+            userService.saveUser(user);
+
+            VerificationToken token = new VerificationToken();
+            token.setUser(user);
+            token.setType(1);
+            token.setExpiryDate(1440);
+            token.generateToken();
+
+            verificationTokenRepository.save(token);
+
+            mailClient.prepareAndSend(email, "Confirmation Registration", "Please confirm via http://localhost:8080/confirmRegistration?token=" + token.getToken());
+
+            map.put("status", "success");
+            /*} catch (Exception e){
+                map.put("status", "error");
+                map.put("error_description", e.getMessage());
+            }
+            */
+        }
+        return map;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @RequestMapping(value = "/ajax/restorePassword", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> restorePassword(@RequestParam(value = "email", required = false) String email) {
+
+        HashMap<String, String> map = new HashMap<>();
+
+        User userExists = userService.findUserByEmail(email);
+
+
+        try{
+            if (userExists != null && userExists.getActive() == 1) {
+                try {
+                    VerificationToken previousToken = verificationTokenRepository.findByUserAndAndType(userExists, 3);
+                    if (previousToken != null){
+                        verificationTokenRepository.delete(previousToken);
+                        System.out.println("previous restore password token was deleted");
+                    }
+                } catch (Exception e){
+                    System.out.println("previous restore password token wasn't deleted");
+                }
+
+                VerificationToken token = new VerificationToken();
+                token.setUser(userExists);
+                token.setEmail(email);
+                token.setType(3);
+                token.setExpiryDate(1440);
+                token.generateToken();
+
+                verificationTokenRepository.save(token);
+
+                mailClient.prepareAndSend(email, "Restore password request", "Please go to http://localhost:8080/confirmForgotPassword?token=" + token.getToken() + " to restore your password.");
+
+                map.put("status", "success");
+            } else if (userExists.getActive() == 0){
+                map.put("status", "error");
+                map.put("error_description", "User wasn't activated yet");
+            } else {
+                map.put("status", "error");
+                map.put("error_description", "Some error was occured. ");
+            }
+        } catch (NullPointerException e){
+            map.put("status", "error");
+            map.put("error_description", "User doesn't exist. ");
+        }
+        return map;
+    }
+
+
+
+
+    @Autowired
+    UserServiceImpl userServiceImpl;
+
 
     @RequestMapping(value="/admin/home", method = RequestMethod.GET)
-    public ModelAndView home(@RequestParam(value = "action", required = false) String action) {
+    public ModelAndView home(@RequestParam(value = "action", required = false) String action,
+                             @RequestParam(value = "goTo", required = false) String goTo,
+                             @RequestParam(value = "id", required = false) String id) {
 
         ModelAndView modelAndView = new ModelAndView();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -250,7 +661,6 @@ public class LoginController {
 
         if (user.isLocked()) {
             modelAndView.addObject("user", user);
-            modelAndView.addObject("avatar", "/avatars/" + user.getImage_name());
             modelAndView.setViewName("admin/locked");
 
         } else {
@@ -270,7 +680,7 @@ public class LoginController {
                 style.sethMenu(false);
                 style.setbLayout(false);
 
-                adminStyleRepository_.save(style);
+                adminStyleRepository.save(style);
 
                 System.out.println("Style was initialized.");
             }
@@ -325,16 +735,45 @@ public class LoginController {
 
 
             modelAndView.addObject("user", user);
-            modelAndView.addObject("avatar", "/avatars/" + user.getImage_name());
 
             modelAndView.setViewName("admin/default");
 
-            if (action == null || action.equals("dashboard")) {
-                modelAndView.addObject("content", "dashboard");
-            } else if (action.equals("profile")) {
-                modelAndView.addObject("content", "profile");
+            if (goTo != null) modelAndView.addObject("goTo", goTo);
+            else modelAndView.addObject("goTo", "null");
+
+            if (action != null) modelAndView.addObject("action", action);
+            else modelAndView.addObject("action", "null");
+            if (goTo == null) goTo = "noWhere";
+            if (action == null) action = "noAction";
+
+            switch (goTo){
+                case "users":
+                    switch (action){
+                        case "add":
+                            modelAndView.addObject("roleList", roleRepository.getAll());
+
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
             }
+
+            modelAndView.addObject("id", id);
+
+            CssSwitcher cssSwitcher = new CssSwitcher();
+            modelAndView.addObject("cssSwitcher", cssSwitcher);
+
+            modelAndView.addObject("error_code", "403");
+            modelAndView.addObject("error_context", "Oops ! Something went wrong");
+            modelAndView.addObject("error_message", "We couldn't find this page");
+
+
         }
+        modelAndView.addObject("avatar", "/avatars/" + ((user.getImage() == null)?"default_avatar.png":user.getImage()));
+
         return modelAndView;
     }
 

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<div class="page-inner" th:fragment="content">
+    <div class="page-title">
+        <h3>Form Elements</h3>
+        <div class="page-breadcrumb">
+            <ol class="breadcrumb">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Form Elements</li>
+            </ol>
+        </div>
+    </div>
+    <div id="main-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-white">
+                    <div class="panel-heading clearfix">
+                        <h4 class="panel-title">Add User</h4>
+                    </div>
+                    <div class="panel-body">
+                        <form class="form-horizontal" id="addUser">
+
+                            <div class="form-group">
+                                <label for="email" class="col-sm-2 control-label">Email:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="email" id="email" placeholder="Email" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="status" class="col-sm-2 control-label">Status:</label>
+                                <div class="col-sm-10">
+                                    <div class="ios-switch pull-right switch-md">
+                                        <input type="checkbox" id="status" name="status" class="js-switch pull-right fixed-header-check">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Role</label>
+                                <div class="col-sm-10">
+                                    <select name="roles" class="form-control m-b-sm">
+                                        <option th:each="role : ${roleList}"
+                                                th:value="${role.getId()}"
+                                                th:text="${role.getRole()}"
+                                                th:selected="((${role.isDefault()}) ? 'selected' : '')"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="firstName" class="col-sm-2 control-label">First Name:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="firstName" id="firstName" placeholder="First Name" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName" class="col-sm-2 control-label">Last Name:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Last Name" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="password" class="col-sm-2 control-label">Password:</label>
+                                <div class="col-sm-10">
+                                    <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword" class="col-sm-2 control-label">Confirm Password:</label>
+                                <div class="col-sm-10">
+                                    <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Create User</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<sc th:if="${cssSwitcher.isPermitted()}" th:fragment="endScript">
+
+    <script src="/adm/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <link href="/adm/assets/plugins/bootstrap-datepicker/css/datepicker3.css" rel="stylesheet" type="text/css"/>
+
+
+    <style>
+        th.normal_font {
+            font-weight: normal;
+            padding-left: 10px;
+        }
+        i.silver {
+            color: #bfbcbc;
+            font-size: 11px;
+        }
+        .select2-results__option--highlighted table tr th i.silver {
+            color: #fff;
+        }
+        .customsize {
+            min-height: 36px;
+        }
+        .select2-search__field {
+            width: 100%!important;
+        }
+        #toast-container > div:hover{
+            opacity: 1;
+            box-shadow: 0px 0px 14px 0px #000;
+            cursor: pointer;
+        }
+    </style>
+    <script src="/adm/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js"></script>
+    <script src="/adm/assets/plugins/summernote-master/summernote.min.js"></script>
+    <script src="/adm/assets/js/pages/form-elements.js"></script>
+
+    <link href="/adm/assets/plugins/slidepushmenus/css/component.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/plugins/summernote-master/summernote.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/plugins/bootstrap-colorpicker/css/colorpicker.css" rel="stylesheet" type="text/css"/>
+    <!--<script src="/adm/assets/js/pages/form-select2.js"></script>-->
+    <script src="/adm/assets/plugins/select2/js/select2.js"></script>
+    <link href="/adm/assets/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <script src="/adm/assets/js/pages/notifications.js"></script>
+    <link href="/adm/assets/plugins/toastr/toastr.min.css" rel="stylesheet"/>
+    <script src="/adm/assets/plugins/toastr/toastr.min.js"></script>
+
+    <script type="text/javascript">
+
+        //needs to fix bug
+        var all_ = true;
+        // end
+        $(document).ready(function() {
+
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+
+
+            $('#addUser').on('submit', function(){
+
+                var email = $('#email').val();
+                var active = $('#status').is(":checked")?'1':'0';
+                var roleId = $('select[name=roles] :selected').val();
+                var firstName = $('#firstName').val();
+                var lastName = $('#lastName').val();
+                var password = $('#password').val();
+                var confirmPassword = $('#confirmPassword').val();
+
+
+                var expEmail = /[-0-9a-z_.]+@[-0-9a-z_]+\.[a-z]{2,6}/i;
+                var resEmail = email.search(expEmail);
+
+
+                if (resEmail == -1) {
+                    document.getElementById("textmodal").innerHTML = "Invalid Email";
+                    document.getElementById("modal_").click();
+                } else if (firstName.length < 2) {
+                    document.getElementById("textmodal").innerHTML = "Name is empty or lesser than 2 characters!";
+                    document.getElementById("modal_").click();
+                } else if (lastName.length < 2) {
+                    document.getElementById("textmodal").innerHTML = "Surname is empty or lesser than 2 characters!";
+                    document.getElementById("modal_").click();
+                } else if (password.length < 6) {
+                    document.getElementById("textmodal").innerHTML = "length of password is lesser than 6 characters";
+                    document.getElementById("modal_").click();
+                } else if (password != confirmPassword) {
+                    document.getElementById("textmodal").innerHTML = "Passwords are not same";
+                    document.getElementById("modal_").click();
+                } else {
+
+                    $.post('/ajax/user', {
+                        action: 'add',
+                        email: email,
+                        active: active,
+                        roleId: roleId,
+                        firstName: firstName,
+                        lastName: lastName,
+                        password: password
+                    }, function(data, status) {
+
+                        if (status == 'success') {
+                            if (data.status == 'success') {
+
+                                document.getElementById("mySmallModalLabel").innerHTML = "Success";
+                                document.getElementById("textmodal").innerHTML = "You have activated your profile, in 4 seconds you will be redirected to login page.";
+                                document.getElementById("modal_").click();
+
+                                setTimeout(goTo, 3500, data.redirect);
+                            }  else if (data.status == 'error') {
+                                document.getElementById("mySmallModalLabel").innerHTML = "Oops";
+                                document.getElementById("textmodal").innerHTML = "Error. " + data.error_code;
+                                document.getElementById("modal_").click();
+                            } else {
+                                document.getElementById("mySmallModalLabel").innerHTML = "Oops";
+                                document.getElementById("textmodal").innerHTML = "Error. Something went wrong.";
+                                document.getElementById("modal_").click();
+                            }
+                        } else {
+                            document.getElementById("submit").disabled = false;
+                            document.getElementById("textmodal").innerHTML = "Error, I can't connect with the server...";
+                            document.getElementById("modal_").click();
+                        }
+                    });
+                }
+                return false;
+            });
+
+            function goTo(redirect) {
+                window.location.href = redirect;
+            }
+
+        });
+    </script>
+</sc>
+</html>

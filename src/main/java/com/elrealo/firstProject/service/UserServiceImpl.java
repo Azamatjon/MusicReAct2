@@ -3,8 +3,10 @@ package com.elrealo.firstProject.service;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import com.elrealo.firstProject.model.VerificationToken;
 import com.elrealo.firstProject.repository.RoleRepository;
 import com.elrealo.firstProject.repository.UserRepository;
+import com.elrealo.firstProject.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +21,10 @@ public class UserServiceImpl implements UserService{
     @Qualifier("userRepository")
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private VerificationTokenRepository tokenRepository;
+
 
     @Qualifier("roleRepository")
     @Autowired
@@ -35,10 +41,36 @@ public class UserServiceImpl implements UserService{
     @Override
     public void saveUser(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setActive(1);
         Role userRole = roleRepository.findByRole("ADMIN");
         user.setRoles(new HashSet<Role>(Arrays.asList(userRole)));
         userRepository.save(user);
     }
+
+    @Override
+    public User getUser(String verificationToken) {
+        User user = tokenRepository.findByToken(verificationToken).getUser();
+        return user;
+    }
+
+    @Override
+    public void createVerificationToken(User user, String token) {
+        VerificationToken myToken = new VerificationToken();
+        myToken.setUser(user);
+        myToken.setToken(token);
+        myToken.setExpiryDate(1440);
+        tokenRepository.save(myToken);
+    }
+
+    @Override
+    public void saveRegisteredUser(User user) {
+
+        userRepository.save(user);
+    }
+
+    @Override
+    public VerificationToken getVerificationToken(String VerificationToken) {
+        return tokenRepository.findByToken(VerificationToken);
+    }
+
 
 }

@@ -12,5 +12,7 @@
     </div>
     <copyright th:replace="admin/copyrightFooter:: content"></copyright>
 </div>
-k
+<sc th:if="${cssSwitcher.isPermitted()}" th:fragment="endScript">
+    <!-- Scripts are shown there-->
+</sc>
 </html>

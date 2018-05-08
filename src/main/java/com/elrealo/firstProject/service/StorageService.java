@@ -5,7 +5,11 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import com.elrealo.firstProject.Helper.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,34 +28,62 @@ public class StorageService {
     public static final Path rootLocationImages = Paths.get("uploads/images");
     public static final Path rootLocationMusics = Paths.get("uploads/musics");
     public static final Path rootLocationVideos = Paths.get("uploads/videos");
+    RandomString randomName = new RandomString(20);
 
-    public void storeAvatar(MultipartFile file){
+    ArrayList<String> allowedImageMimeTypes = new ArrayList<>(Arrays.asList("image/gif", "image/jpeg", "image/png"));
+    ArrayList<String> allowedVideoMimeTypes = new ArrayList<>(Arrays.asList("video/x-flv", "video/mp4", "video/3gpp", "video/quicktime", "video/x-msvideo"));
+    ArrayList<String> allowedMusicMimeTypes = new ArrayList<>(Arrays.asList("audio/mpeg"));
+
+    private String getRandomizedName(MultipartFile file){
+        List<String> allAllowedMimeTypes = new ArrayList<String>();
+        allAllowedMimeTypes.addAll(allowedImageMimeTypes);
+        allAllowedMimeTypes.addAll(allowedVideoMimeTypes);
+        allAllowedMimeTypes.addAll(allowedMusicMimeTypes);
+
+        String mimeType = file.getContentType();
+        String fileName = file.getOriginalFilename();
+        if (allAllowedMimeTypes.contains(mimeType)){
+            return randomName.nextString() + '.' + fileName.substring(fileName.lastIndexOf(".") + 1);
+        }
+
+        return randomName.nextString() + '.' + "ndf";
+    }
+
+    public String storeAvatar(MultipartFile file){
         try {
-            Files.copy(file.getInputStream(), this.rootLocationAvatars.resolve(file.getOriginalFilename()));
+            String randomizedFileName = getRandomizedName(file);
+            Files.copy(file.getInputStream(), this.rootLocationAvatars.resolve(randomizedFileName));
+            return randomizedFileName;
         } catch (Exception e) {
             throw new RuntimeException("Failed upload avatar!");
         }
     }
 
-    public void storeImage(MultipartFile file){
+    public String storeImage(MultipartFile file){
         try {
-            Files.copy(file.getInputStream(), this.rootLocationImages.resolve(file.getOriginalFilename()));
+            String randomizedFileName = getRandomizedName(file);
+            Files.copy(file.getInputStream(), this.rootLocationImages.resolve(randomizedFileName));
+            return randomizedFileName;
         } catch (Exception e) {
             throw new RuntimeException("Failed upload image!");
         }
     }
 
-    public void storeMusic(MultipartFile file){
+    public String storeMusic(MultipartFile file){
         try {
-            Files.copy(file.getInputStream(), this.rootLocationMusics.resolve(file.getOriginalFilename()));
+            String randomizedFileName = getRandomizedName(file);
+            Files.copy(file.getInputStream(), this.rootLocationMusics.resolve(randomizedFileName));
+            return randomizedFileName;
         } catch (Exception e) {
             throw new RuntimeException("Failed upload music!");
         }
     }
 
-    public void storeVideo(MultipartFile file){
+    public String storeVideo(MultipartFile file){
         try {
-            Files.copy(file.getInputStream(), this.rootLocationVideos.resolve(file.getOriginalFilename()));
+            String randomizedFileName = getRandomizedName(file);
+            Files.copy(file.getInputStream(), this.rootLocationVideos.resolve(randomizedFileName));
+            return randomizedFileName;
         } catch (Exception e) {
             throw new RuntimeException("Failed upload video!");
         }

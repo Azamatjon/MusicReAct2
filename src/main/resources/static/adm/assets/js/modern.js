@@ -575,7 +575,7 @@ $( document ).ready(function() {
 
     $('#lockScreen').on('click', function(){
         $.post('/ajax/lock', {
-            type: 'lock'
+            action: 'lock'
         }, function(data, status) {
             if (!navigator.onLine) {
                 document.getElementById("textmodal").innerHTML = "Check your internet connection...";

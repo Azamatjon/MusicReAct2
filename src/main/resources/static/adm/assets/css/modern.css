@@ -1548,10 +1548,11 @@ h5 {
 .modal-open {
     padding: 0!important;
 }
-
+/* debugged by Azamatzhon for modal
 .modal-backdrop {
     z-index: 999999;
 }
+*/
 
 /* Pagination */
 
@@ -3058,6 +3059,7 @@ tr.group:hover {
 
 .sidebar-profile img {
     width: 60px;
+    height: 60px;
     display: block;
     margin: 0 auto;
 }

@@ -2,48 +2,44 @@ package com.elrealo.firstProject.model;
 
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
+import com.elrealo.firstProject.repository.VerificationTokenRepository;
 import javafx.beans.DefaultProperty;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Transient;
 
 @Entity
 @Table(name = "user")
 public class User {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_id")
+    @Column(name = "id")
     private int id;
+
     @Column(name = "email")
     @Email(message = "*Please provide a valid Email")
     @NotEmpty(message = "*Please provide an email")
     private String email;
+
     @Column(name = "password")
-    @Length(min = 5, message = "*Your password must have at least 5 characters")
-    @NotEmpty(message = "*Please provide your password")
     @Transient
     private String password;
+
     @Column(name = "name")
-    @NotEmpty(message = "*Please provide your name")
     private String name;
+
     @Column(name = "last_name")
-    @NotEmpty(message = "*Please provide your last name")
     private String lastName;
-    @Column(name = "image_name")
-    private String image_name;
+
+    @Column(name = "image")
+    private String image;
+
     @Column(name = "active")
     private int active;
 
@@ -58,9 +54,25 @@ public class User {
         isLocked = locked;
     }
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany()
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
+
+    @OneToMany()
+    private Set<VerificationToken> verificationToken;
+
+    public Set<VerificationToken> getVerificationToken() {
+        return verificationToken;
+    }
+
+    public void setVerificationToken(Set<VerificationToken> verificationToken) {
+        this.verificationToken = verificationToken;
+    }
+
+    @PreRemove
+    void preRemove() {
+        //verificationTokenRepository.deleteByUser(this);
+    }
 
     public int getId() {
         return id;
@@ -98,16 +110,16 @@ public class User {
         return email;
     }
 
-    public String getImage_name() {
-        return image_name;
+    public String getImage() {
+        return image;
     }
 
-    public void setImage_name(String image_name) {
-        this.image_name = image_name;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email.toLowerCase();
     }
 
     public int getActive() {
@@ -124,6 +136,13 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public boolean isAdmin(){
+        for (Role userRole: roles) {
+            if (userRole.getRole().equals("ADMIN")) return true;
+        }
+        return false;
     }
 
 }
