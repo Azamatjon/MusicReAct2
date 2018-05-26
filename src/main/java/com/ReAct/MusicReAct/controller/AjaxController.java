@@ -1,18 +1,18 @@
 package com.ReAct.MusicReAct.controller;
 
-import com.ReAct.MusicReAct.model.Role;
-import com.ReAct.MusicReAct.model.User;
-import com.ReAct.MusicReAct.model.VerificationToken;
-import com.ReAct.MusicReAct.repository.AdminStyleRepository;
-import com.ReAct.MusicReAct.repository.RoleRepository;
-import com.ReAct.MusicReAct.repository.UserRepository;
-import com.ReAct.MusicReAct.repository.VerificationTokenRepository;
+import com.ReAct.MusicReAct.model.*;
+import com.ReAct.MusicReAct.repository.*;
 import com.ReAct.MusicReAct.service.MailClient;
 import com.ReAct.MusicReAct.service.UserService;
-import com.ReAct.MusicReAct.model.AdminStyle;
 import com.ReAct.MusicReAct.service.StorageService;
+import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
+import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
+
 @Controller
 public class AjaxController {
 
@@ -39,6 +41,14 @@ public class AjaxController {
 
     @Autowired
     StorageService storageService;
+
+    @Qualifier("artistRepository")
+    @Autowired
+    private ArtistRepository artistRepository;
+
+    @Qualifier("albumRepository")
+    @Autowired
+    private AlbumRepository albumRepository;
 
     @Qualifier("userRepository")
     @Autowired
@@ -60,6 +70,10 @@ public class AjaxController {
 
     @Autowired
     private MailClient mailClient;
+
+    @Qualifier("imageRepository")
+    @Autowired
+    private ImageRepository imageRepository;
 
 
 
@@ -389,6 +403,602 @@ public class AjaxController {
 
         return map;
     }
+
+
+
+
+
+
+
+
+
+
+
+    @RequestMapping(value = "/ajax/artist", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> artistAPI(@RequestParam("action") String action,
+                                         @RequestParam(value = "artistId", required = false) Integer artistId,
+                                         @RequestParam(value = "name", required = false) String name,
+                                         @RequestParam(value = "biography", required = false) String biography,
+                                         @RequestParam(value = "avatar", required = false) MultipartFile avatar,
+                                         HttpServletRequest request,
+                                         HttpServletResponse response
+    ) {
+        HashMap<String, String> map = new HashMap<>();
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByEmail(auth.getName());
+
+        switch (action){
+            case "deleteAvatar":
+                if (artistId != null){
+                    if (user.isAdmin()){
+                        Artist artist = artistRepository.getOne(artistId);
+                        if (artist != null){
+                            artist.setImage(null);
+                            artistRepository.save(artist);
+
+                            map.put("status", "success");
+                            map.put("avatar", "/artistAvatars/default_avatar.png");
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Artist id is not found.");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "You don't have change data privilegies, to another users.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "Artist id is null");
+                }
+                break;
+            case "edit":
+                if (artistId != null){
+                    if (user.isAdmin()){
+                        Artist artist = artistRepository.getOne(artistId);
+                        if (artist != null){
+                            artist.setName(name);
+                            artist.setBiography(biography);
+                            if (avatar != null){
+                                System.out.println("changing avatar");
+                                String generatedAvatarName = storageService.storeArtistAvatar(avatar);
+                                artist.setImage(generatedAvatarName);
+                            }
+                            artistRepository.save(artist);
+                            map.put("status", "success");
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Artist id is not found.");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "You don't have change data privilegies, to another users.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "Error!. " );
+                }
+                break;
+
+            case "add":
+                if (user.isAdmin()){
+                    Artist artistExists = artistRepository.getByName(name);
+                    if (artistExists == null){
+                        Artist artist = new Artist();
+                        artist.setName(name);
+                        if (!biography.isEmpty()) artist.setBiography(biography);
+
+                        if (avatar != null){
+                            System.out.println("changing avatar");
+                            String generatedAvatarName = storageService.storeArtistAvatar(avatar);
+                            artist.setImage(generatedAvatarName);
+                        }
+                        artistRepository.save(artist);
+                        map.put("status", "success");
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "Artist by name (" + name + ") exists.");
+                    }
+
+
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "You don't have enough permissions.");
+                }
+                break;
+
+            case "delete":
+                if (artistId != null){
+                    if (user.isAdmin()){
+                        Artist artist = artistRepository.getOne(artistId);
+                        if (artist != null){
+                            artistRepository.delete(artist);
+                            map.put("status", "success");
+                            map.put("redirect", "/admin/home?goTo=artists");
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Artist not found.");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "You don't have enough permissions.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "Entered password incorrect.");
+                }
+
+                break;
+
+            default:
+                map.put("status", "error");
+                map.put("error_code", "No such action defined.");
+
+                break;
+        }
+
+        return map;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    @RequestMapping(value = "/ajax/album", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> artistAPI(@RequestParam("action") String action,
+                                         @RequestParam(value = "artistId", required = false) Integer artistId,
+                                         @RequestParam(value = "albumId", required = false) Integer albumId,
+                                         @RequestParam(value = "name", required = false) String name,
+                                         @RequestParam(value = "avatar", required = false) MultipartFile avatar,
+                                         HttpServletRequest request,
+                                         HttpServletResponse response
+    ) {
+        HashMap<String, String> map = new HashMap<>();
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByEmail(auth.getName());
+
+        switch (action){
+            case "deleteAvatar":
+                if (albumId != null){
+                    if (user.isAdmin()){
+                        Album album = albumRepository.getOne(albumId);
+                        if (album != null){
+                            album.setImage(null);
+                            albumRepository.save(album);
+
+                            map.put("status", "success");
+                            map.put("avatar", album.getImage());
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Artist id is not found.");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "You don't have enough privilegies.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "Album id is null");
+                }
+                break;
+            case "edit":
+                if (albumId != null){
+                    if (user.isAdmin()){
+                        Album album = albumRepository.getOne(albumId);
+                        if (album != null){
+                            album.setName(name);
+
+                            Artist artist = artistRepository.getOne(artistId);
+
+                            if (artist != null){
+                                album.setArtist(artist);
+                                System.out.println("artist was set successfuly");
+                            }
+
+                            if (avatar != null){
+                                System.out.println("changing avatar");
+                                String generatedAvatarName = storageService.storeAlbumAvatar(avatar);
+                                album.setImage(generatedAvatarName);
+                            }
+                            albumRepository.save(album);
+                            map.put("status", "success");
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Album id is not found.");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "You don't have change data privilegies.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "Error!. " );
+                }
+                break;
+
+            case "add":
+                if (user.isAdmin()){
+
+                    Artist artist = artistRepository.getOne(artistId);
+                    if (artist != null){
+                        Album albumExists = albumRepository.getByNameAndArtist(name, artist);
+
+
+                        //System.out.println("album exists: " + albumExists.getName());
+                        if (albumExists == null){
+                            Album album = new Album();
+                            album.setName(name);
+                            album.setArtist(artist);
+
+                            if (avatar != null){
+                                System.out.println("changing avatar");
+                                String generatedAvatarName = storageService.storeAlbumAvatar(avatar);
+                                album.setImage(generatedAvatarName);
+                            }
+                            albumRepository.save(album);
+                            map.put("status", "success");
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Album by name (" + name + ") of " + artist.getName() + " exists.");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "Album id not found exists.");
+                    }
+
+
+
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "You don't have enough permissions.");
+                }
+                break;
+
+            case "delete":
+                if (albumId != null){
+                    if (user.isAdmin()){
+                        Album album = albumRepository.getOne(albumId);
+                        if (album != null){
+                            albumRepository.delete(album);
+                            map.put("status", "success");
+                            map.put("redirect", "/admin/home?goTo=albums");
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Album not found.");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "You don't have enough permissions.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "Album id is not found.");
+                }
+
+                break;
+
+            default:
+                map.put("status", "error");
+                map.put("error_code", "No such action defined.");
+
+                break;
+        }
+
+        return map;
+    }
+
+
+
+
+
+
+
+
+
+
+
+    @RequestMapping(value = "/ajax/biography", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> artistAPI(@RequestParam("action") String action,
+                                         @RequestParam(value = "artistId", required = false) Integer artistId,
+                                         @RequestParam(value = "biography", required = false) String biography,
+                                         HttpServletRequest request,
+                                         HttpServletResponse response
+    ) {
+        HashMap<String, String> map = new HashMap<>();
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByEmail(auth.getName());
+
+        switch (action){
+            case "edit":
+                if (artistId != null){
+                    if (user.isAdmin()){
+                        Artist artist = artistRepository.getOne(artistId);
+                        if (artist != null){
+                            if (artist.getBiography() != null){
+                                map.put("status", "error");
+                                map.put("error_code", "Artist already has biography.");
+                            } else {
+                                artist.setBiography(biography);
+                                artistRepository.save(artist);
+                                map.put("status", "success");
+                            }
+
+
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Artist id is not found.");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "You don't have change data privilegies.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "Error!. " );
+                }
+                break;
+
+            case "add":
+                if (user.isAdmin()){
+
+                    Artist artist = artistRepository.getOne(artistId);
+                    if (artist != null){
+                        if (artist.getBiography() != null){
+                            map.put("status", "error");
+                            map.put("error_code", "Artist already has biography.");
+                        } else {
+                            artist.setBiography(biography);
+                            artistRepository.save(artist);
+                            map.put("status", "success");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "Album id not found.");
+                    }
+
+
+
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "You don't have enough permissions.");
+                }
+                break;
+
+            case "delete":
+                if (artistId != null){
+                    if (user.isAdmin()){
+                        Artist artist = artistRepository.getOne(artistId);
+                        if (artist != null){
+                            artist.setBiography(null);
+                            artistRepository.save(artist);
+                            map.put("status", "success");
+                            map.put("redirect", "/admin/home?goTo=biographies");
+
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Artist not found.");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "You don't have enough permissions.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "Album id is not found.");
+                }
+
+                break;
+
+            default:
+                map.put("status", "error");
+                map.put("error_code", "No such action defined.");
+
+                break;
+        }
+
+        return map;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @RequestMapping(value = "/ajax/liteSearch", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Object> liteSearchAPI(@RequestParam("option") String option,
+                                             @RequestParam(value = "action", required = false) String action,
+                                             @RequestParam(value = "query", required = false) String query,
+                                             @PageableDefault(sort = {"name"}, direction = Sort.Direction.DESC, page = 1, size = 10,  value = 10) Pageable pageable
+    ) {
+        HashMap<String, Object> map = new HashMap<>();
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByEmail(auth.getName());
+
+        switch (option){
+            case "user":
+                if (user != null){
+                   Page<User> users = userRepository.liteSearch(query, pageable);
+
+                    List<HashMap<String, Object>> results = new ArrayList<>();
+
+
+                    //System.out.println(users.getTotalElements());
+                    for (User us:users.getContent()) {
+                        HashMap<String, Object> result = new HashMap<>();
+                        result.put("id", us.getId());
+                        result.put("email", us.getEmail());
+                        result.put("firstName", us.getName());
+                        result.put("lastName", us.getLastName());
+                        result.put("role", us.getRoleName());
+                        result.put("imageURL", "/avatars/" + us.getImage());
+                        results.add(result);
+                    }
+
+                    map.put("results", results);
+
+                    map.put("incomplete_results", users.hasNext());
+                    map.put("total_count", users.getTotalElements());
+
+                    map.put("status", "success");
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "You don't have privilegies.");
+                }
+                break;
+            case "artist":
+                if (user != null){
+
+                    System.out.println(action);
+                    Page<Artist> artists;
+                    if (action != null && action.equals("biography")){
+                        artists = artistRepository.liteSearchBiography(query, pageable);
+                    } else {
+                        artists = artistRepository.liteSearch(query, pageable);
+                    }
+
+                    List<HashMap<String, Object>> results = new ArrayList<>();
+
+                    //System.out.println(users.getTotalElements());
+                    for (Artist artist:artists.getContent()) {
+                        System.out.println("worked");
+                        HashMap<String, Object> result = new HashMap<>();
+                        result.put("id", artist.getId());
+                        result.put("name", artist.getName());
+                        result.put("numberOfAlbums", artist.getNumberOfAlbums());
+                        result.put("numberOfTracks", artist.getNumberOfTracks());
+                        result.put("imageURL", artist.getImage());
+
+                        result.put("age", (artist.getBirthDate() != null)? ((Calendar.getInstance().getTime().getYear()) -  artist.getBirthDate().getYear()):null);
+
+                        String separatedBiography = (artist.getBiography() != null) ? Jsoup.parse(artist.getBiography()).text():"";
+                        result.put("biography", (separatedBiography.length() > 50) ? separatedBiography.substring(0,50) + "...":(artist.getBiography()!= null || !separatedBiography.isEmpty())?separatedBiography:null);
+                        results.add(result);
+                    }
+
+                    map.put("results", results);
+
+                    map.put("incomplete_results", artists.hasNext());
+                    map.put("total_count", artists.getTotalElements());
+
+                    map.put("status", "success");
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "You don't have privilegies.");
+                }
+                break;
+
+            default:
+                map.put("status", "error");
+                map.put("error_code", "No such action defined.");
+
+                break;
+        }
+
+        return map;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @RequestMapping(value = "/ajax/image", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> artistAPI(@RequestParam("action") String action,
+                                         @RequestParam(value = "image", required = false) MultipartFile image,
+                                         @RequestParam(value = "src", required = false) String src,
+                                         HttpServletRequest request,
+                                         HttpServletResponse response
+    ) {
+        HashMap<String, String> map = new HashMap<>();
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByEmail(auth.getName());
+
+        switch (action){
+            case "delete":
+                if (user != null){
+                    String[] temp = src.split("/");
+                    String fileName = temp[temp.length - 1];
+                    Image image_ = imageRepository.getByFileName(fileName);
+                    if (image != null){
+                        imageRepository.delete(image_);
+                        map.put("status", "ok");
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "Not found.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "You don't have upload image privilegies.");
+                }
+                break;
+            case "add":
+                if (user != null){
+                    if (image != null){
+                        Image image_ = new Image();
+
+                        System.out.println("adding image");
+                        String generatedImageName = storageService.storeImage(image);
+                        image_.setFileName(generatedImageName);
+                        imageRepository.save(image_);
+
+                        map.put("status", "success");
+                        map.put("filename", image_.getFileName());
+
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "Image is null.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "You don't have upload image privilegies.");
+                }
+                break;
+            default:
+                map.put("status", "error");
+                map.put("error_code", "No such action defined.");
+
+                break;
+        }
+
+        return map;
+    }
+
+
+
+
+
+
 
 
 

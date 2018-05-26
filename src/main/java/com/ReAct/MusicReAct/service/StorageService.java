@@ -23,6 +23,8 @@ public class StorageService {
 
     Logger log = LoggerFactory.getLogger(this.getClass().getName());
     public static final Path rootLocationAvatars = Paths.get("uploads/avatars");
+    public static final Path rootLocationArtistAvatars = Paths.get("uploads/artistAvatars");
+    public static final Path rootLocationAlbumAvatars = Paths.get("uploads/albumAvatars");
     public static final Path rootLocationImages = Paths.get("uploads/images");
     public static final Path rootLocationMusics = Paths.get("uploads/musics");
     public static final Path rootLocationVideos = Paths.get("uploads/videos");
@@ -51,6 +53,26 @@ public class StorageService {
         try {
             String randomizedFileName = getRandomizedName(file);
             Files.copy(file.getInputStream(), this.rootLocationAvatars.resolve(randomizedFileName));
+            return randomizedFileName;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed upload avatar!"  + e.getMessage());
+        }
+    }
+
+    public String storeArtistAvatar(MultipartFile file){
+        try {
+            String randomizedFileName = getRandomizedName(file);
+            Files.copy(file.getInputStream(), this.rootLocationArtistAvatars.resolve(randomizedFileName));
+            return randomizedFileName;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed upload avatar!"  + e.getMessage());
+        }
+    }
+
+    public String storeAlbumAvatar(MultipartFile file){
+        try {
+            String randomizedFileName = getRandomizedName(file);
+            Files.copy(file.getInputStream(), this.rootLocationAlbumAvatars.resolve(randomizedFileName));
             return randomizedFileName;
         } catch (Exception e) {
             throw new RuntimeException("Failed upload avatar!"  + e.getMessage());
@@ -95,6 +117,34 @@ public class StorageService {
                 return resource;
             }else{
                 throw new RuntimeException("Fail to load avatar 1");
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Fail to load avatar 2j");
+        }
+    }
+
+    public Resource loadArtistAvatar(String filename) {
+        try {
+            Path file = rootLocationArtistAvatars.resolve(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if(resource.exists() || resource.isReadable()) {
+                return resource;
+            }else{
+                throw new RuntimeException("Fail to load avatar ");
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Fail to load avatar 2");
+        }
+    }
+
+    public Resource loadAlbumAvatar(String filename) {
+        try {
+            Path file = rootLocationAlbumAvatars.resolve(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if(resource.exists() || resource.isReadable()) {
+                return resource;
+            }else{
+                throw new RuntimeException("Fail to load avatar");
             }
         } catch (MalformedURLException e) {
             throw new RuntimeException("Fail to load avatar 2");

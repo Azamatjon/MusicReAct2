@@ -2,17 +2,12 @@ package com.ReAct.MusicReAct.controller;
 
 import com.ReAct.MusicReAct.Helper.CssSwitcher;
 import com.ReAct.MusicReAct.Helper.Pagination;
-import com.ReAct.MusicReAct.model.User;
-import com.ReAct.MusicReAct.model.VerificationToken;
-import com.ReAct.MusicReAct.repository.UserRepository;
-import com.ReAct.MusicReAct.repository.VerificationTokenRepository;
+import com.ReAct.MusicReAct.model.*;
+import com.ReAct.MusicReAct.repository.*;
 import com.ReAct.MusicReAct.service.MailClient;
 import com.ReAct.MusicReAct.service.UserService;
 import com.ReAct.MusicReAct.service.UserServiceImpl;
 import com.ReAct.MusicReAct.Helper.PaginationPage;
-import com.ReAct.MusicReAct.model.AdminStyle;
-import com.ReAct.MusicReAct.repository.AdminStyleRepository;
-import com.ReAct.MusicReAct.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -66,6 +61,15 @@ public class LoginController {
     @Autowired
     private MailClient mailClient;
 
+    @Qualifier("albumRepository")
+    @Autowired
+    private AlbumRepository albumRepository;
+
+
+    @Qualifier("artistRepository")
+    @Autowired
+    private ArtistRepository artistRepository;
+
     private RequestCache requestCache = new HttpSessionRequestCache();
 
     @Autowired
@@ -77,7 +81,7 @@ public class LoginController {
 
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     String employeesPageable(Pageable pageable) {
-        org.springframework.data.domain.Page users = userRepository.findAll(pageable);
+        Page users = userRepository.findAll(pageable);
         Iterator<User> us = users.getContent().iterator();
         //System.out.println(users.);
         do {
@@ -393,7 +397,6 @@ public class LoginController {
             modelAndView.addObject("error_message", "You have alreay logged in.");
             modelAndView.setViewName("admin/errorPage");
         }
-
         return modelAndView;
     }
 
@@ -751,6 +754,124 @@ public class LoginController {
                                 modelAndView.addObject("users", users.getContent());
                                 modelAndView.addObject("currentPage", pagination.getPageNumber());
                                 modelAndView.addObject("pageSize", pagination.getPageSize());
+                            }
+
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "artists":
+                    switch (action) {
+                        case "add":
+                            break;
+
+                        case "edit":
+                            Artist eArtist = artistRepository.getOne(id);
+                            if (eArtist != null){
+
+                                modelAndView.addObject("eArtist", eArtist);
+                                modelAndView.addObject("eArtistAvatar", "/artistsAvatar/" + ((eArtist.getImage() == null)?"default_avatar.png":eArtist.getImage()));
+
+                            } else {
+                                isErrorFound = true;
+                                modelAndView.addObject("goTo", "");
+                                modelAndView.addObject("error_code", "404");
+                                modelAndView.addObject("error_context", "Oops ! Artist not found.");
+                                modelAndView.addObject("error_message", "We couldn't find artist with id: " + id);
+                            }
+
+                            break;
+
+                        case "noAction":
+
+                            if (pageable != null){
+                                Page artists = artistRepository.findAll(pageable);
+                                Pagination pgn = new Pagination(artists, pageable, 5);
+                                modelAndView.addObject("pages", pgn.getPages());
+
+                                modelAndView.addObject("currentPage", pgn.getPageNumber());
+                                modelAndView.addObject("pageSize", pgn.getPageSize());
+                                modelAndView.addObject("artists", artists.getContent());
+                            }
+
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "albums":
+                    switch (action) {
+                        case "add":
+                            break;
+
+                        case "edit":
+                            Album eAlbum = albumRepository.getOne(id);
+                            if (eAlbum != null){
+
+                                modelAndView.addObject("eAlbum", eAlbum);
+                                modelAndView.addObject("eAlbumAvatar", eAlbum.getImage());
+
+                            } else {
+                                isErrorFound = true;
+                                modelAndView.addObject("error_code", "404");
+                                modelAndView.addObject("error_context", "Oops ! Artist not found.");
+                                modelAndView.addObject("error_message", "We couldn't find artist with id: " + id);
+
+                                modelAndView.addObject("goTo", "");
+
+                                }
+
+                            break;
+
+                        case "noAction":
+
+                            if (pageable != null){
+                                Page artists = albumRepository.findAll(pageable);
+                                Pagination pgn = new Pagination(artists, pageable, 5);
+
+                                modelAndView.addObject("currentPage", pgn.getPageNumber());
+                                modelAndView.addObject("pageSize", pgn.getPageSize());
+                                modelAndView.addObject("albums", artists.getContent());
+                                modelAndView.addObject("pages", pgn.getPages());
+                            }
+
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "biographies":
+                    switch (action) {
+                        case "add":
+                            break;
+
+                        case "edit":
+                            Artist eArtist = artistRepository.getOne(id);
+                            if (eArtist != null && eArtist.getBiography() != null){
+                                modelAndView.addObject("eArtist", eArtist);
+                                modelAndView.addObject("eArtistAvatar", eArtist.getImage());
+                            } else {
+                                isErrorFound = true;
+                                modelAndView.addObject("error_code", "404");
+                                modelAndView.addObject("error_context", "Oops ! Biography is not found.");
+                                modelAndView.addObject("error_message", "We couldn't find biography with id: " + id);
+
+                                modelAndView.addObject("goTo", "");
+
+                            }
+
+                            break;
+
+                        case "noAction":
+                            if (pageable != null){
+                                Page artists = artistRepository.findAllByBiographyIsNotNull(pageable);
+                                Pagination pgn = new Pagination(artists, pageable, 5);
+
+                                modelAndView.addObject("currentPage", pgn.getPageNumber());
+                                modelAndView.addObject("pageSize", pgn.getPageSize());
+                                modelAndView.addObject("artists", artists.getContent());
+                                modelAndView.addObject("pages", pgn.getPages());
                             }
 
                             break;

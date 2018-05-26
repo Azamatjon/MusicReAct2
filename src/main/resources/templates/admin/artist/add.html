@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<div class="page-inner" th:fragment="content">
+    <div class="page-title">
+        <h3>Form Elements</h3>
+        <div class="page-breadcrumb">
+            <ol class="breadcrumb">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Form Elements</li>
+            </ol>
+        </div>
+    </div>
+    <div id="main-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-white">
+                    <div class="panel-heading clearfix">
+                        <h4 class="panel-title">Add Artist</h4>
+                    </div>
+                    <div class="panel-body">
+                        <form class="form-horizontal" id="addArtist">
+
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">Name:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="name" id="name" placeholder="Name" required>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="avatar" class="col-sm-2 control-label">Avatar</label>
+
+                                <div class="col-sm-10">
+                                    <input type="file" name="avatar" accept="image/jpeg,image/png,image/gif" class="form-control" id="avatar" placeholder="Choose an avatar">
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Biography</label>
+                                <div class="col-sm-10">
+                                    <div class="summernote"></div>
+                                </div>
+                            </div>
+
+
+                            <button type="submit" class="btn btn-primary">Create Artist</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<sc th:if="${cssSwitcher.isPermitted()}" th:fragment="endScript">
+
+    <script src="/adm/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <link href="/adm/assets/plugins/bootstrap-datepicker/css/datepicker3.css" rel="stylesheet" type="text/css"/>
+
+
+    <style>
+        th.normal_font {
+            font-weight: normal;
+            padding-left: 10px;
+        }
+        i.silver {
+            color: #bfbcbc;
+            font-size: 11px;
+        }
+        .select2-results__option--highlighted table tr th i.silver {
+            color: #fff;
+        }
+        .customsize {
+            min-height: 36px;
+        }
+        .select2-search__field {
+            width: 100%!important;
+        }
+        #toast-container > div:hover{
+            opacity: 1;
+            box-shadow: 0px 0px 14px 0px #000;
+            cursor: pointer;
+        }
+    </style>
+    <script src="/adm/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js"></script>
+    <script src="/adm/assets/plugins/summernote-master/summernote.min.js"></script>
+    <script src="/adm/assets/js/pages/form-elements.js"></script>
+
+    <link href="/adm/assets/plugins/slidepushmenus/css/component.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/plugins/summernote-master/summernote.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/plugins/bootstrap-colorpicker/css/colorpicker.css" rel="stylesheet" type="text/css"/>
+    <!--<script src="/adm/assets/js/pages/form-select2.js"></script>-->
+    <script src="/adm/assets/plugins/select2/js/select2.js"></script>
+    <link href="/adm/assets/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <script src="/adm/assets/js/pages/notifications.js"></script>
+    <link href="/adm/assets/plugins/toastr/toastr.min.css" rel="stylesheet"/>
+    <script src="/adm/assets/plugins/toastr/toastr.min.js"></script>
+
+    <script type="text/javascript">
+
+        //needs to fix bug
+        var all_ = true;
+        // end
+        $(document).ready(function() {
+
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+
+
+            $('#addArtist').on('submit', function(){
+
+                var name = $('#name').val();
+                var avatar = $('input[name="avatar"]').get(0).files[0];
+                var biography = $('.note-editable').html();
+
+                var formData = new FormData();
+                formData.append('action', 'add');
+                formData.append('name', name);
+                formData.append('avatar', avatar);
+                formData.append('biography', biography + "");
+
+                if (name.length < 2) {
+                    document.getElementById("textmodal").innerHTML = "Name is empty or lesser than 2 characters!";
+                    document.getElementById("modal_").click();
+                } else {
+
+
+                    $.ajax({
+                        url: '/ajax/artist',
+                        type: 'post',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function(data){
+                            if (data.status == 'success') {
+
+                                toastr["success"]("All entered data were saved successfuly.", "Success");
+
+                                //setTimeout(goTo, 1500, data.redirect);
+                            } else if (data.status == 'error'){
+                                toastr["error"](data.error_code, "Oops");
+                            } else {
+                                toastr["error"]("Some undefined error occured.", "Oops");
+                            }
+                        },
+                        error: function(){
+                            document.getElementById("textmodal").innerHTML = "Error, I can't connect with the server...";
+                            document.getElementById("modal_").click();
+                        }
+                    });
+
+                }
+                return false;
+            });
+
+            function goTo(redirect) {
+                window.location.href = redirect;
+            }
+
+        });
+    </script>
+
+    <script src="/adm/assets/plugins/summernote-master/summernote.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $('.summernote').summernote({
+                height: ($(window).height() - 300),
+                callbacks: {
+                    onImageUpload: function(image) {
+                        uploadImage(image[0]);
+                    }
+                }
+            });
+
+
+
+            function sendFile(file,editor,welEditable) {
+                data = new FormData();
+                data.append("action", "add");
+                data.append("image", file);
+                $.ajax({
+                    url: "/ajax/image",
+                    data: data,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    type: 'POST',
+                    success: function(data){
+                        editor.insertImage(welEditable, "http://localhost:8080" + data.filename);
+
+
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.log(textStatus+" "+errorThrown);
+                    }
+                });
+            }
+        });
+
+        function deleteFile(src) {
+            $.ajax({
+                data: {
+                    action: 'delete',
+                    src : src
+                },
+                type: "POST",
+                url: "/ajax/image", // replace with your url
+                cache: false,
+                success: function(resp) {
+                    console.log(resp);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            $('#summernote').summernote({
+                height: "300px",
+                callbacks: {
+                    onImageUpload: function(files) {
+                        uploadFile(files[0]);
+                    },
+
+                    onMediaDelete : function(target) {
+                        // alert(target[0].src)
+                        deleteFile(target[0].src);
+                    }
+                }
+            });
+        });
+    </script>
+</sc>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<div class="page-inner" th:fragment="content">
+    <div class="page-title">
+        <h3>Form Elements</h3>
+        <div class="page-breadcrumb">
+            <ol class="breadcrumb">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Form Elements</li>
+            </ol>
+        </div>
+    </div>
+    <div id="main-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-white">
+                    <div class="panel-heading clearfix">
+                        <h4 class="panel-title">Add Album</h4>
+                    </div>
+                    <div class="panel-body">
+                        <form class="form-horizontal" id="addArtist">
+
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">Name:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="name" id="name" placeholder="Name" required>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label for="avatar" class="col-sm-2 control-label">Avatar</label>
+
+                                <div class="col-sm-10">
+                                    <input type="file" name="avatar" accept="image/jpeg,image/png,image/gif" class="form-control" id="avatar" placeholder="Choose an avatar">
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label for="input-folg" class="col-sm-2 control-label">Select artist</label>
+                                <div class="col-sm-10">
+                                    <select id="input-folg" class="js-tokenizer-artist js-states form-control" name="save_from" functional="true" tabindex="-1" style="display: none; width: 100%">
+                                    </select>
+                                </div>
+                            </div>
+
+
+
+
+                            <button type="submit" class="btn btn-primary">Create Artist</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<sc th:if="${cssSwitcher.isPermitted()}" th:fragment="endScript">
+
+    <script src="/adm/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <link href="/adm/assets/plugins/bootstrap-datepicker/css/datepicker3.css" rel="stylesheet" type="text/css"/>
+
+
+    <style>
+        th.normal_font {
+            font-weight: normal;
+            padding-left: 10px;
+        }
+        i.silver {
+            color: #bfbcbc;
+            font-size: 11px;
+        }
+        .select2-results__option--highlighted table tr th i.silver {
+            color: #fff;
+        }
+        .customsize {
+            min-height: 36px;
+        }
+
+        .select2-search__field {
+            width: 100%!important;
+        }
+
+        #toast-container > div:hover{
+            opacity: 1;
+            box-shadow: 0px 0px 14px 0px #000;
+            cursor: pointer;
+        }
+
+    </style>
+    <script src="/adm/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js"></script>
+    <script src="/adm/assets/plugins/summernote-master/summernote.min.js"></script>
+    <script src="/adm/assets/js/pages/form-elements.js"></script>
+
+    <link href="/adm/assets/plugins/slidepushmenus/css/component.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/plugins/summernote-master/summernote.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/plugins/bootstrap-colorpicker/css/colorpicker.css" rel="stylesheet" type="text/css"/>
+    <!--<script src="/adm/assets/js/pages/form-select2.js"></script>-->
+   <script src="/adm/assets/js/pages/notifications.js"></script>
+    <link href="/adm/assets/plugins/toastr/toastr.min.css" rel="stylesheet"/>
+    <script src="/adm/assets/plugins/toastr/toastr.min.js"></script>
+
+    <script src="/adm/assets/js/pages/form-elements.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.js-tokenizer-artist').select2({
+                placeholder: 'Please enter any artist name',
+                ajax: {
+                    url: "/ajax/liteSearch",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            query: params.term, // search term
+                            option: 'artist',
+                            page: ((params.page != undefined) ? params.page : 1) - 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        // parse the results into the format expected by Select2
+                        // since we are using custom formatting functions we do not need to
+                        // alter the remote JSON data, except to indicate that infinite
+                        // scrolling can be used
+                        params.page = params.page || 1;
+
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: (params.page * 10) < data.total_count
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+                minimumInputLength: 1,
+                templateResult: formatRepo,
+                templateSelection: formatRepoSelection
+            });
+
+            function formatRepo (repo) {
+                if (repo.loading) return repo.text;
+
+                var markup = '<table class="customsize"><tr><th><img class="img-circle avatar" src="'+repo.imageURL+'" width="36" height="36" alt=""></th><th class="normal_font">' + repo.name + ((repo.age != null)?' (' + repo.age + ' y.o.)' : '') + '<br><i class="silver"># Albums:' + repo.numberOfAlbums + '| # Tracks: ' + repo.numberOfTracks + ((repo.biography != null)?('| Biography: ' + repo.biography):"") + '</i></th></tr></table>';
+
+                return markup;
+            }
+
+            function formatRepoSelection (repo) {
+                return repo.name;
+            }
+        });
+        //needs to fix bug
+        var all_ = true;
+        // end
+        $(document).ready(function() {
+
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+
+
+            $('#addArtist').on('submit', function(){
+
+                var name = $('#name').val();
+                var avatar = $('input[name="avatar"]').get(0).files[0];
+                var biography = $('.note-editable').html();
+                var artistId = $('.js-tokenizer-artist').val();
+
+                var formData = new FormData();
+                formData.append('action', 'add');
+                formData.append('name', name);
+                formData.append('avatar', avatar);
+                formData.append('artistId', artistId);
+
+                if (name.length < 2) {
+                    document.getElementById("textmodal").innerHTML = "Name is empty or lesser than 2 characters!";
+                    document.getElementById("modal_").click();
+                } else if (artistId == null){
+                    document.getElementById("textmodal").innerHTML = "You have to choose an artist!";
+                    document.getElementById("modal_").click();
+                } else {
+
+                    $.ajax({
+                        url: '/ajax/album',
+                        type: 'post',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function(data){
+                            if (data.status == 'success') {
+
+                                toastr["success"]("All entered data were saved successfuly.", "Success");
+
+                                //setTimeout(goTo, 1500, data.redirect);
+                            } else if (data.status == 'error'){
+                                toastr["error"](data.error_code, "Oops");
+                            } else {
+                                toastr["error"]("Some undefined error occured.", "Oops");
+                            }
+                        },
+                        error: function(){
+                            document.getElementById("textmodal").innerHTML = "Error, I can't connect with the server...";
+                            document.getElementById("modal_").click();
+                        }
+                    });
+
+                }
+                return false;
+            });
+
+            function goTo(redirect) {
+                window.location.href = redirect;
+            }
+
+
+
+            $('.js-tokenizer-artistg').select2({
+                placeholder: 'Please enter any artist name',
+                ajax: {
+                    url: "/ajax/liteSearch",
+                    dataType: 'json',
+                    delay: 750,
+                    type: 'POST',
+                    data: function(params) {
+                        return {
+                            query: params.term, // search term
+                            option: 'artist'
+                        };
+                    },
+                    processResults: function (data, params) {
+                        // parse the results into the format expected by Select2
+                        // since we are using custom formatting functions we do not need to
+                        // alter the remote JSON data, except to indicate that infinite
+                        // scrolling can be used
+
+                        /* FOR PAGINATION
+                        params.page = params.page || 1;
+                        */
+                        return {
+                            results: data.results,
+                            /* FOR PAGINATION
+                            pagination: {
+                              more: (params.page * 30) < data.results.length
+                            }*/
+
+                        };
+                    },
+                    cache: true
+                },
+                escapeMarkup: function (markup) { return markup; },
+                minimumInputLength: 1,
+                templateResult: formatSelect2ListUser
+            });
+
+
+            function formatSelect2ListUser (repo) {
+                if (repo.loading) return repo.text;
+                if (typeof repo.text !== 'undefined'){
+                    if (repo.id =='~'){
+                        var markup = '<span aria-hidden="true" class="icon-check"></span><b> ' + repo.text + '</b>';
+                    } else {
+                        var markup = '<i class="fa fa-keyboard-o"></i> ' + repo.text ;
+                    }
+                } else {
+                    var markup = '<table class="customsize"><tr><th><img class="img-circle avatar" src="'+repo.imageURL+'" width="36" height="36" alt=""></th><th class="normal_font">Rp2: Ledfsvdbsd  sd<br><i class="silver">Full Name | followers: 22k</i></th></tr></table>';
+                }
+
+                return markup;
+            }
+
+            function formatSelectedItemsUser (repo) {
+                //console.log(repo);
+                var rp = repo.id.split("%_&"); // 1.id 2.followers 3.name
+                if (repo.text == '') {
+                    isVerified = 'true';
+                    name = rp[2];
+                } else {
+                    isVerified = 'false';
+                    name = repo.text
+                }
+                var markup = '<span data-id="'+rp[0]+'" data-verify="'+isVerified+'" data-type="users" data-name="'+name+'" data-followers="'+rp[1]+'" data-private="'+repo.is_private+'">' + name + '</span>';
+                return markup;
+            }
+
+        });
+    </script>
+
+    <script src="/adm/assets/plugins/summernote-master/summernote.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $('.summernote').summernote({
+                height: ($(window).height() - 300),
+                callbacks: {
+                    onImageUpload: function(image) {
+                        uploadImage(image[0]);
+                    }
+                }
+            });
+
+            function sendFile(file,editor,welEditable) {
+                data = new FormData();
+                data.append("action", "add");
+                data.append("image", file);
+                $.ajax({
+                    url: "/ajax/image",
+                    data: data,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    type: 'POST',
+                    success: function(data){
+                        editor.insertImage(welEditable, "http://localhost:8080" + data.filename);
+
+
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.log(textStatus+" "+errorThrown);
+                    }
+                });
+            }
+        });
+
+        function deleteFile(src) {
+            $.ajax({
+                data: {
+                    action: 'delete',
+                    src : src
+                },
+                type: "POST",
+                url: "/ajax/image", // replace with your url
+                cache: false,
+                success: function(resp) {
+                    console.log(resp);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            $('#summernote').summernote({
+                height: "300px",
+                callbacks: {
+                    onImageUpload: function(files) {
+                        uploadFile(files[0]);
+                    },
+
+                    onMediaDelete : function(target) {
+                        // alert(target[0].src)
+                        deleteFile(target[0].src);
+                    }
+                }
+            });
+        });
+    </script>
+</sc>
+</html>

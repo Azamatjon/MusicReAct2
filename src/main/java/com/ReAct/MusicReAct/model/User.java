@@ -107,7 +107,7 @@ public class User {
     }
 
     public String getImage() {
-        return image;
+        return (image != null) ? image : "default_avatar.png";
     }
 
     public void setImage(String image) {

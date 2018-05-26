@@ -25,6 +25,12 @@
     <link href="/adm/assets/css/custom.css" rel="stylesheet" type="text/css"/>
     <script src="/adm/assets/plugins/3d-bold-navigation/js/modernizr.js"></script>
     <script src="/adm/assets/plugins/offcanvasmenueffects/js/snap.svg-min.js"></script>
+
+    <script src="/adm/assets/plugins/jquery/jquery-2.1.3.min.js"></script>
+    <script src="/adm/assets/plugins/jquery-ui/jquery-ui.min.js"></script>
+
+    <script src="/adm/assets/plugins/select2/js/select2.min.js"></script>
+    <link href="/adm/assets/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -330,7 +336,7 @@
                     <article th:replace="admin/artist/edit:: content"></article>
                 </element>
                 <element th:case="'null'">
-                    <article th:replace="admin/admin/artist/all:: content"></article>
+                    <article th:replace="admin/artist/all:: content"></article>
                 </element>
                 <element th:case="*">
                     <article th:replace="admin/errorPage:: content"></article>
@@ -474,8 +480,6 @@
 
 <div class="cd-overlay"></div>
 <!-- Javascripts -->
-<script src="/adm/assets/plugins/jquery/jquery-2.1.3.min.js"></script>
-<script src="/adm/assets/plugins/jquery-ui/jquery-ui.min.js"></script>
 <script src="/adm/assets/plugins/pace-master/pace.min.js"></script>
 <script src="/adm/assets/plugins/jquery-blockui/jquery.blockui.js"></script>
 <script src="/adm/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
@@ -541,7 +545,7 @@
                 <article th:replace="admin/artist/edit:: endScript"></article>
             </element>
             <element th:case="'null'">
-                <article th:replace="admin/admin/artist/all:: endScript"></article>
+                <article th:replace="admin/artist/all:: endScript"></article>
             </element>
             <element th:case="*">
                 <article th:replace="admin/errorPage:: endScript"></article>

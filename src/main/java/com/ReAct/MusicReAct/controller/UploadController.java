@@ -106,6 +106,40 @@ public class UploadController {
                 .body(file);
     }
 
+    @GetMapping("/artistImages/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getArtistImage(@PathVariable String filename) {
+        Resource file = storageService.loadArtistAvatar(filename);
+        String mimeType = "";
+        try {
+            mimeType = Files.probeContentType(file.getFile().toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + file.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, mimeType)
+                .body(file);
+    }
+
+    @GetMapping("/albumImages/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getAlbumImage(@PathVariable String filename) {
+        Resource file = storageService.loadAlbumAvatar(filename);
+        String mimeType = "";
+        try {
+            mimeType = Files.probeContentType(file.getFile().toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + file.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, mimeType)
+                .body(file);
+    }
+
+
+
     @GetMapping("/avatars/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> getAvatar(@PathVariable String filename) {
@@ -153,4 +187,6 @@ public class UploadController {
                 .header(HttpHeaders.CONTENT_TYPE, mimeType)
                 .body(file);
     }
+
+
 }
