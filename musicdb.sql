@@ -27,8 +27,10 @@ CREATE TABLE `album` (
   `image` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `artist_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `FKmwc4fyyxb6tfi0qba26gcf8s1` (`artist_id`)
+  KEY `FKmwc4fyyxb6tfi0qba26gcf8s1` (`artist_id`),
+  KEY `FKmi5m81x9aswan1ci0wnw04dq1` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -38,7 +40,7 @@ CREATE TABLE `album` (
 
 LOCK TABLES `album` WRITE;
 /*!40000 ALTER TABLE `album` DISABLE KEYS */;
-INSERT INTO `album` VALUES (57,'qVZVBMZ2Rp8sUD8mY7OT.JPG',NULL,51),(58,'Ydd34N5MF0BUnLB2Ggd9.JPG',NULL,51),(59,'xZgSTqmY2Nw2S3RAYugT.JPG',NULL,51),(60,'fz4TovyD6oPrYuLgPbYm.JPG',NULL,51),(61,NULL,NULL,51),(62,NULL,NULL,51),(63,NULL,'test album99',51);
+INSERT INTO `album` VALUES (112,NULL,'Zara',111,30),(114,NULL,'Sog\'inch',113,30),(120,NULL,'Zaycev.Net',119,30),(122,NULL,'',121,30);
 /*!40000 ALTER TABLE `album` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -79,7 +81,9 @@ CREATE TABLE `artist` (
   `birth_date` date DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `user_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKefakh2px4coqqt25pja7bhvhw` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -89,7 +93,7 @@ CREATE TABLE `artist` (
 
 LOCK TABLES `artist` WRITE;
 /*!40000 ALTER TABLE `artist` DISABLE KEYS */;
-INSERT INTO `artist` VALUES (54,'awdfsd g<span style=\"font-family: &quot;DejaVu Sans Mono&quot;; font-size: 8.3pt;\">biographylerdfcb jijkbcxn bvkm,nxckj bm,.nkm,cvb k,m&nbsp; cvk b.,mndflkgjv,z;xkcbn ksdzvsdxb cdfcb sdbvcv jbnvxck dsfjkx ikdfxcjnbj,cfbn m,bnsdf xckmbhns ghbjn sdvxz jbjjkbnczjhb jwgev cbjnm</span>awdfsd g<span style=\"font-family: &quot;DejaVu Sans Mono&quot;; font-size: 8.3pt;\">biographylerdfcb jijkbcxn bvkm,nxckj bm,.nkm,cvb k,m&nbsp; cvk b.,mndflkgjv,z;xkcbn ksdzvsdxb cdfcb sdbvcv jbnvxck dsfjkx ikdfxcjnbj,cfbn m,bnsdf xckmbhns ghbjn sdvxz jbjjkbnczjhb jwgev cbjnm</span>awdfsd g<span style=\"font-family: &quot;DejaVu Sans Mono&quot;; font-size: 8.3pt;\">biographylerdfcb jijkbcxn bvkm,nxckj bm,.nkm,cvb k,m&nbsp; cvk b.,mndflkgjv,z;xkcbn ksdzvsdxb cdfcb sdbvcv jbnvxck dsfjkx ikdfxcjnbj,cfbn m,bnsdf xckmbhns ghbjn sdvxz jbjjkbnczjhb jwgev cbjnm</span>awdfsd g<span style=\"font-family: &quot;DejaVu Sans Mono&quot;; font-size: 8.3pt;\">biographylerdfcb jijkbcxn bvkm,nxckj bm,.nkm,cvb k,m&nbsp; cvk b.,mndflkgjv,z;xkcbn ksdzvsdxb cdfcb sdbvcv jbnvxck dsfjkx ikdfxcjnbj,cfbn m,bnsdf xckmbhns ghbjn sdvxz jbjjkbnczjhb jwgev cbjnm</span>awdfsd g<span style=\"font-family: &quot;DejaVu Sans Mono&quot;; font-size: 8.3pt;\">biographylerdfcb jijkbcxn bvkm,nxckj bm,.nkm,cvb k,m&nbsp; cvk b.,mndflkgjv,z;xkcbn ksdzvsdxb cdfcb sdbvcv jbnvxck dsfjkx ikdfxcjnbj,cfbn m,bnsdf xckmbhns ghbjn sdvxz jbjjkbnczjhb jwgev cbjnm</span>awdfsd g<span style=\"font-family: &quot;DejaVu Sans Mono&quot;; font-size: 8.3pt;\">biographylerdfcb jijkbcxn bvkm,nxckj bm,.nkm,cvb k,m&nbsp; cvk b.,mndflkgjv,z;xkcbn ksdzvsdxb cdfcb sdbvcv jbnvxck dsfjkx ikdfxcjnbj,cfbn m,bnsdf xckmbhns ghbjn sdvxz jbjjkbnczjhb jwgev cbjnm</span>awdfsd g<span style=\"font-family: &quot;DejaVu Sans Mono&quot;; font-size: 8.3pt;\">biographylerdfcb jijkbcxn bvkm,nxckj bm,.nkm,cvb k,m&nbsp; cvk b.,mndflkgjv,z;xkcbn ksdzvsdxb cdfcb sdbvcv jbnvxck dsfjkx ikdfxcjnbj,cfbn m,bnsdf xckmbhns ghbjn sdvxz jbjjkbnczjhb jwgev cbjnm</span>awdfsd g<span style=\"font-family: &quot;DejaVu Sans Mono&quot;; font-size: 8.3pt;\">biographylerdfcb jijkbcxn bvkm,nxckj bm,.nkm,cvb k,m&nbsp; cvk b.,mndflkgjv,z;xkcbn ksdzvsdxb cdfcb sdbvcv jbnvxck dsfjkx ikdfxcjnbj,cfbn m,bnsdf xckmbhns ghbjn sdvxz jbjjkbnczjhb jwgev cbjnm</span>awdfsd g<span style=\"font-family: &quot;DejaVu Sans Mono&quot;; font-size: 8.3pt;\">biographylerdfcb jijkbcxn bvkm,nxckj bm,.nkm,cvb k,m&nbsp; cvk b.,mndflkgjv,z;xkcbn ksdzvsdxb cdfcb sdbvcv jbnvxck dsfjkx ikdfxcjnbj,cfbn m,bnsdf xckmbhns ghbjn sdvxz jbjjkbnczjhb jwgev cbjnm</span>awdfsd g<span style=\"font-family: &quot;DejaVu Sans Mono&quot;; font-size: 8.3pt;\">biographylerdfcb jijkbcxn bvkm,nxckj bm,.nkm,cvb k,m&nbsp; cvk b.,mndflkgjv,z;xkcbn ksdzvsdxb cdfcb sdbvcv jbnvxck dsfjkx ikdfxcjnbj,cfbn m,bnsdf xckmbhns ghbjn sdvxz jbjjkbnczjhb jwgev cbjnm</span>awdfsd g<span style=\"font-family: &quot;DejaVu Sans Mono&quot;; font-size: 8.3pt;\">biographylerdfcb jijkbcxn bvkm,nxckj bm,.nkm,cvb k,m&nbsp; cvk b.,mndflkgjv,z;xkcbn ksdzvsdxb cdfcb sdbvcv jbnvxck dsfjkx ikdfxcjnbj,cfbn m,bnsdf xckmbhns ghbjn sdvxz jbjjkbnczjhb jwgev cbjnm</span><br>',NULL,'fVt9vk5fyEpb5IZON8zs.png','Test Artist2'),(55,NULL,NULL,NULL,'fd');
+INSERT INTO `artist` VALUES (111,NULL,NULL,NULL,'Zarlyk',30),(113,NULL,NULL,NULL,'Azamatjon',30),(119,NULL,NULL,NULL,'MATRANG',30),(121,NULL,NULL,NULL,'Post Malone feat. 21 Savage',30);
 /*!40000 ALTER TABLE `artist` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -159,7 +163,7 @@ CREATE TABLE `hibernate_sequence` (
 
 LOCK TABLES `hibernate_sequence` WRITE;
 /*!40000 ALTER TABLE `hibernate_sequence` DISABLE KEYS */;
-INSERT INTO `hibernate_sequence` VALUES (71),(71),(71),(71);
+INSERT INTO `hibernate_sequence` VALUES (123),(123),(123),(123);
 /*!40000 ALTER TABLE `hibernate_sequence` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -240,7 +244,7 @@ CREATE TABLE `styles` (
 
 LOCK TABLES `styles` WRITE;
 /*!40000 ALTER TABLE `styles` DISABLE KEYS */;
-INSERT INTO `styles` VALUES (23,'\0','\0','white','','\0','\0','\0','\0',21),(5,'\0','\0','white','','\0','\0','\0','\0',3),(20,'\0','\0','white','','\0','\0','\0','\0',1),(26,'\0','\0','white','','\0','\0','\0','\0',24),(29,'\0','\0','white','','\0','\0','\0','\0',27),(32,'\0','\0','white','','\0','\0','\0','\0',30),(35,'\0','\0','white','','\0','\0','\0','\0',34);
+INSERT INTO `styles` VALUES (23,'\0','\0','white','','\0','\0','\0','\0',21),(5,'\0','\0','white','','\0','\0','\0','\0',3),(20,'\0','\0','white','','\0','\0','\0','\0',1),(26,'\0','\0','white','','\0','\0','\0','\0',24),(29,'\0','\0','white','','\0','\0','\0','\0',27),(32,'\0','\0','red','','\0','\0','\0','\0',30),(35,'\0','\0','white','','\0','\0','\0','\0',34);
 /*!40000 ALTER TABLE `styles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -253,16 +257,22 @@ DROP TABLE IF EXISTS `track`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `track` (
   `id` int(11) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `album_id` int(11) DEFAULT NULL,
-  `artist_id` int(11) NOT NULL,
-  `file_name` varchar(255) DEFAULT NULL,
   `bitrate` int(11) DEFAULT NULL,
-  `duration` int(11) DEFAULT NULL,
-  `size` int(11) DEFAULT NULL,
+  `duration` bigint(20) DEFAULT NULL,
+  `file_name` varchar(255) DEFAULT NULL,
+  `is_verified` int(11) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `old_file_name` varchar(255) DEFAULT NULL,
+  `sample_rate` int(11) DEFAULT NULL,
+  `size` bigint(20) DEFAULT NULL,
+  `year` int(11) DEFAULT NULL,
+  `album_id` int(11) DEFAULT NULL,
+  `artist_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKaxm9pbgk7ptorfyk3o6911q05` (`album_id`),
-  KEY `FKi28jadqiuqk1dlxtl0me7hqh2` (`artist_id`)
+  KEY `FKi28jadqiuqk1dlxtl0me7hqh2` (`artist_id`),
+  KEY `FKgr1n7x926k6yko26tmoalvnra` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -272,6 +282,7 @@ CREATE TABLE `track` (
 
 LOCK TABLES `track` WRITE;
 /*!40000 ALTER TABLE `track` DISABLE KEYS */;
+INSERT INTO `track` VALUES (103,0,0,'0DbpLhR3NkZUcvFa7eqf.mp3',0,NULL,'4 (2).mp3',0,0,0,NULL,NULL,30),(104,320,164,'NdwClFSBBcFNQ3IOcDlm.mp3',1,'?????? (zaycev.net)','matrang_-_meduza_(zaycev.net).mp3',44100,6555649,0,120,119,30),(105,320,218,'pDXzHsUzO518hsmHETf2.mp3',1,'Rockstar','rkstr.mp3',44100,8798654,0,122,121,30),(106,0,0,'1rK1YIuaN678qfqZkPNP.mp3',0,NULL,'4.mp3',0,0,0,NULL,NULL,30),(107,0,0,'S6d0iIsG52UMiUq8DtKF.mp3',0,NULL,'4 (1).mp3',0,0,0,NULL,NULL,30),(108,0,0,'PoLTD7NrkD2SlMnxK9y4.mp3',0,NULL,'4 (2).mp3',0,0,0,NULL,NULL,30),(109,0,0,'kq6esoRBhNM1NYhGRzhj.mp3',0,NULL,'matrang_-_meduza_(zaycev.net).mp3',0,0,0,NULL,NULL,30),(110,0,0,'MGx4CCrdWJfolgsFrrC3.mp3',0,NULL,'rkstr.mp3',0,0,0,NULL,NULL,30),(115,0,0,'6sgOY20cnHtmrLWAekUH.mp3',0,NULL,'4 (2).mp3',0,0,0,NULL,NULL,30),(116,0,0,'oD0nyWUCQGQY3aHwaGOO.mp3',0,NULL,'rkstr.mp3',0,0,0,NULL,NULL,30),(117,0,0,'szIxD1Wje6KLRnYqNvGe.mp3',0,NULL,'4 (1).mp3',0,0,0,NULL,NULL,30),(118,0,0,'Dyi3ZmWJuoJv9RTyGjbt.mp3',0,NULL,'4.mp3',0,0,0,NULL,NULL,30);
 /*!40000 ALTER TABLE `track` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -392,4 +403,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-05-26 15:15:04
+-- Dump completed on 2018-05-27 17:51:49
