@@ -18,78 +18,99 @@
             <div class="col-md-12">
                 <div class="panel panel-white">
                     <div class="panel-heading clearfix">
-                        <h4 class="panel-title">Edit Artist</h4>
+                        <h4 class="panel-title" th:utext="${track.getArtist().getName() + ' - ' + track.getName() + ' -  Track'}"></h4>
                     </div>
                     <div class="panel-body">
-                        <div class="col-md-3 profile-image" style="margin-top: -100px;">
-                            <div class="profile-image-container">
-                                <img th:src="${eArtistAvatar}" class="reloadUserAvatar" style="width: 90px; height: 90px;" alt="">
-                            </div>
-                        </div>
-
-                        <form class="form-horizontal" id="editArtist">
-                            <input type="hidden" id="artistId" th:value="${eArtist.getId()}"/>
+                        <form class="form-horizontal saveTrack" th:data-id="${track.getId()}">
 
                             <div class="form-group">
-                                <label for="name" class="col-sm-2 control-label">Name:</label>
+                                <label for="name" class="col-sm-2 control-label">Track Name:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" th:value="${eArtist.getName()}" class="form-control" name="name" id="name" placeholder="Artist Name" >
+                                    <input type="text" class="form-control" name="name" id="name" th:value="${track.getName()}" placeholder="Track Name">
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="avatar" class="col-sm-2 control-label">Change an avatar</label>
-
+                                <label for="artist" class="col-sm-2 control-label">Artist Name:</label>
                                 <div class="col-sm-10">
-                                    <input type="file" name="avatar" accept="image/jpeg,image/png,image/gif" class="form-control" id="avatar" placeholder="Choose an avatar">
-                                    <br/>
-                                    <button type="button" id="deleteAvatar" class="btn btn-danger btn-addon m-b-xs btn-rounded btn-xs pull-right"><i class="fa fa-trash"></i> Delete Avatar</button>
+                                    <input type="text" class="form-control" name="artist" id="artist" th:value="${track.getArtist().getName()}" placeholder="Artist Name">
                                 </div>
-
                             </div>
 
                             <div class="form-group">
-                                <label class="col-sm-2 control-label">Biography</label>
+                                <label for="album" class="col-sm-2 control-label">Album Name:</label>
                                 <div class="col-sm-10">
-                                    <div class="summernote" th:utext="${eArtist.getBiography()}"></div>
+                                    <input type="text" class="form-control" name="album" id="album" th:value="${track.getAlbum().getName()}" placeholder="Album Name">
                                 </div>
                             </div>
 
 
-                            <button type="submit" class="btn btn-primary">Update Artist Data</button>
-                            <button type="button" class="btn btn-danger" id="deleteArtistModalFocus" data-toggle="modal" data-target="#deleteArtistModal">Delete Artist</button>
+                            <div class="form-group">
+                                <label for="year" class="col-sm-2 control-label">Year:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="year" id="year" th:value="${track.getYear()}" placeholder="Year">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="duration" class="col-sm-2 control-label">Duration:</label>
+                                <div class="col-sm-10">
+                                    <input style="width: 100px;" type="text" class="form-control" name="duration" id="duration" th:data-duration="${track.getDuration()}" th:value="${track.getFormattedDuration()}" placeholder="Duration" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="size" class="col-sm-2 control-label">Size:</label>
+                                <div class="col-sm-10">
+                                    <input style="width: 100px;" type="text" class="form-control" name="size" id="size" th:data-size="${track.getSize()}" th:value="${track.getFormattedSize()}" placeholder="Size" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="bitrate" class="col-sm-2 control-label">Bitrate:</label>
+                                <div class="col-sm-10">
+                                    <input style="width: 100px;" type="text" class="form-control" name="bitrate" id="bitrate" th:data-bitrate="${track.getBitrate()}" th:value="${track.getBitrate() + ' kbps'}" placeholder="bitrate" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sampleRate" class="col-sm-2 control-label">Sample Rate:</label>
+                                <div class="col-sm-10">
+                                    <input style="width: 100px;" type="text" class="form-control" name="sampleRate" id="sampleRate" th:data-sample-rate="${track.getSampleRate()}" th:value="${track.getSampleRate() + ' HZ'}" placeholder="SampleRate" disabled>
+                                </div>
+                            </div>
+
+
+                            <button type="submit" class="btn btn-primary">Save Track</button>
+                            <button type="button" class="btn btn-danger" id="deleteTrackModalFocus" data-toggle="modal" data-target="#deleteTrackModal">Delete Artist</button>
                         </form>
 
 
-
                         <!-- Modal -->
-                        <div class="modal fade" id="deleteArtistModal" tabindex="-1" role="dialog" aria-labelledby="deleteArtistModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="deleteTrackModal" tabindex="-1" role="dialog" aria-labelledby="deleteTrackModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                        <h4 class="modal-title" id="deleteArtistModalLabel">Deleting Artist</h4>
+                                        <h4 class="modal-title" id="deleteTrackModalLabel">Deleting Track</h4>
                                     </div>
                                     <div class="modal-body">
                                         <div class="form-group">
                                             <p>
-                                                You are about to delete artist.
+                                                You are about to delete Track.
                                             </p>
                                         </div>
                                     </div>
                                     <form>
                                         <div class="modal-footer">
-                                            <button type="button" id="cancelDeleteArtist"class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                            <button type="button" id="confirmDeleteArtist" th:artistid="${eArtist.getId()}" class="btn btn-danger">Delete</button>
+                                            <button type="button" id="cancelDeleteTrack"class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                            <button type="button" id="confirmDeleteTrack" class="btn btn-danger">Delete</button>
                                         </div>
                                     </form>
 
                                 </div>
                             </div>
                         </div>
-
-
-
 
 
                     </div>
@@ -168,38 +189,42 @@
             }
 
 
-            $('#editArtist').on('submit', function(){
-                var artistId = $('#artistId').val();
+            $('.saveTrack').on('submit', function(){
 
-                var name = $('#name').val();
-                var avatar = $('input[name="avatar"]').get(0).files[0];
-                var biography = $('.note-editable').html();
+                var trackId = $(this).data('id');
+
+                var trackName = $(this).find('input[name=name]').val();
+                var artistName = $(this).find('input[name=artist]').val();
+                var albumName = $(this).find('input[name=album]').val();
+                var year = $(this).find('input[name=year]').val();
 
                 var formData = new FormData();
                 formData.append('action', 'edit');
-                formData.append('artistId', artistId);
-                formData.append('name', name);
-                formData.append('avatar', avatar);
-                formData.append('biography', biography + "");
+                formData.append('trackId', trackId);
+                formData.append('trackName', trackName);
+                formData.append('artistName', artistName);
+                formData.append('albumName', albumName);
+                formData.append('year', year);
 
 
-                if (name.length < 2) {
-                    document.getElementById("textmodal").innerHTML = "Name is empty or lesser than 2 characters!";
+
+                if (trackName.length < 2) {
+                    document.getElementById("textmodal").innerHTML = "Track Name is empty or lesser than 2 characters!";
+                    document.getElementById("modal_").click();
+                } else if (artistName.length < 2){
+                    document.getElementById("textmodal").innerHTML = "Artist Name is empty or lesser than 2 characters!";
                     document.getElementById("modal_").click();
                 } else {
 
                     $.ajax({
-                        url: '/ajax/artist',
+                        url: '/ajax/track',
                         type: 'post',
                         data: formData,
                         contentType: false,
                         processData: false,
                         success: function(data){
                             if (data.status == 'success') {
-
-                                $('.reloadUserAvatar').attr("src", data.avatar).trigger("change");
-
-                                toastr["success"]("All entered data were saved successfuly.", "Success");
+                                toastr["success"]("Track (" + artistName + " - " + trackName + ") edited successfuly.", "Success");
 
                                 //setTimeout(goTo, 1500, data.redirect);
                             } else if (data.status == 'error'){
@@ -213,68 +238,43 @@
                             document.getElementById("modal_").click();
                         }
                     });
+
                 }
                 return false;
             });
 
 
-            $('#deleteArtistModalFocus').on('click', function(){
+
+
+            $('#deleteTrackModalFocus').on('click', function(){
 
             });
 
 
-            $('#deleteAvatar').on('click', function(){
-                var userId = $('#userId').val();
-                $.post('/ajax/user', {
-                    action: 'deleteAvatar',
-                    userId: userId
-                }, function(data, status) {
-                    if (status == 'success') {
-                        if (data.status == 'success') {
-                            $('.reloadUserAvatar').attr("src", data.avatar).trigger("change");
-
-                            document.getElementById("mySmallModalLabel").innerHTML = "Success!";
-                            document.getElementById("textmodal").innerHTML = "You have successfuly deleted your avatar.";
-                            document.getElementById("modal_").click();
-
-                        } else {
-                            document.getElementById("textmodal").innerHTML = "Error, undefined error occured.";
-                            document.getElementById("modal_").click();
-                        }
-                    } else {
-                        document.getElementById("textmodal").innerHTML = "Error, I can't connect with the server...";
-                        document.getElementById("modal_").click();
-                    }
-                });
-
-                return false;
-            });
-
-
-            $('#confirmDeleteArtist').on('click', function(){
-                var artistId = $('#artistId').val();
-                $.post('/ajax/artist', {
+            $('#confirmDeleteTrack').on('click', function(){
+                var trackId = $('.saveTrack').data('id');
+                $.post('/ajax/track', {
                     action: 'delete',
-                    artistId: artistId
+                    trackId: trackId
                 }, function(data, status) {
                     if (status == 'success') {
                         if (data.status == 'success') {
 
-                            $('#cancelDeleteArtist').click();
-                            toastr["success"]("You have successfuly deleted user profile.", "Success!");
+                            $('#cancelDeleteTrack').click();
+                            toastr["success"]("You have successfuly deleted track.", "Success!");
 
                             setTimeout(goTo, 2000, data.redirect);
 
                         } else if (data.status == 'error') {
-                            $('#cancelDeleteArtist').click();
+                            $('#cancelDeleteTrack').click();
                             toastr["error"]("Error, " + data.error_code, "Oops!");
 
                         } else {
-                            $('#cancelDeleteArtist').click();
+                            $('#cancelDeleteTrack').click();
                             toastr["error"]("Error, undefined error occured.", "Oops!");
                         }
                     } else {
-                        $('#cancelDeleteArtist').click();
+                        $('#cancelDeleteTrack').click();
                         toastr["error"]("Error, I can't connect with the server...", "Oops!");
                     }
                 });

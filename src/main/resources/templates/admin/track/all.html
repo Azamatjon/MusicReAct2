@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" xmlns:div="http://www.thymeleaf.org">
+
+<div class="page-inner" th:fragment="content">
+    <style>
+        .small-img {
+            width: 35px;
+        }
+    </style>
+    <div class="page-title">
+        <h3>Form Elements</h3>
+        <div class="page-breadcrumb">
+            <ol class="breadcrumb">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#">Forms</a></li>
+                <li class="active">Form Elements</li>
+            </ol>
+        </div>
+    </div>
+    <div id="main-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-white">
+                    <div class="panel-heading clearfix">
+                        <h4 class="panel-title">Hover rows</h4>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Artist</th>
+                                <th>Album</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody th:each="track : ${tracks}" th:remove="tag">
+                            <tr>
+                                <th scope="row" th:text="${track.getId()}">*</th>
+                                <td th:text="${track.getName()}"></td>
+                                <td th:text="${track.getArtist().getName()}"></td>
+                                <td th:text="${track.getAlbum().getName()}"></td>
+                                <td><div class="btn-group m-b-sm">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                        Action <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                        <li><a th:href="'/admin/home?goTo=tracks&action=edit&id=' + ${track.getId()}">Edit</a></li>
+                                        <li><a href="#" data-toggle="modal" data-target="#deleteTrackModal" class="trackDelete" th:trackid="${track.getId()}">Delete</a></li>
+                                    </ul>
+                                </div></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="btn-group" th:if="${!pages.isEmpty()}">
+
+                            <a class="btn btn-default" th:each="p : ${pages}"
+                               th:utext="((${p.isPrev()}) ? '<i class=\'fa fa-angle-left\'></i>  Prev' : ((${p.isBetween()}) ? '...' : ((${p.isNext()}) ? 'Next <i class=\'fa fa-angle-right\'></i>' : ${p.getPageNumber()})))"
+                               th:classappend="((${p.isActive() and p.isDisabled()}) ? 'active disabled' : ((${p.isActive()}) ? 'active' : ((${p.isDisabled()}) ? 'disabled' : '')))"
+                               th:href="'/admin/home?goTo=artists&page=' + ((${p.isPrev()}) ? ${currentPage - 1} : ((${p.isNext()}) ? ${currentPage + 1} : ${p.getPageNumber()})) + '&size=' + ${pageSize}"
+                            ></a>
+                        </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="deleteTrackModal" tabindex="-1" role="dialog" aria-labelledby="deleteTrackModal" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="deleteTrackModal">Deleting User Account</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <p>
+                                                You are about to delete track.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" id="cancelDeleteTrack"class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                        <button type="button" id="confirmDeleteTrack" trackid="none" class="btn btn-danger">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<sc th:if="${cssSwitcher.isPermitted()}" th:fragment="endScript">
+
+    <script src="/adm/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+    <link href="/adm/assets/plugins/bootstrap-datepicker/css/datepicker3.css" rel="stylesheet" type="text/css"/>
+
+
+    <style>
+        th.normal_font {
+            font-weight: normal;
+            padding-left: 10px;
+        }
+        i.silver {
+            color: #bfbcbc;
+            font-size: 11px;
+        }
+        .select2-results__option--highlighted table tr th i.silver {
+            color: #fff;
+        }
+        .customsize {
+            min-height: 36px;
+        }
+        .select2-search__field {
+            width: 100%!important;
+        }
+        #toast-container > div:hover{
+            opacity: 1;
+            box-shadow: 0px 0px 14px 0px #000;
+            cursor: pointer;
+        }
+    </style>
+    <script src="/adm/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js"></script>
+    <script src="/adm/assets/plugins/summernote-master/summernote.min.js"></script>
+    <script src="/adm/assets/js/pages/form-elements.js"></script>
+
+    <link href="/adm/assets/plugins/slidepushmenus/css/component.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/plugins/summernote-master/summernote.css" rel="stylesheet" type="text/css"/>
+    <link href="/adm/assets/plugins/bootstrap-colorpicker/css/colorpicker.css" rel="stylesheet" type="text/css"/>
+    <!--<script src="/adm/assets/js/pages/form-select2.js"></script>-->
+    <script src="/adm/assets/plugins/select2/js/select2.js"></script>
+    <link href="/adm/assets/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <script src="/adm/assets/js/pages/notifications.js"></script>
+    <link href="/adm/assets/plugins/toastr/toastr.min.css" rel="stylesheet"/>
+    <script src="/adm/assets/plugins/toastr/toastr.min.js"></script>
+
+    <script type="text/javascript">
+
+        //needs to fix bug
+        var all_ = true;
+        // end
+        $(document).ready(function() {
+
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+
+
+            $('.trackDelete').on('click', function(){
+
+                var trackId = $(this).attr('trackid');
+                $('#confirmDeleteTrack').attr('trackid', trackId);
+
+            });
+
+
+            $('#confirmDeleteTrack').on('click', function(){
+
+                var trackId = $(this).attr('trackid');
+
+                if (trackId == 'none') {
+                    document.getElementById("textmodal").innerHTML = "Invalid Artist ID";
+                    document.getElementById("modal_").click();
+                } else {
+
+                    $.post('/ajax/track', {
+                        action: 'delete',
+                        trackId: trackId
+                    }, function(data, status) {
+
+                        if (status == 'success') {
+                            if (data.status == 'success') {
+                                $('#cancelDeleteTrack').click();
+                                toastr["success"]("Artist was deleted successfuly.", "Success");
+
+                                setTimeout(reload, 1500);
+                            }  else if (data.status == 'error') {
+                                $('#cancelDeleteTrack').click();
+                                toastr["error"]("Error. " + data.error_code, "Oops");
+
+                            } else {
+                                $('#cancelDeleteTrack').click();
+                                toastr["error"]("Error. Something went wrong.", "Oops");
+                            }
+                        } else {
+                            $('#cancelDeleteTrack').click();
+                            document.getElementById("submit").disabled = false;
+                            document.getElementById("textmodal").innerHTML = "Error, I can't connect with the server...";
+                            document.getElementById("modal_").click();
+                        }
+                    });
+                }
+                return false;
+            });
+
+            function reload() {
+                location.reload();
+            }
+
+        });
+    </script>
+</sc>
+</html>

@@ -5,13 +5,20 @@ import com.ReAct.MusicReAct.Helper.Pagination;
 import com.ReAct.MusicReAct.model.*;
 import com.ReAct.MusicReAct.repository.*;
 import com.ReAct.MusicReAct.service.MailClient;
+import com.ReAct.MusicReAct.service.StorageService;
 import com.ReAct.MusicReAct.service.UserService;
 import com.ReAct.MusicReAct.service.UserServiceImpl;
 import com.ReAct.MusicReAct.Helper.PaginationPage;
+import com.mpatric.mp3agic.ID3v1;
+import com.mpatric.mp3agic.ID3v2;
+import com.mpatric.mp3agic.Mp3File;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -65,6 +72,10 @@ public class LoginController {
     @Autowired
     private AlbumRepository albumRepository;
 
+    @Qualifier("trackRepository")
+    @Autowired
+    private TrackRepository trackRepository;
+
 
     @Qualifier("artistRepository")
     @Autowired
@@ -78,15 +89,21 @@ public class LoginController {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
+    private StorageService storageService;
 
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    String employeesPageable(Pageable pageable) {
-        Page users = userRepository.findAll(pageable);
-        Iterator<User> us = users.getContent().iterator();
+
+    @RequestMapping(value = "/testsd", method = RequestMethod.GET)
+    String employeesPageable() {
+
+        List<User> users = userRepository.findTop3ByOrderByIdDesc();
+
+        Iterator<User> us = users.iterator();
         //System.out.println(users.);
         do {
             System.out.println("email: " + us.next().getEmail());
-        }while (us.hasNext());
+        } while (us.hasNext());
+
         return "login";
     }
 
@@ -871,6 +888,114 @@ public class LoginController {
                                 modelAndView.addObject("currentPage", pgn.getPageNumber());
                                 modelAndView.addObject("pageSize", pgn.getPageSize());
                                 modelAndView.addObject("artists", artists.getContent());
+                                modelAndView.addObject("pages", pgn.getPages());
+                            }
+
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case "tracks":
+                    switch (action) {
+                        case "add":
+                            break;
+
+                        case "verify":
+                            System.out.println("came there!");
+                            List<Track> tracks = trackRepository.findAllByUserAndIsVerified(user, 0);
+                            HashMap<Integer, String[]> trs = new HashMap<>();
+                            for (Track track:tracks) {
+
+                                Resource file = storageService.loadMusic(track.getFileName());
+                                try {
+                                    Mp3File mp3file = new Mp3File(file.getFile());
+
+                                    Long length = mp3file.getLengthInSeconds();
+                                    int bitrate = mp3file.getBitrate();
+                                    int sampleRate = mp3file.getSampleRate();
+
+
+                                    System.out.println("sample rate: " + sampleRate);
+                                    track.setBitrate(bitrate);
+                                    track.setDuration(length);
+                                    track.setSize(file.getFile().length());
+                                    track.setSampleRate(sampleRate);
+
+                                    String trackTitle, trackName, artist, album;
+                                    int year;
+
+                                    if (mp3file.hasId3v2Tag()){
+
+                                        ID3v2 id3v2Tag = mp3file.getId3v2Tag();
+
+                                        trackName = id3v2Tag.getTrack();
+                                        trackTitle = id3v2Tag.getTitle();
+                                        artist = id3v2Tag.getArtist();
+                                        album = id3v2Tag.getAlbum();
+                                        if (id3v2Tag.getYear() != null )track.setYear(Integer.valueOf(id3v2Tag.getYear()));
+
+                                        track.setName((trackTitle != null)? trackTitle : trackName);
+                                        track.setUser(user);
+
+                                        trs.put(track.getId(), new String[]{(artist != null) ? artist : "", (album != null) ? album : ""});
+
+                                    } else if (mp3file.hasId3v1Tag()) {
+                                        ID3v1 id3v1Tag = mp3file.getId3v1Tag();
+                                        trackName = id3v1Tag.getTrack();
+                                        trackTitle = id3v1Tag.getTitle();
+                                        artist = id3v1Tag.getArtist();
+                                        album = id3v1Tag.getAlbum();
+                                        if (id3v1Tag.getYear() != null )track.setYear(Integer.valueOf(id3v1Tag.getYear()));
+
+                                        track.setName((trackTitle != null)? trackTitle : trackName);
+                                        track.setUser(user);
+
+                                        trs.put(track.getId(), new String[]{(artist != null) ? artist : "", (album != null) ? album : ""});
+                                    } else {
+                                        trs.put(track.getId(), new String[]{"", ""});
+                                    }
+
+                                } catch (Exception e){
+                                    System.out.println(e);
+                                }
+
+
+                            }
+
+
+                            for (Track trd: tracks) {
+                                System.out.println("Artist : " + trs.get(trd.getId())[0] + " | Album : " + trs.get(trd.getId())[1]);
+                            }
+                            modelAndView.addObject("tracks", tracks);
+                            modelAndView.addObject("trs", trs);
+
+                            break;
+
+                        case "edit":
+                            Track eTrack = trackRepository.getOne(id);
+                            if (eTrack != null){
+                                modelAndView.addObject("track", eTrack);
+                            } else {
+                                isErrorFound = true;
+                                modelAndView.addObject("error_code", "404");
+                                modelAndView.addObject("error_context", "Oops ! Track is not found.");
+                                modelAndView.addObject("error_message", "We couldn't find track with id: " + id);
+
+                                modelAndView.addObject("goTo", "");
+
+                            }
+
+                            break;
+
+                        case "noAction":
+                            if (pageable != null){
+                                Page<Track> tracks_ = trackRepository.findAllByIsVerified(1, pageable);
+                                Pagination pgn = new Pagination(tracks_, pageable, 5);
+
+                                modelAndView.addObject("currentPage", pgn.getPageNumber());
+                                modelAndView.addObject("pageSize", pgn.getPageSize());
+                                modelAndView.addObject("tracks", tracks_.getContent());
                                 modelAndView.addObject("pages", pgn.getPages());
                             }
 

@@ -22,6 +22,10 @@ public class Album {
     @JoinColumn(nullable = true, name = "artist_id")
     private Artist artist;
 
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(nullable = true, name = "user_id")
+    private User user;
+
     @OneToMany()
     private Set<Track> tracks;
 
@@ -69,4 +73,11 @@ public class Album {
         return tracks.size();
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

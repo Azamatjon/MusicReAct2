@@ -316,6 +316,9 @@
                 <element th:case="'add'">
                     <article th:replace="admin/track/add:: content"></article>
                 </element>
+                <element th:case="'verify'">
+                    <article th:replace="admin/track/verify:: content"></article>
+                </element>
                 <element th:case="'edit'">
                     <article th:replace="admin/track/edit:: content"></article>
                 </element>
@@ -524,6 +527,9 @@
         <sw th:switch="${action}">
             <element th:case="'add'">
                 <article th:replace="admin/track/add:: endScript"></article>
+            </element>
+            <element th:case="'verify'">
+                <article th:replace="admin/track/verify:: endScript"></article>
             </element>
             <element th:case="'edit'">
                 <article th:replace="admin/track/edit:: endScript"></article>

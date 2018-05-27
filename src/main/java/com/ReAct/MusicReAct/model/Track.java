@@ -17,22 +17,46 @@ public class Track {
     @Column(name = "file_name")
     private String fileName;
 
+    @Column(name = "old_file_name")
+    private String oldFileName;
+
+    @Column(name = "is_verified", nullable = false)
+    private int isVerified = 0;
+
     @Column(name = "bitrate")
     private int bitrate;
 
     @Column(name = "duration")
-    private int duration;
+    private long duration;
+
+    @Column(name = "sample_rate", nullable = true)
+    private int sampleRate;
 
     @Column(name = "size")
-    private int size;
+    private long size;
+
+    @Column(name = "year")
+    private int year;
 
     @ManyToOne(targetEntity = Artist.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "artist_id")
+    @JoinColumn(nullable = true, name = "artist_id")
     private Artist artist;
 
     @ManyToOne(targetEntity = Album.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = true, name = "album_id")
     private Album album;
+
+    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @JoinColumn(nullable = true, name = "user_id")
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public int getId() {
         return id;
@@ -82,19 +106,59 @@ public class Track {
         this.bitrate = bitrate;
     }
 
-    public int getDuration() {
+    public long getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(long duration) {
         this.duration = duration;
     }
 
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(long size) {
         this.size = size;
+    }
+
+    public boolean getIsVerified() {
+        return isVerified == 1;
+    }
+
+    public void setIsVerified(boolean isVerified) {
+        this.isVerified = ((isVerified) ? 1:0);
+    }
+
+    public int getSampleRate() {
+        return sampleRate;
+    }
+
+    public void setSampleRate(int sampleRate) {
+        this.sampleRate = sampleRate;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public String getOldFileName() {
+        return oldFileName;
+    }
+
+    public void setOldFileName(String oldFileName) {
+        this.oldFileName = oldFileName;
+    }
+
+    public String getFormattedDuration() {
+        return (String.format("%02d", duration/60) + ":" + String.format("%02d", duration%60));
+    }
+
+    public String getFormattedSize() {
+        return (String.format("%.2f", ((size > 0) ? (size / 1024.0 / 1024.0) : 0.0)) + " MB");
     }
 }

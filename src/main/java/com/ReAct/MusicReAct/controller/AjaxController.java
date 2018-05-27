@@ -75,6 +75,10 @@ public class AjaxController {
     @Autowired
     private ImageRepository imageRepository;
 
+    @Qualifier("trackRepository")
+    @Autowired
+    private TrackRepository trackRepository;
+
 
 
     private RequestCache requestCache = new HttpSessionRequestCache();
@@ -513,7 +517,12 @@ public class AjaxController {
                     if (user.isAdmin()){
                         Artist artist = artistRepository.getOne(artistId);
                         if (artist != null){
+
+                            List<Album> chainedAlbums = albumRepository.findAllByArtist(artist);
+                            albumRepository.deleteAll(chainedAlbums);
                             artistRepository.delete(artist);
+
+
                             map.put("status", "success");
                             map.put("redirect", "/admin/home?goTo=artists");
                         } else {
@@ -813,6 +822,184 @@ public class AjaxController {
 
 
 
+
+
+
+
+
+
+
+    @RequestMapping(value = "/ajax/track", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> trackAPI(@RequestParam("action") String action,
+                                         @RequestParam(value = "trackId", required = false) Integer trackId,
+                                         @RequestParam(value = "trackName", required = false) String trackName,
+                                         @RequestParam(value = "artistName", required = false) String artistName,
+                                         @RequestParam(value = "albumName", required = false) String albumName,
+                                         @RequestParam(value = "year", required = false) Integer year,
+                                         @RequestParam(value = "duration", required = false) Long duration,
+                                         @RequestParam(value = "size", required = false) Long size,
+                                         @RequestParam(value = "bitrate", required = false) Integer bitrate,
+                                         @RequestParam(value = "sampleRate", required = false) Integer sampleRate,
+                                         HttpServletRequest request,
+                                         HttpServletResponse response
+    ) {
+        HashMap<String, String> map = new HashMap<>();
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByEmail(auth.getName());
+
+        switch (action){
+            case "edit":
+                if (trackId != null){
+                    if (user.isAdmin()){
+                        Track track = trackRepository.getOne(trackId);
+                        if (track != null){
+                            track.setName(trackName);
+                            track.setYear(year);
+
+                            Artist artist = artistRepository.getByName(artistName);
+                            if (artist != null){
+                                track.setArtist(artist);
+                            } else {
+                                Artist artist1 = new Artist();
+                                artist1.setName(artistName);
+
+                                artistRepository.save(artist1);
+
+                                Artist artist2 = artistRepository.getByName(artistName);
+                                track.setArtist(artist2);
+                            }
+
+
+
+                            Album album = albumRepository.getByNameAndArtist(albumName, track.getArtist());
+                            if (album != null){
+                                track.setAlbum(album);
+                            } else {
+                                Album album1 = new Album();
+                                album1.setName(albumName);
+
+                                albumRepository.save(album1);
+
+                                Album album2 = albumRepository.getByNameAndArtist(albumName, track.getArtist());
+                                track.setAlbum(album2);
+                            }
+
+                            trackRepository.save(track);
+                            map.put("status", "success");
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Artist id is not found.");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "You don't have change data privilegies.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "Error!. " );
+                }
+                break;
+
+            case "verify":
+                if (user.isAdmin()){
+
+                    Track track = trackRepository.getOne(trackId);
+
+                    if (track != null){
+
+                        track.setName(trackName);
+
+
+                        Artist artist = artistRepository.getByName(artistName);
+                        if (artist == null){
+                            Artist artist1 = new Artist();
+                            artist1.setName(artistName);
+                            artist1.setUser(user);
+                            artistRepository.save(artist1);
+
+                            Artist artist2 = artistRepository.getByName(artistName);
+                            track.setArtist(artist2);
+
+                        } else {
+                            track.setArtist(artist);
+                        }
+
+
+
+                        Album album = albumRepository.getByNameAndArtist(albumName, track.getArtist());
+                        if (album == null){
+                            Album album1 = new Album();
+                            album1.setArtist(track.getArtist());
+                            album1.setName(albumName);
+                            album1.setUser(user);
+
+                            albumRepository.save(album1);
+
+                            Album album2 = albumRepository.getByNameAndArtist(albumName, track.getArtist());
+                            track.setAlbum(album2);
+
+                        } else {
+                            track.setAlbum(album);
+                        }
+
+                        if (year > 0) track.setYear(year);
+
+                        track.setDuration(duration);
+                        track.setSize(size);
+                        track.setBitrate(bitrate);
+                        track.setSampleRate(sampleRate);
+
+                        track.setIsVerified(true);
+
+                        trackRepository.save(track);
+
+                        map.put("status", "success");
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "Track id not found.");
+                    }
+
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "You don't have enough permissions.");
+                }
+                break;
+
+            case "delete":
+                if (trackId != null){
+                    if (user.isAdmin()){
+                        Track track = trackRepository.getOne(trackId);
+                        if (track != null){
+                            trackRepository.delete(track);
+                            map.put("status", "success");
+                            map.put("redirect", "/admin/home?goTo=tracks");
+
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Track not found.");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "You don't have enough permissions.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "Track id is not found.");
+                }
+
+                break;
+
+            default:
+                map.put("status", "error");
+                map.put("error_code", "No such action defined.");
+
+                break;
+        }
+
+        return map;
+    }
 
 
 

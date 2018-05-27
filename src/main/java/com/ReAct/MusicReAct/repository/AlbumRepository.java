@@ -5,7 +5,11 @@ package com.ReAct.MusicReAct.repository;
         import org.springframework.data.jpa.repository.JpaRepository;
         import org.springframework.stereotype.Repository;
 
+        import java.util.List;
+
 @Repository("albumRepository")
 public interface AlbumRepository extends JpaRepository<Album, Integer> {
         Album getByNameAndArtist(String name, Artist artist);
+
+        List<Album> findAllByArtist(Artist artist);
 }

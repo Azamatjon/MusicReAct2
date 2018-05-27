@@ -24,8 +24,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("select u from User u where u.name like %?1% OR u.lastName like %?1%")
     Page<User> liteSearch(String query, Pageable pageable);
 
-
-/*
-    @Query("SELECT u FROM User u ORDER BY u.id ASC")
-    Set<User> getPagination(Pageable pageable);*/
+    List<User> findTop3ByOrderByIdDesc();
 }

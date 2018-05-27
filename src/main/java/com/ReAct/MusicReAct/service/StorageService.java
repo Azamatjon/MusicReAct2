@@ -32,7 +32,7 @@ public class StorageService {
 
     ArrayList<String> allowedImageMimeTypes = new ArrayList<>(Arrays.asList("image/gif", "image/jpeg", "image/png"));
     ArrayList<String> allowedVideoMimeTypes = new ArrayList<>(Arrays.asList("video/x-flv", "video/mp4", "video/3gpp", "video/quicktime", "video/x-msvideo"));
-    ArrayList<String> allowedMusicMimeTypes = new ArrayList<>(Arrays.asList("audio/mpeg"));
+    ArrayList<String> allowedMusicMimeTypes = new ArrayList<>(Arrays.asList("audio/mpeg", "audio/mp3"));
 
     private String getRandomizedName(MultipartFile file){
         List<String> allAllowedMimeTypes = new ArrayList<String>();
