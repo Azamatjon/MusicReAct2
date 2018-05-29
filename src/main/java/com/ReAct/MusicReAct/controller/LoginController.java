@@ -81,6 +81,11 @@ public class LoginController {
     @Autowired
     private ArtistRepository artistRepository;
 
+
+    @Qualifier("galleryRepository")
+    @Autowired
+    private GalleryRepository galleryRepository;
+
     private RequestCache requestCache = new HttpSessionRequestCache();
 
     @Autowired
@@ -215,13 +220,7 @@ public class LoginController {
 
         return records;
     }
-/*
-    @RequestMapping(value={"/"}, method = RequestMethod.GET)
-    public ModelAndView homePage(){
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("index");
-        return modelAndView;
-    }*/
+
 
     @RequestMapping(value={"/login"}, method = RequestMethod.GET)
     public ModelAndView login(){
@@ -749,7 +748,7 @@ public class LoginController {
 
                                 modelAndView.addObject("roleList", roleRepository.getAll());
                                 modelAndView.addObject("eUser", eUser);
-                                modelAndView.addObject("eUserAvatar", "/avatars/" + ((eUser.getImage() == null)?"default_avatar.png":eUser.getImage()));
+                                modelAndView.addObject("eUserAvatar", eUser.getImage());
 
                             } else {
                                 isErrorFound = true;
@@ -801,7 +800,8 @@ public class LoginController {
                             break;
 
                         case "noAction":
-
+                            modelAndView.addObject("trackRepository", trackRepository);
+                            modelAndView.addObject("albumRepository", albumRepository);
                             if (pageable != null){
                                 Page artists = artistRepository.findAll(pageable);
                                 Pagination pgn = new Pagination(artists, pageable, 5);
@@ -842,7 +842,7 @@ public class LoginController {
                             break;
 
                         case "noAction":
-
+                            modelAndView.addObject("trackRepository", trackRepository);
                             if (pageable != null){
                                 Page artists = albumRepository.findAll(pageable);
                                 Pagination pgn = new Pagination(artists, pageable, 5);
@@ -1004,6 +1004,74 @@ public class LoginController {
                             break;
                     }
                     break;
+                case "gallery":
+                    switch (action) {
+                        case "add":
+                            break;
+
+                        case "edit":
+
+                            if (pageable != null){
+                                if (id != null){
+                                    Artist artist = artistRepository.getOne(id);
+
+                                    if (artist != null){
+                                        if (galleryRepository.findAllByArtist(artist).size() > 0){
+                                            modelAndView.addObject("artist", artist);
+                                            Page gallery = galleryRepository.findAllByArtist(artist, pageable);
+
+                                            Pagination pgn = new Pagination(gallery, pageable, 5);
+
+                                            modelAndView.addObject("currentPage", pgn.getPageNumber());
+                                            modelAndView.addObject("pageSize", pgn.getPageSize());
+                                            modelAndView.addObject("images", gallery.getContent());
+                                            modelAndView.addObject("pages", pgn.getPages());
+                                        } else {
+                                            isErrorFound = true;
+                                            modelAndView.addObject("goTo", "");
+                                            modelAndView.addObject("error_code", "404");
+                                            modelAndView.addObject("error_context", "Oops ! Gallery is not found.");
+                                            modelAndView.addObject("error_message", "We couldn't find biography with id: " + id);
+
+                                        }
+
+                                    } else {
+                                        isErrorFound = true;
+                                        modelAndView.addObject("error_code", "404");
+                                        modelAndView.addObject("error_context", "Oops ! Gallery is not found.");
+                                        modelAndView.addObject("goTo", "");
+                                        modelAndView.addObject("error_message", "We couldn't find biography with id: " + id);
+
+                                    }
+                                } else {
+                                    isErrorFound = true;
+                                    modelAndView.addObject("error_context", "Oops ! Biography is not found.");
+                                    modelAndView.addObject("error_code", "404");
+                                    modelAndView.addObject("error_message", "We couldn't find biography with id: " + id);
+
+                                    modelAndView.addObject("goTo", "");
+                                }
+                            }
+
+                            break;
+
+                        case "noAction":
+                            if (pageable != null){
+                                Page artists = artistRepository.findAllWhereHasGallery(pageable);
+
+                                Pagination pgn = new Pagination(artists, pageable, 5);
+
+                                modelAndView.addObject("currentPage", pgn.getPageNumber());
+                                modelAndView.addObject("pageSize", pgn.getPageSize());
+                                modelAndView.addObject("artists", artists.getContent());
+                                modelAndView.addObject("pages", pgn.getPages());
+                            }
+
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
                 default:
                     break;
             }
@@ -1022,7 +1090,7 @@ public class LoginController {
             }
 
         }
-        modelAndView.addObject("avatar", "/avatars/" + ((user.getImage() == null)?"default_avatar.png":user.getImage()));
+        modelAndView.addObject("avatar", user.getImage());
 
         return modelAndView;
     }

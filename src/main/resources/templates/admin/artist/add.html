@@ -41,6 +41,13 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="col-sm-2 control-label">Birth Date</label>
+                                <div class="col-sm-10">
+                                    <input type='text' name="birthDate" class="form-control" id='datetimepicker4' />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="col-sm-2 control-label">Biography</label>
                                 <div class="col-sm-10">
                                     <div class="summernote"></div>
@@ -101,6 +108,10 @@
     <link href="/adm/assets/plugins/toastr/toastr.min.css" rel="stylesheet"/>
     <script src="/adm/assets/plugins/toastr/toastr.min.js"></script>
 
+    <link href="/adm/assets/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css"/>
+    <script src="/adm/assets/plugins/moment/moment.js"></script>
+    <script src="/adm/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+
     <script type="text/javascript">
 
         //needs to fix bug
@@ -132,12 +143,15 @@
                 var name = $('#name').val();
                 var avatar = $('input[name="avatar"]').get(0).files[0];
                 var biography = $('.note-editable').html();
+                var birthDate = $('input[name="birthDate"]').val();
+
 
                 var formData = new FormData();
                 formData.append('action', 'add');
                 formData.append('name', name);
                 formData.append('avatar', avatar);
                 formData.append('biography', biography + "");
+                formData.append('birthDate', birthDate);
 
                 if (name.length < 2) {
                     document.getElementById("textmodal").innerHTML = "Name is empty or lesser than 2 characters!";
@@ -192,7 +206,11 @@
                 }
             });
 
-
+            $(function () {
+                $('#datetimepicker4').datetimepicker({
+                    format: 'DD/MM/YYYY'
+                });
+            });
 
             function sendFile(file,editor,welEditable) {
                 data = new FormData();

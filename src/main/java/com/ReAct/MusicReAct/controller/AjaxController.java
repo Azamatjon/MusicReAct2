@@ -58,6 +58,10 @@ public class AjaxController {
     @Autowired
     private AdminStyleRepository adminStyleRepository;
 
+    @Qualifier("galleryRepository")
+    @Autowired
+    private GalleryRepository galleryRepository;
+
     @Qualifier("roleRepository")
     @Autowired
     private RoleRepository roleRepository;
@@ -218,7 +222,7 @@ public class AjaxController {
 
                         userRepository.save(changingUser);
 
-                        map.put("avatar", "/avatars/" + ((changingUser.getImage() == null)?"default_avatar.png":changingUser.getImage()));
+                        map.put("avatar", changingUser.getImage());
                         if (!map.containsKey("status")) map.put("status", "success");
                         map.put("redirect", "/admin/home?goTo=users");
 
@@ -274,7 +278,7 @@ public class AjaxController {
 
                     if (!map.containsKey("status")) map.put("status", "success");
 
-                    map.put("avatar", "/avatars/" + ((user.getImage() == null)?"default_avatar.png":user.getImage()));
+                    map.put("avatar", user.getImage());
                     map.put("firstName", user.getName());
                     map.put("lastName", user.getLastName());
                     map.put("email", user.getEmail());
@@ -425,6 +429,8 @@ public class AjaxController {
                                          @RequestParam(value = "name", required = false) String name,
                                          @RequestParam(value = "biography", required = false) String biography,
                                          @RequestParam(value = "avatar", required = false) MultipartFile avatar,
+                                         @RequestParam(value = "birthDate", required = false) String birthDate,
+
                                          HttpServletRequest request,
                                          HttpServletResponse response
     ) {
@@ -469,6 +475,10 @@ public class AjaxController {
                                 String generatedAvatarName = storageService.storeArtistAvatar(avatar);
                                 artist.setImage(generatedAvatarName);
                             }
+
+                            if (birthDate != null &&birthDate.length() > 0){
+                                artist.setBirthDate(birthDate);
+                            }
                             artistRepository.save(artist);
                             map.put("status", "success");
                         } else {
@@ -497,6 +507,9 @@ public class AjaxController {
                             System.out.println("changing avatar");
                             String generatedAvatarName = storageService.storeArtistAvatar(avatar);
                             artist.setImage(generatedAvatarName);
+                        }
+                        if (birthDate != null &&birthDate.length() > 0){
+                            artist.setBirthDate(birthDate);
                         }
                         artistRepository.save(artist);
                         map.put("status", "success");
@@ -648,7 +661,7 @@ public class AjaxController {
                             Album album = new Album();
                             album.setName(name);
                             album.setArtist(artist);
-
+                            album.setUser(user);
                             if (avatar != null){
                                 System.out.println("changing avatar");
                                 String generatedAvatarName = storageService.storeAlbumAvatar(avatar);
@@ -735,9 +748,9 @@ public class AjaxController {
                     if (user.isAdmin()){
                         Artist artist = artistRepository.getOne(artistId);
                         if (artist != null){
-                            if (artist.getBiography() != null){
+                            if (artist.getBiography() == null){
                                 map.put("status", "error");
-                                map.put("error_code", "Artist already has biography.");
+                                map.put("error_code", "Artist doesn't have biography.");
                             } else {
                                 artist.setBiography(biography);
                                 artistRepository.save(artist);
@@ -824,9 +837,163 @@ public class AjaxController {
 
 
 
+    @RequestMapping(value = "/ajax/gallery", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> galleryAPI(@RequestParam("action") String action,
+                                         @RequestParam(value = "artistId", required = false) Integer artistId,
+                                          @RequestParam(value = "imageId", required = false) Integer imageId,
+                                         HttpServletRequest request,
+                                         HttpServletResponse response
+    ) {
+        HashMap<String, String> map = new HashMap<>();
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByEmail(auth.getName());
+
+        switch (action){
+
+            case "deleteAll":
+                if (artistId != null){
+                    if (user.isAdmin()){
+                        Artist artist = artistRepository.getOne(artistId);
+                        if (artist != null){
+                            List<Gallery> images = galleryRepository.findAllByArtist(artist);
+                            galleryRepository.deleteAll(images);
+
+                            map.put("status", "success");
+                            map.put("redirect", "/admin/home?goTo=gallery");
+
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Artist not found.");
+                        }
+                    } else if (user != null){
+                        Artist artist = artistRepository.getOne(artistId);
+                        if (artist != null){
+                            List<Gallery> images = galleryRepository.findAllByArtistAndUser(artist, user);
+                            galleryRepository.deleteAll(images);
+
+                            map.put("status", "success");
+                            map.put("redirect", "/admin/home?goTo=gallery");
+
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Artist not found.");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "You don't have enough permissions.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "Album id is not found.");
+                }
+
+                break;
+
+            case "delete":
+                if (imageId != null){
+                    if (user.isAdmin()){
+                        Gallery image = galleryRepository.getOne(imageId);
+                        if (image != null){
+                            galleryRepository.delete(image);
+                            map.put("status", "success");
+                            map.put("redirect", "/admin/home?goTo=biographies");
+
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Image not found.");
+                        }
+                    } else if (user != null){
+
+                        Gallery image = galleryRepository.getByIdAndUser(imageId, user);
+                        if (image != null){
+                            galleryRepository.delete(image);
+                            map.put("status", "success");
+
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Image not found.");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "You don't have enough permissions.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "Image id is not found.");
+                }
+
+                break;
+
+
+            default:
+                map.put("status", "error");
+                map.put("error_code", "No such action defined.");
+
+                break;
+        }
+
+        return map;
+    }
 
 
 
+
+    @RequestMapping(value = "/ajax/favorite", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, String> galleryAPI(@RequestParam("action") String action,
+                                          @RequestParam(value = "trackId", required = false) Integer trackId,
+                                          HttpServletRequest request,
+                                          HttpServletResponse response
+    ) {
+        HashMap<String, String> map = new HashMap<>();
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByEmail(auth.getName());
+
+        switch (action){
+            case "common":
+                if (trackId != null){
+                    if (user != null){
+                        Track track = trackRepository.getOne(trackId);
+                        if (track != null){
+                            Set<Track> tracks = user.getFavoriteTracks();
+                            if (tracks.contains(track)){
+                                tracks.remove(track);
+                                map.put("message", "removed");
+                            } else {
+                                tracks.add(track);
+                                map.put("message", "added");
+                            }
+                            userRepository.save(user);
+
+                            map.put("status", "success");
+
+                        } else {
+                            map.put("status", "error");
+                            map.put("error_code", "Track is not found.");
+                        }
+                    } else {
+                        map.put("status", "error");
+                        map.put("error_code", "You don't have enough permissions.");
+                    }
+                } else {
+                    map.put("status", "error");
+                    map.put("error_code", "Track id is not found.");
+                }
+
+                break;
+
+            default:
+                map.put("status", "error");
+                map.put("error_code", "No such action defined.");
+
+                break;
+        }
+
+        return map;
+    }
 
 
     @RequestMapping(value = "/ajax/track", method = RequestMethod.POST)
@@ -1038,7 +1205,7 @@ public class AjaxController {
                         result.put("firstName", us.getName());
                         result.put("lastName", us.getLastName());
                         result.put("role", us.getRoleName());
-                        result.put("imageURL", "/avatars/" + us.getImage());
+                        result.put("imageURL", us.getImage());
                         results.add(result);
                     }
 

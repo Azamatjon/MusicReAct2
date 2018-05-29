@@ -20,6 +20,19 @@
 .padding {
   padding: 18rem 0;
 }
+
+.favorite {
+  display: inline-block;
+  cursor: pointer;
+}
+.favorited {
+  color: #ff0000;
+
+}
+
+.not-favorited {
+  color: #000;
+}
 .paddingBottom {
   padding-bottom: 14rem;
 }

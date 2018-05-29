@@ -18,87 +18,57 @@
             <div class="col-md-12">
                 <div class="panel panel-white">
                     <div class="panel-heading clearfix">
-                        <h4 class="panel-title">Edit Album</h4>
+                        <h4 class="panel-title">Add Event</h4>
                     </div>
                     <div class="panel-body">
-                        <div class="col-md-3 profile-image" style="margin-top: -100px;">
-                            <div class="profile-image-container">
-                                <img th:src="${eAlbum.getImage()}" class="reloadUserAvatar" style="width: 90px; height: 90px;" alt="">
-                            </div>
-                        </div>
-
-                        <form class="form-horizontal" id="editArtist">
-                            <input type="hidden" name="albumId" th:value="${eAlbum.getId()}"/>
+                        <form class="form-horizontal" id="addArtist">
 
                             <div class="form-group">
-                                <label for="name" class="col-sm-2 control-label">Name:</label>
+                                <label for="name" class="col-sm-2 control-label">Title:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" th:value="${eAlbum.getName()}" class="form-control" name="name" id="name" placeholder="Artist Name" >
+                                    <input type="text" class="form-control" name="name" id="name" placeholder="Name" required>
                                 </div>
                             </div>
 
+
                             <div class="form-group">
-                                <label for="avatar" class="col-sm-2 control-label">Change an avatar</label>
+                                <label for="avatar" class="col-sm-2 control-label">Photo</label>
 
                                 <div class="col-sm-10">
                                     <input type="file" name="avatar" accept="image/jpeg,image/png,image/gif" class="form-control" id="avatar" placeholder="Choose an avatar">
-                                    <br/>
-                                    <button type="button" id="deleteAvatar" class="btn btn-danger btn-addon m-b-xs btn-rounded btn-xs pull-right"><i class="fa fa-trash"></i> Delete Avatar</button>
                                 </div>
 
                             </div>
-
-
-                            <input type="hidden" th:value="${eAlbum.getArtist().getId()}" name="selectedArtist"  th:data-name="${eAlbum.getArtist().getName()}" />
-
 
                             <div class="form-group">
                                 <label for="input-folg" class="col-sm-2 control-label">Select artist</label>
                                 <div class="col-sm-10">
                                     <select id="input-folg" class="js-tokenizer-artist js-states form-control" name="save_from" functional="true" tabindex="-1" style="display: none; width: 100%">
-                                    <option th:value="${eAlbum.getArtist().getId()}" th:utext="${eAlbum.getArtist().getName()}" selected></option>
                                     </select>
                                 </div>
                             </div>
 
 
-
-                            <button type="submit" class="btn btn-primary">Update Album Data</button>
-                            <button type="button" class="btn btn-danger" id="deleteArtistModalFocus" data-toggle="modal" data-target="#deleteArtistModal">Delete Account</button>
-                        </form>
-
-
-
-                        <!-- Modal -->
-                        <div class="modal fade" id="deleteArtistModal" tabindex="-1" role="dialog" aria-labelledby="deleteAlbumModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                        <h4 class="modal-title" id="deleteAlbumModalLabel">Deleting Album</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="form-group">
-                                            <p>
-                                                You are about to delete album.
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <form>
-                                        <div class="modal-footer">
-                                            <button type="button" id="cancelDeleteAlbum"class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                            <button type="button" id="confirmDeleteAlbum" th:artistid="${eAlbum.getId()}" class="btn btn-danger">Delete</button>
-                                        </div>
-                                    </form>
-
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Description</label>
+                                <div class="col-sm-10">
+                                    <div class="summernote"></div>
                                 </div>
                             </div>
-                        </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Date & Time</label>
+                                <div class="col-sm-10">
+                                    <input type='text' class="form-control" id='datetimepicker4' />
+                                </div>
+                            </div>
 
 
 
 
 
+                            <button type="submit" class="btn btn-primary">Create Artist</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -127,14 +97,17 @@
         .customsize {
             min-height: 36px;
         }
+
         .select2-search__field {
             width: 100%!important;
         }
+
         #toast-container > div:hover{
             opacity: 1;
             box-shadow: 0px 0px 14px 0px #000;
             cursor: pointer;
         }
+
     </style>
     <script src="/adm/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js"></script>
     <script src="/adm/assets/plugins/summernote-master/summernote.min.js"></script>
@@ -143,22 +116,32 @@
     <link href="/adm/assets/plugins/slidepushmenus/css/component.css" rel="stylesheet" type="text/css"/>
     <link href="/adm/assets/plugins/summernote-master/summernote.css" rel="stylesheet" type="text/css"/>
     <link href="/adm/assets/plugins/bootstrap-colorpicker/css/colorpicker.css" rel="stylesheet" type="text/css"/>
+
+    <link href="/adm/assets/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css"/>
+    <script src="/adm/assets/plugins/moment/moment.js"></script>
+    <script src="/adm/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
     <!--<script src="/adm/assets/js/pages/form-select2.js"></script>-->
-    <script src="/adm/assets/plugins/select2/js/select2.js"></script>
-    <link href="/adm/assets/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
-    <script src="/adm/assets/js/pages/notifications.js"></script>
+   <script src="/adm/assets/js/pages/notifications.js"></script>
     <link href="/adm/assets/plugins/toastr/toastr.min.css" rel="stylesheet"/>
     <script src="/adm/assets/plugins/toastr/toastr.min.js"></script>
 
+    <script src="/adm/assets/js/pages/form-elements.js"></script>
+
     <script type="text/javascript">
+        $(function () {
+            $('#datetimepicker4').datetimepicker({
+                format: 'yyyy-MM-dd hh:mm'
+            });
+        });
         $(document).ready(function() {
+
+
             $('.js-tokenizer-artist').select2({
                 placeholder: 'Please enter any artist name',
                 ajax: {
                     url: "/ajax/liteSearch",
                     dataType: 'json',
                     delay: 250,
-                    tags: true,
                     data: function (params) {
                         return {
                             query: params.term, // search term
@@ -199,15 +182,12 @@
             function formatRepoSelection (repo) {
                 return repo.name;
             }
-
-            var selectedArtistName = $('input[name=selectedArtist]').data('name');
-            $('.select2-selection__rendered').html(selectedArtistName);
-
         });
         //needs to fix bug
         var all_ = true;
         // end
         $(document).ready(function() {
+
             toastr.options = {
                 "closeButton": true,
                 "debug": false,
@@ -227,26 +207,24 @@
             }
 
 
-            $('#editArtist').on('submit', function(){
-                var albumId = $('input[name=albumId]').val();
-                var artistId = $('.js-tokenizer-artist').val();
+            $('#addArtist').on('submit', function(){
 
                 var name = $('#name').val();
                 var avatar = $('input[name="avatar"]').get(0).files[0];
+                var biography = $('.note-editable').html();
+                var artistId = $('.js-tokenizer-artist').val();
 
                 var formData = new FormData();
-                formData.append('action', 'edit');
-                formData.append('artistId', artistId);
-                formData.append('albumId', albumId);
+                formData.append('action', 'add');
                 formData.append('name', name);
                 formData.append('avatar', avatar);
-
+                formData.append('artistId', artistId);
 
                 if (name.length < 2) {
                     document.getElementById("textmodal").innerHTML = "Name is empty or lesser than 2 characters!";
                     document.getElementById("modal_").click();
-                } else if (artistId == null) {
-                    document.getElementById("textmodal").innerHTML = "You haven't choosen artist";
+                } else if (artistId == null){
+                    document.getElementById("textmodal").innerHTML = "You have to choose an artist!";
                     document.getElementById("modal_").click();
                 } else {
 
@@ -258,8 +236,6 @@
                         processData: false,
                         success: function(data){
                             if (data.status == 'success') {
-
-                                $('.reloadUserAvatar').attr("src", data.avatar).trigger("change");
 
                                 toastr["success"]("All entered data were saved successfuly.", "Success");
 
@@ -275,72 +251,8 @@
                             document.getElementById("modal_").click();
                         }
                     });
+
                 }
-                return false;
-            });
-
-
-            $('#deleteArtistModalFocus').on('click', function(){
-
-            });
-
-
-            $('#deleteAvatar').on('click', function(){
-                var albumId = $('input[name=albumId]').val();
-                $.post('/ajax/album', {
-                    action: 'deleteAvatar',
-                    albumId: albumId
-                }, function(data, status) {
-                    if (status == 'success') {
-                        if (data.status == 'success') {
-                            $('.reloadUserAvatar').attr("src", data.avatar).trigger("change");
-
-                            document.getElementById("mySmallModalLabel").innerHTML = "Success!";
-                            document.getElementById("textmodal").innerHTML = "You have successfuly deleted your avatar.";
-                            document.getElementById("modal_").click();
-
-                        } else {
-                            document.getElementById("textmodal").innerHTML = "Error, undefined error occured.";
-                            document.getElementById("modal_").click();
-                        }
-                    } else {
-                        document.getElementById("textmodal").innerHTML = "Error, I can't connect with the server...";
-                        document.getElementById("modal_").click();
-                    }
-                });
-
-                return false;
-            });
-
-
-            $('#confirmDeleteAlbum').on('click', function(){
-                var albumId = $('input[name=albumId]').val();
-                $.post('/ajax/album', {
-                    action: 'delete',
-                    albumId: albumId
-                }, function(data, status) {
-                    if (status == 'success') {
-                        if (data.status == 'success') {
-
-                            $('#cancelDeleteAlbum').click();
-                            toastr["success"]("You have successfuly deleted user profile.", "Success!");
-
-                            setTimeout(goTo, 2000, data.redirect);
-
-                        } else if (data.status == 'error') {
-                            $('#cancelDeleteAlbum').click();
-                            toastr["error"]("Error, " + data.error_code, "Oops!");
-
-                        } else {
-                            $('#cancelDeleteAlbum').click();
-                            toastr["error"]("Error, undefined error occured.", "Oops!");
-                        }
-                    } else {
-                        $('#cancelDeleteAlbum').click();
-                        toastr["error"]("Error, I can't connect with the server...", "Oops!");
-                    }
-                });
-
                 return false;
             });
 
@@ -348,6 +260,143 @@
                 window.location.href = redirect;
             }
 
+
+
+            $('.js-tokenizer-artistg').select2({
+                placeholder: 'Please enter any artist name',
+                ajax: {
+                    url: "/ajax/liteSearch",
+                    dataType: 'json',
+                    delay: 750,
+                    type: 'POST',
+                    data: function(params) {
+                        return {
+                            query: params.term, // search term
+                            option: 'artist'
+                        };
+                    },
+                    processResults: function (data, params) {
+                        // parse the results into the format expected by Select2
+                        // since we are using custom formatting functions we do not need to
+                        // alter the remote JSON data, except to indicate that infinite
+                        // scrolling can be used
+
+                        /* FOR PAGINATION
+                        params.page = params.page || 1;
+                        */
+                        return {
+                            results: data.results,
+                            /* FOR PAGINATION
+                            pagination: {
+                              more: (params.page * 30) < data.results.length
+                            }*/
+
+                        };
+                    },
+                    cache: true
+                },
+                escapeMarkup: function (markup) { return markup; },
+                minimumInputLength: 1,
+                templateResult: formatSelect2ListUser
+            });
+
+
+            function formatSelect2ListUser (repo) {
+                if (repo.loading) return repo.text;
+                if (typeof repo.text !== 'undefined'){
+                    if (repo.id =='~'){
+                        var markup = '<span aria-hidden="true" class="icon-check"></span><b> ' + repo.text + '</b>';
+                    } else {
+                        var markup = '<i class="fa fa-keyboard-o"></i> ' + repo.text ;
+                    }
+                } else {
+                    var markup = '<table class="customsize"><tr><th><img class="img-circle avatar" src="'+repo.imageURL+'" width="36" height="36" alt=""></th><th class="normal_font">Rp2: Ledfsvdbsd  sd<br><i class="silver">Full Name | followers: 22k</i></th></tr></table>';
+                }
+
+                return markup;
+            }
+
+            function formatSelectedItemsUser (repo) {
+                //console.log(repo);
+                var rp = repo.id.split("%_&"); // 1.id 2.followers 3.name
+                if (repo.text == '') {
+                    isVerified = 'true';
+                    name = rp[2];
+                } else {
+                    isVerified = 'false';
+                    name = repo.text
+                }
+                var markup = '<span data-id="'+rp[0]+'" data-verify="'+isVerified+'" data-type="users" data-name="'+name+'" data-followers="'+rp[1]+'" data-private="'+repo.is_private+'">' + name + '</span>';
+                return markup;
+            }
+
+        });
+    </script>
+
+    <script src="/adm/assets/plugins/summernote-master/summernote.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $('.summernote').summernote({
+                height: ($(window).height() - 300),
+                callbacks: {
+                    onImageUpload: function(image) {
+                        uploadImage(image[0]);
+                    }
+                }
+            });
+
+            function sendFile(file,editor,welEditable) {
+                data = new FormData();
+                data.append("action", "add");
+                data.append("image", file);
+                $.ajax({
+                    url: "/ajax/image",
+                    data: data,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    type: 'POST',
+                    success: function(data){
+                        editor.insertImage(welEditable, "http://localhost:8080" + data.filename);
+
+
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.log(textStatus+" "+errorThrown);
+                    }
+                });
+            }
+        });
+
+        function deleteFile(src) {
+            $.ajax({
+                data: {
+                    action: 'delete',
+                    src : src
+                },
+                type: "POST",
+                url: "/ajax/image", // replace with your url
+                cache: false,
+                success: function(resp) {
+                    console.log(resp);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            $('#summernote').summernote({
+                height: "300px",
+                callbacks: {
+                    onImageUpload: function(files) {
+                        uploadFile(files[0]);
+                    },
+
+                    onMediaDelete : function(target) {
+                        // alert(target[0].src)
+                        deleteFile(target[0].src);
+                    }
+                }
+            });
         });
     </script>
 </sc>

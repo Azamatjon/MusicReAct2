@@ -22,4 +22,10 @@ public interface ArtistRepository extends JpaRepository<Artist, Integer> {
 
     Page findAllByBiographyIsNotNull(Pageable pageable);
 
+    @Query("select a from Artist a left join Gallery g on a.id = g.artist WHERE a.id = g.artist group by a.id")
+    Page<Artist> findAllWhereHasGallery(Pageable pageable);
+
+
+    @Query("select a from Artist a where a.name like ?1%")
+    List<Artist> findAllBy(String by);
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
 	<meta charset="UTF-8">
 	<meta name="HandheldFriendly" content="true" />
@@ -77,21 +77,19 @@
 			<div class="about-list clearfix">
 				<span class="about-name">NAME</span>
 				<span class="about-length">LENGTH</span>
-				<span class="about-available">AVAILABLE ON</span>
+				<span class="about-available">Action</span>
 			</div>
-			<div class="trak-item" data-audio="assets/audio/flute.mp3" data-artist="Tensnake" data-thumbnail="assets/img/albums/cover1.jpg" data-id="trak-200">
-				<audio preload="metadata" src="assets/audio/flute.mp3" title="See right through ft. Fiora"></audio>
+			<div class="trak-item" th:data-audio="${track.getListenLink()}" th:data-artist="${track.getArtist().getName()}" th:data-thumbnail="${track.getImage()}" th:data-id="'trak-' + ${track.getId()}" th:each="track: ${favoriteTracks}">
+				<audio preload="metadata" th:src="${track.getListenLink()}" th:title="${track.getName()}"></audio>
 				<div class="additional-button">
 					<div class="center-y-table">
-						<a href="#">
-							<i class="fa fa-headphones"></i>
+						<a th:href="${track.getDownloadLink()}" download>
+							<i class="fa fa-download"></i>
 						</a>
-						<a href="#">
-							<i class="fa fa-apple"></i>
-						</a>
-						<a href="#">
-							<i class="fa fa-soundcloud"></i>
-						</a>
+
+						<div th:data-id="${track.getId()}" th:class="'favorite favorited'">
+							<i class="fa fa-heart"></i>
+						</div>
 					</div>
 				</div>
 				<div class="play-pause-button">
@@ -101,106 +99,11 @@
 				</div>
 				<div class="name-artist">
 					<div class="center-y-table">
-						<h2>
-							Tensnake - See Right Through Ft. Fiora
-						</h2>
+						<h2 th:utext="${track.getArtist().getName() + ' - ' + track.getName()}"> </h2>
 					</div>
 				</div>
-				<time class="trak-duration">
-					00:00
-				</time>
-			</div>
-			<div class="trak-item" data-audio="assets/audio/2.mp3" data-artist="Jack U ft. Kiesza" data-thumbnail="assets/img/albums/cover2.jpg" data-id="trak-201">
-				<audio preload="metadata" src="assets/audio/2.mp3" title="Take You There"></audio>
-				<div class="additional-button">
-					<div class="center-y-table">
-						<a href="#">
-							<i class="fa fa-headphones"></i>
-						</a>
-						<a href="#">
-							<i class="fa fa-apple"></i>
-						</a>
-						<a href="#">
-							<i class="fa fa-soundcloud"></i>
-						</a>
-					</div>
-				</div>
-				<div class="play-pause-button">
-					<div class="center-y-table">
-						<i class="fa fa-play"></i>
-					</div>
-				</div>
-				<div class="name-artist">
-					<div class="center-y-table">
-						<h2>
-							Jack U ft. Kiesza - Take You There
-						</h2>
-					</div>
-				</div>
-				<time class="trak-duration">
-					00:00
-				</time>
-			</div>
-			<div class="trak-item" data-audio="assets/audio/3.mp3" data-artist="Bob Sinclair" data-thumbnail="assets/img/albums/cover3.jpg" data-id="trak-201">
-				<audio preload="metadata" src="assets/audio/3.mp3" title="Cinderella"></audio>
-				<div class="additional-button">
-					<div class="center-y-table">
-						<a href="#">
-							<i class="fa fa-headphones"></i>
-						</a>
-						<a href="#">
-							<i class="fa fa-apple"></i>
-						</a>
-						<a href="#">
-							<i class="fa fa-soundcloud"></i>
-						</a>
-					</div>
-				</div>
-				<div class="play-pause-button">
-					<div class="center-y-table">
-						<i class="fa fa-play"></i>
-					</div>
-				</div>
-				<div class="name-artist">
-					<div class="center-y-table">
-						<h2>
-							Bob Sinclair - Cinderella
-						</h2>
-					</div>
-				</div>
-				<time class="trak-duration">
-					00:00
-				</time>
-			</div>
-			<div class="trak-item" data-audio="assets/audio/4.mp3" data-artist="Yuna" data-thumbnail="assets/img/albums/cover4.jpg" data-id="trak-201">
-				<audio preload="metadata" src="assets/audio/4.mp3" title="Lullabies"></audio>
-				<div class="additional-button">
-					<div class="center-y-table">
-						<a href="#">
-							<i class="fa fa-headphones"></i>
-						</a>
-						<a href="#">
-							<i class="fa fa-apple"></i>
-						</a>
-						<a href="#">
-							<i class="fa fa-soundcloud"></i>
-						</a>
-					</div>
-				</div>
-				<div class="play-pause-button">
-					<div class="center-y-table">
-						<i class="fa fa-play"></i>
-					</div>
-				</div>
-				<div class="name-artist">
-					<div class="center-y-table">
-						<h2>
-							Yuna - Lullabies
-						</h2>
-					</div>
-				</div>
-				<time class="trak-duration">
-					00:00
+				<time class="trak-duration" th:utext="${track.getFormattedDuration()}">
+
 				</time>
 			</div>
 		</div>
@@ -213,41 +116,56 @@
 			<div class="rightTopHeader">
 				<div class="cartContainer">
 					<div class="myCart">
-						<ul>
-							<li class="cartTitle"><img src="assets/img/shop/cart.png" alt=""><span>0</span></li>
+						<ul th:if="${isLoggedIn}">
+							<li class="cartTitle">PROFILE</li>
+						</ul>
+						<ul th:if="${!isLoggedIn}">
+							<li class="cartTitle">LOGIN</li>
 						</ul>
 					</div><!-- end myCart -->
 					<div class="cartParent">
 						<div class="cartItems">
-							<ul>
+							<ul th:if="${isLoggedIn}">
 								<li>
-									<div class="priceCart">
-										<img src="assets/img/shop/cart1.jpg" alt="">
-										<a href="#">Hoodie T.Brothers <!-- <span><i class="fa fa-times"></i></span> --></a>
-										<p>Price:&nbsp;<span>&pound;15,99</span></p>
-										<p class="quantity">Quantity: <span>1</span></p>
+									<style>
+										.customProfile {
+											padding: 0;
+											margin: 0;
+											display: block;
+											font-size: 1.5rem;
+											font-family: 'Karla', sans-serif;
+											font-weight: 600;
+											color: #525252;
+											position: relative;
+										}
+									</style>
+									<div class="priceCart" >
+										<input type="hidden" id="userId" th:value="${user.getId()}">
+										<img th:src="${user.getImage()}" alt="">
+										<div class="customProfile" th:utext="${user.getName() + ' ' + user.getLastName()}"> </div>
+										<p>Role: <span th:utext="${user.getRoleName()}"></span></p>
+										<p>Tracks: <span th:utext="${userTracksNumber}"></span></p>
 									</div>
 								</li>
-								<li>
-									<div class="priceCart">
-										<img src="assets/img/shop/cart2.jpg" alt="">
-										<a href="#">Hoodie T.Brothers <!-- <span><i class="fa fa-times"></i></span> --></a>
-										<p>Price:&nbsp;<span>&pound;15,99</span></p>
-										<p class="quantity">Quantity: <span>1</span></p>
-									</div>						
-								</li>
-								<li>
-									<div class="total">
-										<a href="#">Sub Total<span>31,98&pound;</span></a>
-									</div>
-								</li>
+
 							</ul>
-							<button type="submit" class="single_add_to_cart_button button alt buttonView">
-												View Cart
+							&nbsp;
+							<button th:if="${isLoggedIn}" href="/admin/home" class="single_add_to_cart_button button alt customLink buttonCheck">
+								Control Panel
 							</button>
-							<button type="submit" class="single_add_to_cart_button button alt buttonCheck">
-								Checkout
+							<button th:if="${isLoggedIn}"href="/logout"  class="single_add_to_cart_button button alt customLink buttonCheck">
+								Logout
 							</button>
+
+							<button th:if="${!isLoggedIn}"href="/registration"  class="single_add_to_cart_button button alt customLink buttonCheck">
+								Registration
+							</button>
+							<button th:if="${!isLoggedIn}" href="/login" class="single_add_to_cart_button button alt customLink buttonCheck">
+								Login
+							</button>
+
+
+
 						</div><!-- end cartItems -->
 					</div><!-- end cartParent -->
 				</div><!--end cartContainer  -->
@@ -258,7 +176,7 @@
 					<span class="span-2"></span>
 					<span class="span-3"></span>
 				</a>
-			</div><!-- end rightTopHeader -->
+			</div>
 		</div><!-- end header -->
 		<!-- Menu Fixed Container -->
 		<div class="menu-fixed-container">
@@ -273,142 +191,71 @@
 				<ul>
 					<!-- Menu Fixed Item -->
 					<li>
-						<a href="index.html">
-							home
-						</a>
-						<ul class="sub-menu">
-							<!-- Menu Fixed Sub Menu Item -->
-							<li>
-								<a href="index.html">
-									home star
-								</a>
-							</li>
-							<li>
-								<a href="index-royal-slider.html">
-									home royal slider
-								</a>
-							</li>
-							<!-- Menu Fixed Sub Menu Item -->
-							<li>
-								<a href="index-video.html">
-									home video 
-								</a>
-							</li>
-						</ul>
-					</li>
-					<li>
-						<a href="albumsGrid.html">
-							discography
-						</a>
-						<ul class="sub-menu">
-							<!-- Menu Fixed Sub Menu Item -->
-							<li>
-								<a href="albumsFullBackground.html">
-									albums full background
-								</a>
-							</li>
-							<!-- Menu Fixed Sub Menu Item -->
-							<li>
-								<a href="albumsGrid.html">
-									albums grid
-								</a>
-							</li>
-							<!-- Menu Fixed Sub Menu Item -->
-							<li>
-								<a href="albumsSingle1.html">
-									album description
-								</a>
-							</li>
-						</ul>
-					</li>
-					<!-- Menu Fixed Item -->
-					<li>
-						<a href="events.html">
-							events
+						<a href="/">
+							Home
 						</a>
 					</li>
 					<!-- Menu Fixed Item -->
 					<li>
 						<a href="#">
-							blog
+							Artists
 						</a>
 						<ul class="sub-menu">
 							<!-- Menu Fixed Sub Menu Item -->
 							<li>
-								<a href="blogGrid.html">
-									blog grid
+								<a href="/artists">
+									All Artists
 								</a>
 							</li>
 							<!-- Menu Fixed Sub Menu Item -->
 							<li>
-								<a href="blogSidebarRight.html">
-									blog sidebar
-								</a>
-							</li>
-							<!-- Menu Fixed Sub Menu Item -->
-							<li>
-								<a href="blogSingle.html">
-									blog single
+								<a href="/artists/top">
+									Top Artists
 								</a>
 							</li>
 						</ul>
 					</li>
-					<!-- Menu Fixed Item -->
+
 					<li>
 						<a href="#">
-							gallery
+							Albums
 						</a>
 						<ul class="sub-menu">
 							<!-- Menu Fixed Sub Menu Item -->
 							<li>
-								<a href="galleryGrid.html">
-									albums grid
+								<a href="/albums">
+									All Albums
 								</a>
 							</li>
 							<!-- Menu Fixed Sub Menu Item -->
 							<li>
-								<a href="galleryScroll.html">
-									albums scroll
-								</a>
-							</li>
-							<!-- Menu Fixed Sub Menu Item -->
-							<li>
-								<a href="gallerySingle.html">
-									gallery single
+								<a href="/albums/top">
+									Top Albums
 								</a>
 							</li>
 						</ul>
 					</li>
 					<!-- Menu Fixed Item -->
-					<li>
-						<a href="#">
-							Other Pages
+
+					<li th:if="${isLoggedIn}">
+						<a href="/admin/home">
+							Contorol Panel
 						</a>
-						<ul class="sub-menu">
-							<!-- Menu Fixed Sub Menu Item -->
-							<li>
-								<a href="biography.html">
-									Biography
-								</a>
-							</li>
-							<!-- Menu Fixed Sub Menu Item -->
-							<li>
-								<a href="video.html">
-									Video
-								</a>
-							</li>
-						</ul>
 					</li>
-					<!-- Menu Fixed Item -->
-					<li>
-						<a href="contact.html">
-							contact
+					<li th:if="${!isLoggedIn}">
+						<a href="/login">
+							Login
+						</a>
+					</li>
+					<li th:if="${!isLoggedIn}">
+						<a href="/registration">
+							Registration
 						</a>
 					</li>
 					<!-- Menu Fixed Item -->
-					<li>
-						<a href="shop.html">
-							shop
+					<li th:if="${isLoggedIn}">
+						<a href="/logout">
+							logout
 						</a>
 					</li>
 				</ul>
@@ -468,59 +315,25 @@
 				<div class="col-sm-12">
 					<div class="sectionTitle paddingBottom">
 						<span class="heading-t3"></span>
-						<h2><a href="albumsFullBackground.html">Discography</a></h2>
+						<h2><a href="/albums">Discography</a></h2>
 						<span class="heading-b3"></span>
 					</div><!-- end sectionTtile -->
 				</div><!-- end col-sm-12 -->
 			</div>
 			<div class="list-albums">
 				<ul class="list-feature col-md-12 col-xs-12 col-sm-12">
-					<li class="col-md-3 col-sm-3 col-xs-12">
+					<li class="col-md-3 col-sm-3 col-xs-12" th:each="album: ${albums}">
 						<div class="album-icon">
 							<span class="thumbs-album">
-								<a href="albumsSingle1.html"><img width="270" height="270" src="assets/img/content/albumCover.png" class="attachment-album-thumbnail wp-post-image" alt="album-cover-1"></a>
+								<a th:href="'/album?id=' + ${album.getId()}"><img style="width: 270px; height: 270px;" th:src="${album.getImage()}" class="attachment-album-thumbnail wp-post-image" alt="album-cover-1"></a>
 							</span>
-							<span class="disk"></span>
+							<span class="disk" th:style="'background: url(' + ${album.getImage()} + ') no-repeat center center; border-radius: 100px;  background-size: cover; '"></span>
 						</div><!-- END ALBUM ICON -->
 						<div class="name">
-							<h3>Noon Xoxo</h3>						
-							<p>Chillout</p>								
+							<h3 th:utext="${album.getName()}"></h3>
+							<p><a th:href="'artist?id=' + ${album.getArtist().getId()}" th:utext="${album.getArtist().getName()}"></a> </p>
 						</div><!-- end name -->
 					</li>
-									
-					<li class="col-md-3 col-sm-3 col-xs-12">
-						<div class="album-icon albumIcon1">
-							<span class="thumbs-album">
-								<a href="albumsSingle3.html"><img width="270" height="270" src="assets/img/content/albumCover1.png" class="attachment-album-thumbnail wp-post-image" alt="album-cover-1"></a>
-							</span>
-							<span class="disk"></span>
-						</div>
-						<div class="name">
-							<h3>Stunt Vibe</h3>									<p>Chillout</p>								
-						</div>
-						</li>
-						<li class="col-md-3 col-sm-3 col-xs-12">
-							<div class="album-icon albumIcon2">
-								<span class="thumbs-album">
-									<a href="albumsSingle4.html"><img width="270" height="270" src="assets/img/content/albumCover2.png" class="attachment-album-thumbnail wp-post-image" alt="album-cover-1"></a>
-									</span>
-								<span class="disk"></span>
-							</div>
-							<div class="name">
-								<h3>Strange Clouds</h3>								<p>Chillout</p>								
-							</div>
-						</li>
-						<li class="col-md-3 col-sm-3 col-xs-12">
-							<div class="album-icon albumIcon3">
-								<span class="thumbs-album">
-									<a href="albumsSingle2.html"><img width="270" height="270" src="assets/img/content/albumCover3.png" class="attachment-album-thumbnail wp-post-image" alt="album-cover-1"></a>
-									</span>
-								<span class="disk"></span>
-							</div>
-							<div class="name">
-								<h3>Natural Earth</h3>								<p>Chillout</p>								
-							</div>
-						</li>	
 				</ul>
 			</div><!-- end list-albums -->
 		</div><!-- end container -->
@@ -1018,8 +831,66 @@
 			jQuery(function() {
 				jQuery('input, textarea').placeholder();
 			});
+
 		</script>
 	<![endif]-->
+
+	<script>
+        $( document ).ready(function() {
+            $('button.customLink').click(function () {
+
+                console.log("clicked");
+
+                var linkToGo = $(this).attr('href');
+                window.location.href = linkToGo;
+            });
+
+
+            $('.favorite').on('click', function(){
+
+                var thatObj = $(this);
+                var userId = $('#userId').val();
+                var trackId = $(this).data('id');
+
+                var formData = new FormData();
+                formData.append('action', 'common');
+                formData.append('userId', userId);
+                formData.append('trackId', trackId);
+
+                if (userId == null) {
+                    alert("You haven't logged in yet");
+                } else {
+                    $.ajax({
+                        url: '/ajax/favorite',
+                        type: 'post',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function(data){
+                            if (data.status == 'success') {
+                                if (data.message == 'added'){
+                                    thatObj.removeClass("not-favorited");
+                                    thatObj.addClass("favorited");
+								} else if (data.message == 'removed') {
+                                    thatObj.removeClass("favorited");
+                                    thatObj.addClass("not-favorited");
+								}
+                            } else if (data.status == 'error'){
+                                alert(data.error_code);
+                            } else {
+                                alert("Some undefined error occured.");
+                            }
+                        },
+                        error: function(){
+                            alert("Error, I can't connect with the server...");
+                        }
+                    });
+
+                }
+                return false;
+            });
+        });
+	</script>
 	<!-- ================================================== -->
 	<!-- =============== END JQUERY SCRIPTS ================ -->
 	<!-- ================================================== -->

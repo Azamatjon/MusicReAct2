@@ -35,6 +35,4 @@ public class Role {
     public void setDefault(boolean aDefault) {
         isDefault = aDefault;
     }
-
-
 }

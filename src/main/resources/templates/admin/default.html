@@ -269,15 +269,13 @@
                 </li>
                 <li class="droplink">
                     <a href="#" class="waves-effect waves-button">
-                        <span class="menu-icon glyphicon glyphicon-bullhorn"></span>
-                        <p>Events</p>
+                        <span class="menu-icon glyphicon glyphicon-camera"></span>
+                        <p>Gallery</p>
                         <span class="arrow"></span>
                     </a>
                     <ul class="sub-menu">
-                        <li><a href="/admin/home?goTo=events">All Events</a></li>
-                        <li><a href="/admin/home?goTo=events&action=past">Past Events</a></li>
-                        <li><a href="/admin/home?goTo=events&action=coming">Coming Soon Events</a></li>
-                        <li><a href="/admin/home?goTo=events&action=add&action=add">Add</a></li>
+                        <li><a href="/admin/home?goTo=gallery">All Galleries</a></li>
+                        <li><a href="/admin/home?goTo=gallery&action=add">Add Gallery</a></li>
                     </ul>
                 </li>
             </ul>
@@ -388,6 +386,22 @@
                 </element>
                 <element th:case="'null'">
                     <article th:replace="admin/event/all:: content"></article>
+                </element>
+                <element th:case="*">
+                    <article th:replace="admin/errorPage:: content"></article>
+                </element>
+            </sw>
+        </article>
+        <article th:case="'gallery'" >
+            <sw th:switch="${action}">
+                <element th:case="'add'">
+                    <article th:replace="admin/gallery/add:: content"></article>
+                </element>
+                <element th:case="'edit'">
+                    <article th:replace="admin/gallery/edit:: content"></article>
+                </element>
+                <element th:case="'null'">
+                    <article th:replace="admin/gallery/all:: content"></article>
                 </element>
                 <element th:case="*">
                     <article th:replace="admin/errorPage:: content"></article>
@@ -600,6 +614,22 @@
             </element>
             <element th:case="'null'">
                 <article th:replace="admin/event/all:: endScript"></article>
+            </element>
+            <element th:case="*">
+                <article th:replace="admin/errorPage:: endScript"></article>
+            </element>
+        </sw>
+    </article>
+    <article th:case="'gallery'" >
+        <sw th:switch="${action}">
+            <element th:case="'add'">
+                <article th:replace="admin/gallery/add:: endScript"></article>
+            </element>
+            <element th:case="'edit'">
+                <article th:replace="admin/gallery/edit:: endScript"></article>
+            </element>
+            <element th:case="'null'">
+                <article th:replace="admin/gallery/all:: endScript"></article>
             </element>
             <element th:case="*">
                 <article th:replace="admin/errorPage:: endScript"></article>

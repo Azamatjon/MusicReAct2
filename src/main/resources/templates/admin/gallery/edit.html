@@ -23,7 +23,10 @@
             <div class="col-md-12">
                 <div class="panel panel-white">
                     <div class="panel-heading clearfix">
-                        <h4 class="panel-title">Hover rows</h4>
+                        <h4 class="panel-title" th:utext="${artist.getName()}"></h4>
+                        <button type="button" class="btn btn-danger AllDelete pull-right" data-toggle="modal" data-target="#deleteAllModal">
+                            Delete All
+                        </button>
                     </div>
                     <div class="panel-body">
                         <table class="table table-hover">
@@ -31,28 +34,20 @@
                             <tr>
                                 <th>#</th>
                                 <th>Image</th>
-                                <th>Name</th>
-                                <th># Tracks</th>
-                                <th># Albums</th>
+                                <th>User</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
-                            <tbody th:each="artist : ${artists}" th:remove="tag">
+                            <tbody th:each="image : ${images}" th:remove="tag">
                             <tr>
-                                <th scope="row" th:text="${artist.getId()}">*</th>
-                                <td><img th:src="${artist.getImage()}" class="img-circle small-img" alt=""></td>
-                                <td th:text="${artist.getName()}"></td>
-                                <td th:text="${trackRepository.findAllByArtistAndIsVerified(artist, 1).size()}"></td>
-                                <td th:text="${albumRepository.findAllByArtist(artist).size()}"></td>
-                                <td><div class="btn-group m-b-sm">
-                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                        Action <span class="caret"></span>
+                                <th scope="row" th:text="${image.getId()}">*</th>
+                                <td><a th:href="${image.getImage()}" target="_blank"><img th:src="${image.getImage()}" class="img-circle small-img" alt=""></a> </td>
+                                <td th:text="${image.getUser().getName() + ' ' + image.getUser().getLastName()}"></td>
+                                <td>
+                                    <button type="button" class="btn btn-danger biographyDelete" data-toggle="modal" data-target="#deleteBiographyModal" th:imageid="${image.getId()}">
+                                        Delete
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                        <li><a th:href="'/admin/home?goTo=artists&action=edit&id=' + ${artist.getId()}">Edit</a></li>
-                                        <li><a href="#" data-toggle="modal" data-target="#deleteArtistModal" class="artistDelete" th:artistid="${artist.getId()}">Delete</a></li>
-                                    </ul>
-                                </div></td>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -66,23 +61,48 @@
                         </div>
 
                         <!-- Modal -->
-                        <div class="modal fade" id="deleteArtistModal" tabindex="-1" role="dialog" aria-labelledby="deleteArtistModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="deleteBiographyModal" tabindex="-1" role="dialog" aria-labelledby="deleteBiographyModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                        <h4 class="modal-title" id="deleteArtistModalLabel">Deleting User Account</h4>
+                                        <h4 class="modal-title" id="deleteBiographyModalLabel">Deleting Artist Gallery Image</h4>
                                     </div>
                                     <div class="modal-body">
                                         <div class="form-group">
                                             <p>
-                                                You are about to delete artist.
+                                                You are about to delete gallery image of artist.
                                             </p>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" id="cancelDeleteArtist"class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                        <button type="button" id="confirmDeleteArtist" artistid="none" class="btn btn-danger">Delete</button>
+                                        <button type="button" id="cancelDeleteBiography"class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                        <button type="button" id="confirmDeleteBiography" biographyid="none" class="btn btn-danger">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="deleteAllModal" tabindex="-1" role="dialog" aria-labelledby="deleteAllModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="deleteAllModalLabel">Deleting Artist Gallery</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <p>
+                                                You are about to delete all gallery of artist.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" id="cancelDeleteAll"class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                        <button type="button" id="confirmDeleteAll" th:artistid="${artist.getId()}" th:userid="${(user.isAdmin()) ? 'none' : user.getId()}" class="btn btn-danger">Delete</button>
                                     </div>
                                 </div>
                             </div>
@@ -167,33 +187,33 @@
             }
 
 
-            $('.artistDelete').on('click', function(){
+            $('.biographyDelete').on('click', function(){
 
-                var artistId = $(this).attr('artistid');
-                $('#confirmDeleteArtist').attr('artistid', artistId);
+                var imageId = $(this).attr('imageid');
+                $('#confirmDeleteBiography').attr('imageId', imageId);
 
             });
 
 
 
-            $('#confirmDeleteArtist').on('click', function(){
+            $('#confirmDeleteBiography').on('click', function(){
 
-                var artistId = $(this).attr('artistid');
+                var imageId = $(this).attr('imageid');
 
-                if (artistId == 'none') {
-                    document.getElementById("textmodal").innerHTML = "Invalid Artist ID";
+                if (imageId == 'none') {
+                    document.getElementById("textmodal").innerHTML = "Invalid Image ID";
                     document.getElementById("modal_").click();
                 } else {
 
-                    $.post('/ajax/artist', {
+                    $.post('/ajax/gallery', {
                         action: 'delete',
-                        artistId: artistId
+                        imageId: imageId
                     }, function(data, status) {
 
                         if (status == 'success') {
                             if (data.status == 'success') {
                                 $('#cancelDeleteArtist').click();
-                                toastr["success"]("Artist was deleted successfuly.", "Success");
+                                toastr["success"]("Artist gallery was deleted successfuly.", "Success");
 
                                 setTimeout(reload, 1500);
                             }  else if (data.status == 'error') {
@@ -215,8 +235,54 @@
                 return false;
             });
 
+
+            $('#confirmDeleteAll').on('click', function(){
+
+                var artistId = $(this).attr('artistid');
+                var userId = ($(this).attr('userid') != 'none') ? $(this).attr('userid') : null;
+
+                if (artistId == 'none') {
+                    document.getElementById("textmodal").innerHTML = "Invalid Artist ID";
+                    document.getElementById("modal_").click();
+                } else {
+
+                    $.post('/ajax/gallery', {
+                        action: 'deleteAll',
+                        artistId: artistId,
+                        userId: userId
+                    }, function(data, status) {
+
+                        if (status == 'success') {
+                            if (data.status == 'success') {
+                                $('#cancelDeleteArtist').click();
+                                toastr["success"]("Artist gallery was deleted successfuly.", "Success");
+
+                                setTimeout(goTo, 1500, data.redirect);
+                            }  else if (data.status == 'error') {
+                                $('#cancelDeleteArtist').click();
+                                toastr["error"]("Error. " + data.error_code, "Oops");
+
+                            } else {
+                                $('#cancelDeleteArtist').click();
+                                toastr["error"]("Error. Something went wrong.", "Oops");
+                            }
+                        } else {
+                            $('#cancelDeleteArtist').click();
+                            document.getElementById("submit").disabled = false;
+                            document.getElementById("textmodal").innerHTML = "Error, I can't connect with the server...";
+                            document.getElementById("modal_").click();
+                        }
+                    });
+                }
+                return false;
+            });
+
             function reload() {
                 location.reload();
+            }
+
+            function goTo(redirect) {
+                location.href = redirect;
             }
 
         });

@@ -38,6 +38,15 @@ public class Track {
     @Column(name = "year")
     private int year;
 
+    @Column(name = "views", nullable = false)
+    private int views = 0;
+
+    @Column(name = "listened", nullable = false)
+    private int listened = 0;
+
+    @Column(name = "downloads", nullable = false)
+    private int downloads = 0;
+
     @ManyToOne(targetEntity = Artist.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = true, name = "artist_id")
     private Artist artist;
@@ -160,5 +169,54 @@ public class Track {
 
     public String getFormattedSize() {
         return (String.format("%.2f", ((size > 0) ? (size / 1024.0 / 1024.0) : 0.0)) + " MB");
+    }
+
+
+    public String getImage() {
+        if (album != null) {
+            return album.getImage();
+        } else {
+            return "/albumImages/default_avatar.png";
+        }
+    }
+
+    public String getListenLink() {
+        return "/listenMusic/" + fileName;
+    }
+
+    public String getDownloadLink() {
+        return "/downloadMusic/" + fileName;
+    }
+
+    public int getViews() {
+        return views;
+    }
+
+    public void setViews(int views) {
+        this.views = views;
+    }
+
+    public void incrementViews(int views) {
+        this.views++;
+    }
+
+    public void setListened(int listened) {
+        this.listened = listened;
+    }
+
+    public void incrementListened() {
+        this.listened++;
+    }
+
+    public int getDownloads() {
+        return downloads;
+    }
+
+    public void setDownloads(int downloads) {
+        this.downloads = downloads;
+    }
+
+    public void incrementDownloads() {
+        this.downloads++;
     }
 }

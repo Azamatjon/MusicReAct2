@@ -45,8 +45,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(bCryptPasswordEncoder);
     }
 
-
-
     /*
     * .
                 authorizeRequests()

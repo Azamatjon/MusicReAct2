@@ -1,5 +1,7 @@
 package com.ReAct.MusicReAct.repository;
 
+import com.ReAct.MusicReAct.model.Album;
+import com.ReAct.MusicReAct.model.Artist;
 import com.ReAct.MusicReAct.model.Track;
 import com.ReAct.MusicReAct.model.User;
 import org.springframework.data.domain.Page;
@@ -16,5 +18,13 @@ public interface TrackRepository extends JpaRepository<Track, Integer> {
 
     List<Track> findAllByUserAndIsVerified(User user, int i);
     Page<Track> findAllByIsVerified(int i, Pageable pageable);
+
+    List<Track> findAllByAlbumAndIsVerified(Album album, int i);
+
+    List<Track> findAllByArtistAndIsVerified(Artist artist, int i);
+
+    Track findByFileName(String fileName);
+
+    List<Track> findTop10ByArtistAndIsVerifiedOrderByIdDesc(Artist artist, int i);
 
 }

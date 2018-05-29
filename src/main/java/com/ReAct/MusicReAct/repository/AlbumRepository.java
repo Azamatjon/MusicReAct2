@@ -12,4 +12,6 @@ public interface AlbumRepository extends JpaRepository<Album, Integer> {
         Album getByNameAndArtist(String name, Artist artist);
 
         List<Album> findAllByArtist(Artist artist);
+
+        List<Album> findTop4ByOrderByIdDesc();
 }

@@ -1,8 +1,13 @@
 package com.ReAct.MusicReAct.model;
 
 
+import org.jsoup.Jsoup;
+
 import javax.persistence.*;
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Set;
 
 @Entity
@@ -61,7 +66,7 @@ public class Artist {
     }
 
     public String getImage() {
-        return "/artistImages/" + ((image != null)?image:"default_avatar.png");
+        return "/artistImages/" + ((image != null)?image:"default_avatar.jpg");
     }
 
     public void setImage(String image) {
@@ -96,8 +101,20 @@ public class Artist {
         return birthDate;
     }
 
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
+    public String getFormattedBirthDate() {
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        return (birthDate != null) ? df.format(birthDate) : "";
+    }
+
+    public void setBirthDate(String birthDate)
+    {
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            this.birthDate = new Date(df.parse(birthDate).getTime());
+        } catch (ParseException e) {
+            System.out.println(e);
+        }
+
     }
 
     public int getNumberOfTracks(){
@@ -107,4 +124,12 @@ public class Artist {
     public int getNumberOfAlbums(){
         return albums.size();
     }
+
+    public String getShortBiography(int i){
+        String separatedBiography = (getBiography() != null) ? Jsoup.parse(getBiography()).text():"";
+        return (separatedBiography.length() > i) ? separatedBiography.substring(0,i) + "...":(getBiography()!= null || !separatedBiography.isEmpty())?separatedBiography:null;
+
+    }
+
+
 }

@@ -6,8 +6,12 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.*;
 
+import com.ReAct.MusicReAct.model.Artist;
+import com.ReAct.MusicReAct.model.Gallery;
 import com.ReAct.MusicReAct.model.Track;
 import com.ReAct.MusicReAct.model.User;
+import com.ReAct.MusicReAct.repository.ArtistRepository;
+import com.ReAct.MusicReAct.repository.GalleryRepository;
 import com.ReAct.MusicReAct.repository.TrackRepository;
 import com.ReAct.MusicReAct.service.StorageService;
 import com.ReAct.MusicReAct.service.UserService;
@@ -49,6 +53,14 @@ public class UploadController {
     @Qualifier("trackRepository")
     @Autowired
     TrackRepository trackRepository;
+
+    @Qualifier("artistRepository")
+    @Autowired
+    private ArtistRepository artistRepository;
+
+    @Qualifier("galleryRepository")
+    @Autowired
+    private GalleryRepository galleryRepository;
 
     @GetMapping("/upload")
     public String listUploadedFiles(Model model) {
@@ -199,15 +211,93 @@ public class UploadController {
 
 
 
-
-
-
-
-
-
-    @GetMapping("/musics/{filename:.+}")
+    @PostMapping("/galleryUpload")
     @ResponseBody
-    public ResponseEntity<Resource> getMusic(@PathVariable String filename) {
+    public Map<String, String>  mp3Upload(HttpServletResponse response,
+                                          @RequestParam(value = "file", required = false) MultipartFile file, @RequestParam(value = "artistId", required = false) Integer artistId) {
+        HashMap<String, String> map = new HashMap<>();
+
+        ArrayList<String> allowedMusicMimeTypes = new ArrayList<>(Arrays.asList("image/gif", "image/jpeg", "image/jpg", "image/pjpeg", "image/png"));
+
+        response.setStatus(403);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userService.findUserByEmail(auth.getName());
+
+        if (user != null) {
+            Artist artist = artistRepository.getOne(artistId);
+            if (artistId != null && artist != null){
+                if (file.getSize() > 7340032){
+                    map.put("error", "Image size is too big");
+                } else if (!allowedMusicMimeTypes.contains(file.getContentType())) {
+                    map.put("error", "File must be in image format.");
+                } else {
+                    response.setStatus(200);
+
+                    Gallery gallery = new Gallery();
+
+                    String generatedTrackName = storageService.storeGallery(file);
+                    gallery.setFileName(generatedTrackName);
+
+                    gallery.setArtist(artist);
+                    gallery.setUser(user);
+
+                    galleryRepository.save(gallery);
+                    map.put("error", "success");
+                }
+            } else {
+                map.put("error", "Artist is not found");
+            }
+
+        } else {
+            map.put("error", "You haven't authorized yet.");
+        }
+
+        return map;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @GetMapping("/downloadMusic/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> downloadMusic(@PathVariable String filename) {
+
+        Track track = trackRepository.findByFileName(filename);
+        track.incrementDownloads();
+        trackRepository.save(track);
+
+        Resource file = storageService.loadMusic(filename);
+        String mimeType = "";
+        try {
+            mimeType = Files.probeContentType(file.getFile().toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + track.getArtist().getName() + "_-_" + track.getName() + "_(MusicReact.net)" + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, mimeType)
+                .body(file);
+    }
+
+
+    @GetMapping("/listenMusic/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> listenMusic(@PathVariable String filename) {
+
+        Track track = trackRepository.findByFileName(filename);
+        track.incrementListened();
+        trackRepository.save(track);
+
         Resource file = storageService.loadMusic(filename);
         String mimeType = "";
         try {
@@ -241,6 +331,24 @@ public class UploadController {
     @ResponseBody
     public ResponseEntity<Resource> getAlbumImage(@PathVariable String filename) {
         Resource file = storageService.loadAlbumAvatar(filename);
+        String mimeType = "";
+        try {
+            mimeType = Files.probeContentType(file.getFile().toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "filename=\"" + file.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, mimeType)
+                .body(file);
+    }
+
+
+
+    @GetMapping("/galleryImages/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getGalleryImage(@PathVariable String filename) {
+        Resource file = storageService.loadGallery(filename);
         String mimeType = "";
         try {
             mimeType = Files.probeContentType(file.getFile().toPath());

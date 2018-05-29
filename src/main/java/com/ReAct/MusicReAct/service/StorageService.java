@@ -28,9 +28,11 @@ public class StorageService {
     public static final Path rootLocationImages = Paths.get("uploads/images");
     public static final Path rootLocationMusics = Paths.get("uploads/musics");
     public static final Path rootLocationVideos = Paths.get("uploads/videos");
+    public static final Path rootLocationGallery = Paths.get("uploads/gallery");
+
     RandomString randomName = new RandomString(20);
 
-    ArrayList<String> allowedImageMimeTypes = new ArrayList<>(Arrays.asList("image/gif", "image/jpeg", "image/png"));
+    ArrayList<String> allowedImageMimeTypes = new ArrayList<>(Arrays.asList("image/gif", "image/jpeg", "image/png", "image/jpg", "image/pjpeg"));
     ArrayList<String> allowedVideoMimeTypes = new ArrayList<>(Arrays.asList("video/x-flv", "video/mp4", "video/3gpp", "video/quicktime", "video/x-msvideo"));
     ArrayList<String> allowedMusicMimeTypes = new ArrayList<>(Arrays.asList("audio/mpeg", "audio/mp3"));
 
@@ -56,6 +58,17 @@ public class StorageService {
             return randomizedFileName;
         } catch (Exception e) {
             throw new RuntimeException("Failed upload avatar!"  + e.getMessage());
+        }
+    }
+
+
+    public String storeGallery(MultipartFile file){
+        try {
+            String randomizedFileName = getRandomizedName(file);
+            Files.copy(file.getInputStream(), this.rootLocationGallery.resolve(randomizedFileName));
+            return randomizedFileName;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed upload gallery!"  + e.getMessage());
         }
     }
 
@@ -122,6 +135,22 @@ public class StorageService {
             throw new RuntimeException("Fail to load avatar 2j");
         }
     }
+
+
+    public Resource loadGallery(String filename) {
+        try {
+            Path file = rootLocationGallery.resolve(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if(resource.exists() || resource.isReadable()) {
+                return resource;
+            }else{
+                throw new RuntimeException("Fail to load gallery 1");
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Fail to load gallery 2j");
+        }
+    }
+
 
     public Resource loadArtistAvatar(String filename) {
         try {
@@ -208,6 +237,9 @@ public class StorageService {
             Files.createDirectory(rootLocationImages);
             Files.createDirectory(rootLocationMusics);
             Files.createDirectory(rootLocationVideos);
+            Files.createDirectory(rootLocationAlbumAvatars);
+            Files.createDirectory(rootLocationVideos);
+            Files.createDirectory(rootLocationGallery);
 
         } catch (IOException e) {
             throw new RuntimeException("Could not initialize storage!");

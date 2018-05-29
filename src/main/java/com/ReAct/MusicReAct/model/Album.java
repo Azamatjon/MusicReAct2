@@ -26,9 +26,6 @@ public class Album {
     @JoinColumn(nullable = true, name = "user_id")
     private User user;
 
-    @OneToMany()
-    private Set<Track> tracks;
-
     public int getId() {
         return id;
     }
@@ -59,18 +56,6 @@ public class Album {
 
     public void setArtist(Artist artist) {
         this.artist = artist;
-    }
-
-    public Set<Track> getTracks() {
-        return tracks;
-    }
-
-    public void setTracks(Set<Track> tracks) {
-        this.tracks = tracks;
-    }
-
-    public int getNumberOfTracks() {
-        return tracks.size();
     }
 
     public User getUser() {

@@ -54,6 +54,10 @@ public class User {
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
+    @ManyToMany()
+    @JoinTable(name = "user_favorites", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "track_id"))
+    private Set<Track> favoriteTracks;
+
     @OneToMany()
     private Set<VerificationToken> verificationToken;
 
@@ -107,7 +111,7 @@ public class User {
     }
 
     public String getImage() {
-        return (image != null) ? image : "default_avatar.png";
+        return "/avatars/" + ((image != null) ? image : "default_avatar.png");
     }
 
     public void setImage(String image) {
@@ -152,4 +156,11 @@ public class User {
         return "/avatars/" + ((this.getImage() == null)?"default_avatar.png":this.getImage());
     }
 
+    public Set<Track> getFavoriteTracks() {
+        return favoriteTracks;
+    }
+
+    public void setFavoriteTracks(Set<Track> tracks) {
+        this.favoriteTracks = tracks;
+    }
 }

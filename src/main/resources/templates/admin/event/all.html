@@ -33,24 +33,24 @@
                                 <th>Image</th>
                                 <th>Name</th>
                                 <th># Tracks</th>
-                                <th># Albums</th>
+                                <th>Artist</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
-                            <tbody th:each="artist : ${artists}" th:remove="tag">
+                            <tbody th:each="album : ${albums}" th:remove="tag">
                             <tr>
-                                <th scope="row" th:text="${artist.getId()}">*</th>
-                                <td><img th:src="${artist.getImage()}" class="img-circle small-img" alt=""></td>
-                                <td th:text="${artist.getName()}"></td>
-                                <td th:text="${trackRepository.findAllByArtistAndIsVerified(artist, 1).size()}"></td>
-                                <td th:text="${albumRepository.findAllByArtist(artist).size()}"></td>
+                                <th scope="row" th:text="${album.getId()}">*</th>
+                                <td><img th:src="${album.getImage()}" class="img-circle small-img" alt=""></td>
+                                <td th:text="${album.getName()}"></td>
+                                <td th:text="${album.getNumberOfTracks()}"></td>
+                                <td th:text="${album.getArtist().getName()}"></td>
                                 <td><div class="btn-group m-b-sm">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                         Action <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                        <li><a th:href="'/admin/home?goTo=artists&action=edit&id=' + ${artist.getId()}">Edit</a></li>
-                                        <li><a href="#" data-toggle="modal" data-target="#deleteArtistModal" class="artistDelete" th:artistid="${artist.getId()}">Delete</a></li>
+                                        <li><a th:href="'/admin/home?goTo=albums&action=edit&id=' + ${album.getId()}">Edit</a></li>
+                                        <li><a href="#" data-toggle="modal" data-target="#deleteAlbumModal" class="albumDelete" th:albumid="${album.getId()}">Delete</a></li>
                                     </ul>
                                 </div></td>
                             </tr>
@@ -66,23 +66,23 @@
                         </div>
 
                         <!-- Modal -->
-                        <div class="modal fade" id="deleteArtistModal" tabindex="-1" role="dialog" aria-labelledby="deleteArtistModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="deleteAlbumModal" tabindex="-1" role="dialog" aria-labelledby="deleteAlbumModal" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                        <h4 class="modal-title" id="deleteArtistModalLabel">Deleting User Account</h4>
+                                        <h4 class="modal-title" id="deleteAlbumModal">Deleting User Account</h4>
                                     </div>
                                     <div class="modal-body">
                                         <div class="form-group">
                                             <p>
-                                                You are about to delete artist.
+                                                You are about to delete artist album.
                                             </p>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" id="cancelDeleteArtist"class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                        <button type="button" id="confirmDeleteArtist" artistid="none" class="btn btn-danger">Delete</button>
+                                        <button type="button" id="cancelDeleteAalbum"class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                        <button type="button" id="confirmDeleteAlbum" albumid="none" class="btn btn-danger">Delete</button>
                                     </div>
                                 </div>
                             </div>
@@ -167,45 +167,44 @@
             }
 
 
-            $('.artistDelete').on('click', function(){
+            $('.albumDelete').on('click', function(){
 
-                var artistId = $(this).attr('artistid');
-                $('#confirmDeleteArtist').attr('artistid', artistId);
+                var albumId = $(this).attr('albumid');
+                $('#confirmDeleteAlbum').attr('albumid', albumId);
 
             });
 
 
+            $('#confirmDeleteAlbum').on('click', function(){
 
-            $('#confirmDeleteArtist').on('click', function(){
+                var albumId = $(this).attr('albumid');
 
-                var artistId = $(this).attr('artistid');
-
-                if (artistId == 'none') {
+                if (albumId == 'none') {
                     document.getElementById("textmodal").innerHTML = "Invalid Artist ID";
                     document.getElementById("modal_").click();
                 } else {
 
-                    $.post('/ajax/artist', {
+                    $.post('/ajax/album', {
                         action: 'delete',
-                        artistId: artistId
+                        albumId: albumId
                     }, function(data, status) {
 
                         if (status == 'success') {
                             if (data.status == 'success') {
-                                $('#cancelDeleteArtist').click();
+                                $('#cancelDeleteAlbum').click();
                                 toastr["success"]("Artist was deleted successfuly.", "Success");
 
                                 setTimeout(reload, 1500);
                             }  else if (data.status == 'error') {
-                                $('#cancelDeleteArtist').click();
+                                $('#cancelDeleteAlbum').click();
                                 toastr["error"]("Error. " + data.error_code, "Oops");
 
                             } else {
-                                $('#cancelDeleteArtist').click();
+                                $('#cancelDeleteAlbum').click();
                                 toastr["error"]("Error. Something went wrong.", "Oops");
                             }
                         } else {
-                            $('#cancelDeleteArtist').click();
+                            $('#cancelDeleteAlbum').click();
                             document.getElementById("submit").disabled = false;
                             document.getElementById("textmodal").innerHTML = "Error, I can't connect with the server...";
                             document.getElementById("modal_").click();
