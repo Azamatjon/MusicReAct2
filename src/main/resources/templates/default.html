@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="UTF-8">
+	<meta name="HandheldFriendly" content="true" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>Home-Page-Star</title>
+	<link rel="icon" href="/assets/img/content/icon.png">
+	<!-- ========== CSS INCLUDES ========== -->
+	<link rel="stylesheet" href="/assets/css/master.css">
+</head>
+<body>
+	<div class="page-loader">
+		 <div class="vertical-align align-center">
+			  <img src="/assets/loader/loader.gif" alt="" class="loader-img">
+		 </div>
+	</div>
+
+	<!-- =============== START PLAYER ================ -->
+	<div class="main-music-player">
+		<a class="hide-player-button">
+			<i class="fa fa-plus"></i>
+			<i class="fa fa-minus"></i>
+		</a>
+		<div id="mesh-main-player" class="jp-jplayer" data-audio-src="assets/audio/flute.mp3" data-title="See right through ft. Fiora" data-artist="Tensnake"></div>
+		
+		<div id="mesh-main-player-content" class="mesh-main-player" role="application" aria-label="media player">
+			<div class="container">
+				<div class="row">
+					<div class="left-player-side">
+						<div class="mesh-prev">
+							<i class="fa fa-step-backward"></i>
+						</div>
+						<div class="mesh-play">
+							<i class="fa fa-play"></i>
+						</div>
+						<div class="mesh-pause">
+							<i class="fa fa-pause"></i>
+						</div>
+						<div class="mesh-next">
+							<i class="fa fa-step-forward"></i>
+						</div>
+						<button id="playlist-toggle" class="jplayerButton">
+							<span class="span-1"></span>
+							<span class="span-2"></span>
+							<span class="span-3"></span>
+						</button>
+					</div>
+					<div class="center-side">
+						<div class="mesh-current-time">
+						</div>
+						<div class="mesh-seek-bar">
+							<div class="mesh-play-bar">
+							</div>
+						</div>
+						<div class="mesh-duration">
+						</div>
+					</div>
+					<div class="right-player-side">
+						<div class="mesh-thumbnail">
+							<img src="assets/img/albums/cover3.jpg" alt="">
+						</div>
+						<div class="mesh-title">
+						</div>
+						<div class="mesh-artist">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- =============== END PLAYER ================ -->
+
+	<!-- =============== START PLAYLIST ================ -->
+	<div class="playlist-wrapper" id="playlist-wrapper">
+		<div class="jp-playlist container">
+			<div class="about-list clearfix">
+				<span class="about-name">NAME</span>
+				<span class="about-length">LENGTH</span>
+				<span class="about-available">Action</span>
+			</div>
+			<div class="trak-item" th:data-audio="${track.getListenLink()}" th:data-artist="${track.getArtist().getName()}" th:data-thumbnail="${track.getImage()}" th:data-id="'trak-' + ${track.getId()}" th:each="track: ((${isLoggedIn}) ? ${userFavorites} : ${topTracks})">
+				<audio preload="metadata" th:src="${track.getListenLink()}" th:title="${track.getName()}"></audio>
+
+
+				<div class="additional-button">
+					<div class="center-y-table">
+
+						<a th:href="${track.getDownloadLink()}" download>
+							<i class="fa fa-download"></i>
+						</a>
+
+						<div th:data-id="${track.getId()}" th:class="'favorite' + ${(userFavorites.contains(track)) ? ' favorited' : ' not-favorited'}">
+							<i class="fa fa-heart"></i>
+						</div>
+					</div>
+				</div>
+
+				<div class="additional-button">
+					<div class="center-y-table">
+
+						<div class="ffv">
+							<i class="fa fa-arrow-circle-down"></i> <span th:utext="${track.getDownloads()}"></span>
+						</div>
+
+						<div class="ffv">
+							<i class="fa fa-headphones"></i> <span th:utext="${track.getListens()}"></span>
+						</div>
+					</div>
+				</div>
+				<div class="play-pause-button">
+					<div class="center-y-table">
+						<i class="fa fa-play"></i>
+					</div>
+				</div>
+				<div class="name-artist">
+					<div class="center-y-table">
+						<h2 th:utext="${track.getArtist().getName() + ' - ' + track.getName()}"> </h2>
+					</div>
+				</div>
+				<time class="trak-duration" th:utext="${track.getFormattedDuration()}">
+
+				</time>
+			</div>
+		</div>
+	</div>
+	<!-- =============== END PLAYLIST ================ -->
+	
+	<!-- =============== START TOP HEADER ================ -->
+	<div class="topHeader" >
+		<div class="header">
+			<div class="rightTopHeader">
+				<div class="cartContainer">
+					<div class="myCart">
+						<ul th:if="${isLoggedIn}">
+							<li class="cartTitle">PROFILE</li>
+						</ul>
+						<ul th:if="${!isLoggedIn}">
+							<li class="cartTitle">LOGIN</li>
+						</ul>
+					</div><!-- end myCart -->
+					<div class="cartParent">
+						<div class="cartItems">
+							<ul th:if="${isLoggedIn}">
+								<li>
+									<style>
+										.customProfile {
+											padding: 0;
+											margin: 0;
+											display: block;
+											font-size: 1.5rem;
+											font-family: 'Karla', sans-serif;
+											font-weight: 600;
+											color: #525252;
+											position: relative;
+										}
+									</style>
+									<div class="priceCart" >
+										<input type="hidden" id="userId" th:value="${user.getId()}">
+										<img th:src="${user.getImage()}" alt="">
+										<div class="customProfile" th:utext="${user.getName() + ' ' + user.getLastName()}"> </div>
+										<p>Role: <span th:utext="${user.getRoleName()}"></span></p>
+										<p>Tracks: <span th:utext="${userTracksNumber}"></span></p>
+									</div>
+								</li>
+
+							</ul>
+							&nbsp;
+							<button th:if="${isLoggedIn}" href="/admin/home" class="single_add_to_cart_button button alt customLink buttonCheck">
+								Control Panel
+							</button>
+							<button th:if="${isLoggedIn}"href="/logout"  class="single_add_to_cart_button button alt customLink buttonCheck">
+								Logout
+							</button>
+
+							<button th:if="${!isLoggedIn}"href="/registration"  class="single_add_to_cart_button button alt customLink buttonCheck">
+								Registration
+							</button>
+							<button th:if="${!isLoggedIn}" href="/login" class="single_add_to_cart_button button alt customLink buttonCheck">
+								Login
+							</button>
+
+
+
+						</div><!-- end cartItems -->
+					</div><!-- end cartParent -->
+				</div><!--end cartContainer  -->
+				<!-- Open Menu Button -->
+				<a class="open-menu">
+					<!-- Buttons Bars -->
+					<span class="span-1"></span>
+					<span class="span-2"></span>
+					<span class="span-3"></span>
+				</a>
+			</div>
+		</div><!-- end header -->
+		<!-- Menu Fixed Container -->
+		<div class="menu-fixed-container">
+			<!-- Menu Fixed Centred Container -->
+			<nav>
+				<!-- Menu Fixed Close Button -->
+				<div class="x-filter">
+					<span></span>
+					<span></span>
+				</div>
+				<!-- Menu Fixed Primary List -->
+				<ul>
+					<!-- Menu Fixed Item -->
+					<li>
+						<a href="/">
+							Home
+						</a>
+					</li>
+					<!-- Menu Fixed Item -->
+					<li>
+						<a href="#">
+							Artists
+						</a>
+						<ul class="sub-menu">
+							<!-- Menu Fixed Sub Menu Item -->
+							<li>
+								<a href="/artists">
+									All Artists
+								</a>
+							</li>
+							<!-- Menu Fixed Sub Menu Item -->
+							<li>
+								<a href="/topArtists">
+									Top Artists
+								</a>
+							</li>
+						</ul>
+					</li>
+
+					<li>
+						<a href="#">
+							Albums
+						</a>
+						<ul class="sub-menu">
+							<!-- Menu Fixed Sub Menu Item -->
+							<li>
+								<a href="/albums">
+									All Albums
+								</a>
+							</li>
+							<!-- Menu Fixed Sub Menu Item -->
+							<li>
+								<a href="/topAlbums">
+									Top Albums
+								</a>
+							</li>
+						</ul>
+					</li>
+
+					<li>
+						<a href="#">
+							Tracks
+						</a>
+						<ul class="sub-menu">
+							<!-- Menu Fixed Sub Menu Item -->
+							<li>
+								<a href="/tracks">
+									All Tracks
+								</a>
+							</li>
+							<!-- Menu Fixed Sub Menu Item -->
+							<li>
+								<a href="/topTracks">
+									Top Tracks
+								</a>
+							</li>
+						</ul>
+					</li>
+					<!-- Menu Fixed Item -->
+
+					<li th:if="${isLoggedIn}">
+						<a href="/admin/home">
+							Contorol Panel
+						</a>
+					</li>
+					<li th:if="${!isLoggedIn}">
+						<a href="/login">
+							Login
+						</a>
+					</li>
+					<li th:if="${!isLoggedIn}">
+						<a href="/registration">
+							Registration
+						</a>
+					</li>
+					<!-- Menu Fixed Item -->
+					<li th:if="${isLoggedIn}">
+						<a href="/logout">
+							logout
+						</a>
+					</li>
+				</ul>
+				<!-- Menu Fixed Close Button -->
+				<div class="x-filter">
+					<span></span>
+					<span></span>
+				</div>
+			</nav>
+		</div><!-- end menu-fixed-container -->
+		<!-- =============== STAR LOGO ================ -->
+		<div class="logo-container-top">
+			<a href="/"><img src="/assets/img/logo/whiteLogo.png" alt="MusicReact"></a>
+		</div><!-- end logo-container-top -->
+
+		<div class="logo-container-top" style="width: 360px; float:  right;">
+			<form action="search" method="get">
+				<input type="text" placeholeder="Search..." name="query" style="background:  transparent; color: #000; border: 1px solid; border-color: #000; display: inline-block; text-shadow: 0 0 4px #ffffff; width: 250px; box-shadow: 0px -1px 20px 3px #ffffff;">
+				<button type="submit" style="display: inline-block; width: 55px; border:  1px solid; text-shadow: 0 0 4px #ffffff; height:  39px; box-shadow: 0px -1px 20px 3px #ffffff;">
+					<i class="fa fa-search"></i>
+				</button>
+			</form>
+		</div>
+
+
+		<!-- =============== END LOGO ================ -->
+	</div><!-- end topHeader -->
+
+
+	<!-- =============== END TOP HEADER ================ -->
+
+
+	<switcher th:switch="${page}">
+		<article th:case="'home'" >
+			<article th:replace="index:: content"></article>
+		</article>
+
+		<article th:case="'album'" >
+			<article th:replace="album:: content"></article>
+		</article>
+
+		<article th:case="'allAlbums'" >
+			<article th:replace="allAlbums:: content"></article>
+		</article>
+
+		<article th:case="'artistAlbums'" >
+			<article th:replace="artistAlbums:: content"></article>
+		</article>
+
+		<article th:case="'topAlbums'" >
+			<article th:replace="topAlbums:: content"></article>
+		</article>
+
+		<article th:case="'artist'" >
+			<article th:replace="artist:: content"></article>
+		</article>
+
+		<article th:case="'allArtists'" >
+			<article th:replace="allArtists:: content"></article>
+		</article>
+
+		<article th:case="'topArtists'" >
+			<article th:replace="topArtists:: content"></article>
+		</article>
+
+		<article th:case="'topTracks'" >
+			<article th:replace="topTracks:: content"></article>
+		</article>
+
+		<article th:case="'allTracks'" >
+			<article th:replace="allTracks:: content"></article>
+		</article>
+
+		<article th:case="'track'" >
+			<article th:replace="track:: content"></article>
+		</article>
+
+		<article th:case="'user'" >
+			<article th:replace="user:: content"></article>
+		</article>
+
+		<article th:case="'search'" >
+			<article th:replace="search:: content"></article>
+		</article>
+
+		<article th:case="'gallery'" >
+			<article th:replace="gallery:: content"></article>
+		</article>
+
+		<article th:case="'allTracks'" >
+			<article th:replace="allTracks:: content"></article>
+		</article>
+
+		<article th:case="'topTracks'" >
+			<article th:replace="topTracks:: content"></article>
+		</article>
+
+		<article th:case="*">
+			<article th:replace="index:: content"></article>
+		</article>
+	</switcher>
+
+	<!-- =============== START FOOTER ================ -->
+	<section style="background-color:#eeeeee;">
+		<div class="footer footerPadding">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-4">
+						<div class="copyFooter">
+							<a href="#">&copy; MusicReact 2018</a>
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<nav class="social-icons">
+							<ul class="clearfix">
+								<li><a href="#" class="icon-button shopIcon"><i class="fa fa-twitter"></i><span></span></a></li>
+								<li><a href="#" class="icon-button shopIcon"><i class="fa fa-facebook"></i><span></span></a></li>
+								<li><a href="#" class="icon-button shopIcon"><i class="fa fa-apple"></i><span></span></a></li>
+								<li><a href="#" class="icon-button shopIcon"><i class="fa fa-lastfm"></i><span></span></a></li>
+								<li><a href="#" class="icon-button shopIcon"><i class="fa fa-soundcloud"></i><span></span></a></li>
+								<li><a href="#" class="icon-button shopIcon"><i class="fa fa-youtube-play"></i><span></span></a></li>
+								<li><a href="#" class="icon-button shopIcon"><i class="fa fa-vimeo"></i><span></span></a></li>  
+							</ul>
+						</nav>
+					</div>
+					<div class="col-sm-4">
+						<div class="goTop back-to-top" id="back-to-top">
+							<i class="fa fa-angle-up"></i>
+							<a href="#">Go Top</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- =============== END FOOTER ================ -->
+
+	<!-- ================================================== -->
+	<!-- =============== START JQUERY SCRIPTS ================ -->
+	<!-- ================================================== -->
+	<script src="assets/js/jquery.js"></script>
+	<script src="assets/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="assets/jplayer/jplayer/jquery.jplayer.js"></script>
+	<script src="assets/js/jPlayer.js"></script>
+	<script src="assets/js/plugins.js"></script>
+	<script src="assets/js/main.js"></script>
+	<!--[if lte IE 9 ]>
+		<script src="assets/js/placeholder.js"></script>
+		<script>
+			jQuery(function() {
+				jQuery('input, textarea').placeholder();
+			});
+
+		</script>
+	<![endif]-->
+
+	<script>
+        $( document ).ready(function() {
+            $('button.customLink').click(function () {
+
+                console.log("clicked");
+
+                var linkToGo = $(this).attr('href');
+                window.location.href = linkToGo;
+            });
+
+
+            $('.favorite').on('click', function(){
+
+                var thatObj = $(this);
+                var userId = $('#userId').val();
+                var trackId = $(this).data('id');
+
+                var formData = new FormData();
+                formData.append('action', 'common');
+                formData.append('userId', userId);
+                formData.append('trackId', trackId);
+
+                if (userId == null) {
+                    alert("You haven't logged in yet");
+                } else {
+                    $.ajax({
+                        url: '/ajax/favorite',
+                        type: 'post',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function(data){
+                            if (data.status == 'success') {
+                                if (data.message == 'added'){
+                                    thatObj.removeClass("not-favorited");
+                                    thatObj.addClass("favorited");
+								} else if (data.message == 'removed') {
+                                    thatObj.removeClass("favorited");
+                                    thatObj.addClass("not-favorited");
+								}
+                            } else if (data.status == 'error'){
+                                alert(data.error_code);
+                            } else {
+                                alert("Some undefined error occured.");
+                            }
+                        },
+                        error: function(){
+                            alert("Error, I can't connect with the server...");
+                        }
+                    });
+
+                }
+                return false;
+            });
+        });
+	</script>
+
+
+
+
+	<span th:if="${cssSwitcher.setPermitted()}">
+            <!-- To set value of cssSwitcher.isPermitted() true for endScript in fragments-->
+        </span>
+
+	<switcher th:switch="${page}">
+		<article th:case="'home'" >
+			<article th:replace="index:: endScript"></article>
+		</article>
+
+		<article th:case="'album'" >
+			<article th:replace="album:: endScript"></article>
+		</article>
+
+		<article th:case="'allAlbums'" >
+			<article th:replace="allAlbums:: endScript"></article>
+		</article>
+
+		<article th:case="'artistAlbums'" >
+			<article th:replace="artistAlbums:: endScript"></article>
+		</article>
+
+		<article th:case="'topAlbums'" >
+			<article th:replace="topAlbums:: endScript"></article>
+		</article>
+
+		<article th:case="'artist'" >
+			<article th:replace="artist:: endScript"></article>
+		</article>
+
+		<article th:case="'allArtists'" >
+			<article th:replace="allArtists:: endScript"></article>
+		</article>
+
+		<article th:case="'topArtists'" >
+			<article th:replace="topArtists:: endScript"></article>
+		</article>
+
+		<article th:case="'search'" >
+			<article th:replace="search:: endScript"></article>
+		</article>
+
+		<article th:case="'track'" >
+			<article th:replace="track:: endScript"></article>
+		</article>
+
+		<article th:case="'allTracks'" >
+			<article th:replace="allTracks:: endScript"></article>
+		</article>
+
+		<article th:case="'gallery'" >
+			<article th:replace="gallery:: endScript"></article>
+		</article>
+
+
+		<article th:case="'topTracks'" >
+			<article th:replace="topTracks:: endScript"></article>
+		</article>
+
+		<article th:case="'allTracks'" >
+			<article th:replace="allTracks:: endScript"></article>
+		</article>
+
+		<article th:case="'user'" >
+			<article th:replace="user:: endScript"></article>
+		</article>
+
+
+		<article th:case="'topTracks'" >
+			<article th:replace="topTracks:: endScript"></article>
+		</article>
+
+		<article th:case="*">
+			<article th:replace="index:: endScript"></article>
+		</article>
+	</switcher>
+	<!-- ================================================== -->
+	<!-- =============== END JQUERY SCRIPTS ================ -->
+	<!-- ================================================== -->
+</body>
+</html>

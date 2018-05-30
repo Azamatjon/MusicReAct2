@@ -38,11 +38,11 @@
 	<div class="container">
 		<!-- start filter -->
         <div class="sectionTitle paddingBottom">
-            <h2>Albums</h2>
+            <h2>Top Albums</h2>
         </div>
 		<div class="aqura-filter-content list-albums">
 			<ul class="list-feature clearfix">
-                <li class="col-md-3 col-sm-3 col-xs-12" th:each="album: ${albums}">
+                <li class="col-md-3 col-sm-3 col-xs-12" th:each="album: ${topAlbums}">
                     <div class="album-icon">
 							<span class="thumbs-album">
 								<a th:href="'/album?id=' + ${album.getId()}"><img style="width: 270px; height: 270px;" th:src="${album.getImage()}" class="attachment-album-thumbnail wp-post-image" alt="album-cover-1"></a>

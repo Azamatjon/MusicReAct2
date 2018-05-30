@@ -442,7 +442,7 @@ public class AjaxController {
         switch (action){
             case "deleteAvatar":
                 if (artistId != null){
-                    if (user.isAdmin()){
+                    if (user.isAdmin() || artistRepository.getByUserAndId(user, artistId).getUser() == user){
                         Artist artist = artistRepository.getOne(artistId);
                         if (artist != null){
                             artist.setImage(null);
@@ -465,7 +465,7 @@ public class AjaxController {
                 break;
             case "edit":
                 if (artistId != null){
-                    if (user.isAdmin()){
+                    if (user.isAdmin() || artistRepository.getByUserAndId(user, artistId).getUser() == user){
                         Artist artist = artistRepository.getOne(artistId);
                         if (artist != null){
                             artist.setName(name);
@@ -496,7 +496,7 @@ public class AjaxController {
                 break;
 
             case "add":
-                if (user.isAdmin()){
+                if (user.isAdmin() || user != null){
                     Artist artistExists = artistRepository.getByName(name);
                     if (artistExists == null){
                         Artist artist = new Artist();
@@ -508,6 +508,7 @@ public class AjaxController {
                             String generatedAvatarName = storageService.storeArtistAvatar(avatar);
                             artist.setImage(generatedAvatarName);
                         }
+                        artist.setUser(user);
                         if (birthDate != null &&birthDate.length() > 0){
                             artist.setBirthDate(birthDate);
                         }
@@ -527,7 +528,7 @@ public class AjaxController {
 
             case "delete":
                 if (artistId != null){
-                    if (user.isAdmin()){
+                    if (user.isAdmin() || artistRepository.getByUserAndId(user, artistId).getUser() == user){
                         Artist artist = artistRepository.getOne(artistId);
                         if (artist != null){
 
@@ -592,7 +593,7 @@ public class AjaxController {
         switch (action){
             case "deleteAvatar":
                 if (albumId != null){
-                    if (user.isAdmin()){
+                    if (user.isAdmin() || albumRepository.getByUserAndId(user, albumId).getUser() == user){
                         Album album = albumRepository.getOne(albumId);
                         if (album != null){
                             album.setImage(null);
@@ -615,7 +616,7 @@ public class AjaxController {
                 break;
             case "edit":
                 if (albumId != null){
-                    if (user.isAdmin()){
+                    if (user.isAdmin() || albumRepository.getByUserAndId(user, albumId).getUser() == user){
                         Album album = albumRepository.getOne(albumId);
                         if (album != null){
                             album.setName(name);
@@ -649,7 +650,7 @@ public class AjaxController {
                 break;
 
             case "add":
-                if (user.isAdmin()){
+                if (user.isAdmin() || user != null){
 
                     Artist artist = artistRepository.getOne(artistId);
                     if (artist != null){
@@ -688,7 +689,7 @@ public class AjaxController {
 
             case "delete":
                 if (albumId != null){
-                    if (user.isAdmin()){
+                    if (user.isAdmin() || albumRepository.getByUserAndId(user, albumId).getUser() == user){
                         Album album = albumRepository.getOne(albumId);
                         if (album != null){
                             albumRepository.delete(album);
@@ -745,7 +746,7 @@ public class AjaxController {
         switch (action){
             case "edit":
                 if (artistId != null){
-                    if (user.isAdmin()){
+                    if (user.isAdmin() || artistRepository.getByUserAndId(user, artistId).getUser() == user){
                         Artist artist = artistRepository.getOne(artistId);
                         if (artist != null){
                             if (artist.getBiography() == null){
@@ -800,7 +801,7 @@ public class AjaxController {
 
             case "delete":
                 if (artistId != null){
-                    if (user.isAdmin()){
+                    if (user.isAdmin() || artistRepository.getByUserAndId(user, artistId).getUser() == user){
                         Artist artist = artistRepository.getOne(artistId);
                         if (artist != null){
                             artist.setBiography(null);
@@ -854,7 +855,7 @@ public class AjaxController {
 
             case "deleteAll":
                 if (artistId != null){
-                    if (user.isAdmin()){
+                    if (user.isAdmin() || user != null){
                         Artist artist = artistRepository.getOne(artistId);
                         if (artist != null){
                             List<Gallery> images = galleryRepository.findAllByArtist(artist);
@@ -893,7 +894,7 @@ public class AjaxController {
 
             case "delete":
                 if (imageId != null){
-                    if (user.isAdmin()){
+                    if (user.isAdmin() || galleryRepository.getByUserAndId(user, imageId).getUser() == user){
                         Gallery image = galleryRepository.getOne(imageId);
                         if (image != null){
                             galleryRepository.delete(image);
@@ -1019,7 +1020,7 @@ public class AjaxController {
         switch (action){
             case "edit":
                 if (trackId != null){
-                    if (user.isAdmin()){
+                    if (user.isAdmin() || trackRepository.getByUserAndId(user, trackId).getUser() == user){
                         Track track = trackRepository.getOne(trackId);
                         if (track != null){
                             track.setName(trackName);
@@ -1070,7 +1071,7 @@ public class AjaxController {
                 break;
 
             case "verify":
-                if (user.isAdmin()){
+                if (user.isAdmin() || trackRepository.getByUserAndId(user, trackId).getUser() == user){
 
                     Track track = trackRepository.getOne(trackId);
 
@@ -1136,7 +1137,7 @@ public class AjaxController {
 
             case "delete":
                 if (trackId != null){
-                    if (user.isAdmin()){
+                    if (user.isAdmin() || trackRepository.getByUserAndId(user, trackId).getUser() == user){
                         Track track = trackRepository.getOne(trackId);
                         if (track != null){
                             trackRepository.delete(track);

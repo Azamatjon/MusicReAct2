@@ -1,0 +1,118 @@
+
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:th="http://www.thymeleaf.org">
+
+
+
+
+<content th:fragment="content">
+
+
+	<!-- =============== START BREADCRUMB ================ -->
+	<section class="no-mb">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="before-FullscreenSlider"></div>
+				<div class="breadcrumb-fullscreen-parent phone-menu-bg">
+					<div class="breadcrumb breadcrumb-fullscreen alignleft small-description overlay almost-black-overlay" style="background-image: url('/assets/img/blog/header.jpg');" data-stellar-background-ratio="0.5" data-stellar-vertical-offset="0">
+						<div class="breadTxt">
+							<h1>
+								Plato
+							</h1>
+							<p>
+								Music is a moral law. It gives soul to the universe, wings to the mind, flight to the imagination, and charm and gaiety to life and to everything.
+							</p>
+							<a href="#content" data-easing="easeInOutQuint" data-scroll="" data-speed="900" data-url="false">
+								View All Artists <i class="fa fa-angle-down"></i>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- =============== END BREADCRUMB ================ -->
+
+	<!-- =============== START BLOG FILTER ================ -->
+	<section class="aquraFilter padding" id="content">
+		<div class="container">
+			<!-- start blog-filter-category -->
+			<div class="sectionTitle paddingBottom">
+				<h2>All Tracks</h2>
+			</div>
+			<!-- end blog-filter-category -->
+
+			<!-- start filter -->
+			<div class="row">
+				<div class="aqura-filter-content">
+					<ul class="clearfix">
+						<div class="jp-playlist">
+							<div class="about-list clearfix">
+								<span class="about-name" style="width: 60%;">NAME</span>
+								<span class="about-length">LENGTH</span>
+								<span class="about-available" style="display: block;">Action</span>
+							</div>
+
+							<div class="trak-item" th:data-audio="${track.getListenLink()}" th:data-artist="${track.getArtist().getName()}" th:data-thumbnail="${track.getImage()}" th:data-id="'trak-' + ${track.getId()}" th:each="track: ${allTracksD}">
+								<audio preload="metadata" th:src="${track.getListenLink()}" th:title="${track.getName()}"></audio>
+
+
+
+								<div class="additional-button">
+									<div class="center-y-table">
+
+										<a th:href="${track.getDownloadLink()}" download>
+											<i class="fa fa-download"></i>
+										</a>
+
+										<div th:data-id="${track.getId()}" th:class="'favorite' + ${(userFavorites.contains(track)) ? ' favorited' : ' not-favorited'}">
+											<i class="fa fa-heart"></i>
+										</div>
+									</div>
+								</div>
+
+								<div class="additional-button">
+									<div class="center-y-table">
+
+										<div class="ffv">
+											<i class="fa fa-arrow-circle-down"></i> <span th:utext="${track.getDownloads()}"></span>
+										</div>
+
+										<div class="ffv">
+											<i class="fa fa-headphones"></i> <span th:utext="${track.getListens()}"></span>
+										</div>
+									</div>
+								</div>
+
+
+								<div class="play-pause-button">
+									<div class="center-y-table">
+										<i class="fa fa-play"></i>
+									</div>
+								</div>
+								<div class="name-artist">
+									<div class="center-y-table">
+										<h2 th:utext="${track.getArtist().getName() + ' - ' + track.getName()}"> </h2>
+									</div>
+								</div>
+								<time class="trak-duration" th:utext="${track.getFormattedDuration()}">
+
+								</time>
+							</div>
+						</div>
+					</ul>
+				</div>
+			</div><!-- end container -->
+			<!-- end filter -->
+		</div><!-- end container -->
+	</section>
+	<!-- =============== END BLOG FILTER ================ -->
+
+</content>
+
+<sc th:if="${cssSwitcher.isPermitted()}" th:fragment="endScript">
+
+</sc>
+</html>

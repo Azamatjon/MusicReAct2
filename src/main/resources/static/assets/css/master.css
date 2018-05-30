@@ -25,6 +25,16 @@
   display: inline-block;
   cursor: pointer;
 }
+
+
+.ffv {
+  display: inline-block;
+}
+
+
+.ffv:not(:last-child){
+  margin-right: 8px;
+}
 .favorited {
   color: #ff0000;
 
@@ -16074,7 +16084,7 @@ body.opacityPlaylist .main-music-player .mesh-title {
 .trak-item .trak-duration {
   line-height: 5.5rem;
   font-size: 1.2rem;
-  width: 9.5rem;
+  width: 6.5rem;
   color: #757575;
   font-weight: 400;
   text-align: center;
@@ -16176,10 +16186,10 @@ body.opacityPlaylist .main-music-player .mesh-title {
     margin-left: 3.5rem;
   }
   .trak-item .name-artist {
-    width: 46rem;
+    width: 40rem;
   }
   .trak-item .name-artist h2 {
-    width: 44rem;
+    width: 38rem;
   }
 }
 @media (min-width: 1030px) {
@@ -16214,10 +16224,10 @@ body.opacityPlaylist .main-music-player .mesh-title {
     margin-right: 0;
   }
   .trak-item .name-artist {
-    width: 36.5rem;
+    width: 26.5rem;
   }
   .trak-item .name-artist h2 {
-    width: 34.5rem;
+    width: 24.5rem;
   }
 }
 @media (max-width: 800px) {
@@ -16248,10 +16258,10 @@ body.opacityPlaylist .main-music-player .mesh-title {
     display: none;
   }
   .trak-item .name-artist {
-    width: 22rem;
+    width: 16rem;
   }
   .trak-item .name-artist h2 {
-    width: 20rem;
+    width: 14rem;
   }
   .jp-playlist .about-list .about-length {
     visibility: hidden;
@@ -16286,14 +16296,14 @@ body.opacityPlaylist .main-music-player .mesh-title {
     width: 80%;
   }
   .albumSingle .trak-item .name-artist {
-    width: 45rem;
+    width: 30rem;
   }
   .albumSingle .trak-item .name-artist h2 {
-    width: 45rem;
+    width: 30rem;
   }
   .albumSingle .trak-item .trak-duration {
     float: right;
-    line-height: 4.7rem;
+    line-height: 3.7rem;
   }
   .albumSingle .trak-item > * {
     height: 4.7rem;
@@ -16317,14 +16327,14 @@ body.opacityPlaylist .main-music-player .mesh-title {
     width: 80%;
   }
   .albumSingle .trak-item .name-artist {
-    width: 30rem;
+    width: 20rem;
   }
   .albumSingle .trak-item .name-artist h2 {
-    width: 30rem;
+    width: 20rem;
   }
   .albumSingle .trak-item .trak-duration {
     float: right;
-    line-height: 4.7rem;
+    line-height: 3.7rem;
     text-align: right;
   }
   .albumSingle .trak-item > * {
@@ -16371,10 +16381,10 @@ body.opacityPlaylist .main-music-player .mesh-title {
     margin-right: 0;
   }
   .trak-item .name-artist {
-    width: 15rem;
+    width: 10rem;
   }
   .trak-item .name-artist h2 {
-    width: 13rem;
+    width: 8rem;
   }
   .trak-item .additional-button a {
     margin-right: 0.7rem;
@@ -16397,9 +16407,9 @@ body.opacityPlaylist .main-music-player .mesh-title {
 }
 @media (max-width: 360px) {
   .trak-item .name-artist {
-    width: 18rem;
+    width: 13rem;
   }
   .trak-item .name-artist h2 {
-    width: 18rem;
+    width: 13rem;
   }
 }

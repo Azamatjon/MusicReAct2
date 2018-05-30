@@ -3,12 +3,287 @@
       xmlns:th="http://www.thymeleaf.org">
 
 <div class="page-inner" th:fragment="content">
-    <div class="col-md-4 center">
-        <h1 class="text-xxl text-primary text-center">OOPS</h1>
-        <div class="details">
-            <h3>Nothing to show</h3>
-            <p>Sorry page is not available now. Return <a href="/admin/home?action=profile">Profile</a>.</p>
-        </div>
+    <div id="main-wrapper">
+
+        <div class="row" th:if="${user.isAdmin()}">
+
+            <div class="col-lg-3 col-md-6">
+                <div class="panel info-box panel-white">
+                    <div class="panel-body">
+                        <div class="info-box-stats">
+                            <p class="counter" th:utext="${allTracksListen}"></p>
+                            <span class="info-box-title">All Tracks Listenings</span>
+                        </div>
+                        <div class="info-box-icon">
+                            <i class="icon-earphones"></i>
+                        </div>
+                        <div class="info-box-progress">
+                            <div class="progress progress-xs progress-squared bs-n">
+                                <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="panel info-box panel-white">
+                    <div class="panel-body">
+                        <div class="info-box-stats">
+                            <p class="counter" th:utext="${allTracksDownloads}"></p>
+                            <span class="info-box-title">All Tracks Downloads</span>
+                        </div>
+                        <div class="info-box-icon">
+                            <i class="icon-cloud-download"></i>
+                        </div>
+                        <div class="info-box-progress">
+                            <div class="progress progress-xs progress-squared bs-n">
+                                <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="panel info-box panel-white">
+                    <div class="panel-body">
+                        <div class="info-box-stats">
+                            <p class="counter" th:utext="${allTracks}"></p>
+                            <span class="info-box-title">All Tracks</span>
+                        </div>
+                        <div class="info-box-icon">
+                            <i class="icon-music-tone-alt"></i>
+                        </div>
+                        <div class="info-box-progress">
+                            <div class="progress progress-xs progress-squared bs-n">
+                                <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="panel info-box panel-white">
+                    <div class="panel-body">
+                        <div class="info-box-stats">
+                            <p class="counter" th:utext="${allArtists}"></p>
+                            <span class="info-box-title">All Artists</span>
+                        </div>
+                        <div class="info-box-icon">
+                            <i class="icon-earphones"></i>
+                        </div>
+                        <div class="info-box-progress">
+                            <div class="progress progress-xs progress-squared bs-n">
+                                <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="panel info-box panel-white">
+                    <div class="panel-body">
+                        <div class="info-box-stats">
+                            <p class="counter" th:utext="${allAlbums}"></p>
+                            <span class="info-box-title">All Albums</span>
+                        </div>
+                        <div class="info-box-icon">
+                            <i class="icon-cloud-download"></i>
+                        </div>
+                        <div class="info-box-progress">
+                            <div class="progress progress-xs progress-squared bs-n">
+                                <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="panel info-box panel-white">
+                    <div class="panel-body">
+                        <div class="info-box-stats">
+                            <p class="counter" th:utext="${allImages}"></p>
+                            <span class="info-box-title">All Images</span>
+                        </div>
+                        <div class="info-box-icon">
+                            <i class="icon-music-tone-alt"></i>
+                        </div>
+                        <div class="info-box-progress">
+                            <div class="progress progress-xs progress-squared bs-n">
+                                <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="panel info-box panel-white">
+                    <div class="panel-body">
+                        <div class="info-box-stats">
+                            <p class="counter" th:utext="${allBiographies}"></p>
+                            <span class="info-box-title">All Biographies</span>
+                        </div>
+                        <div class="info-box-icon">
+                            <i class="icon-music-tone-alt"></i>
+                        </div>
+                        <div class="info-box-progress">
+                            <div class="progress progress-xs progress-squared bs-n">
+                                <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- Row -->
+
+        <div class="row" th:if="${!user.isAdmin()}">
+
+            <div class="col-lg-3 col-md-6">
+                <div class="panel info-box panel-white">
+                    <div class="panel-body">
+                        <div class="info-box-stats">
+                            <p class="counter" th:utext="${allTracksListen}"></p>
+                            <span class="info-box-title">All Your Tracks Listenings</span>
+                        </div>
+                        <div class="info-box-icon">
+                            <i class="icon-earphones"></i>
+                        </div>
+                        <div class="info-box-progress">
+                            <div class="progress progress-xs progress-squared bs-n">
+                                <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="panel info-box panel-white">
+                    <div class="panel-body">
+                        <div class="info-box-stats">
+                            <p class="counter" th:utext="${allTracksDownloads}"></p>
+                            <span class="info-box-title">All Your Tracks Downloads</span>
+                        </div>
+                        <div class="info-box-icon">
+                            <i class="icon-cloud-download"></i>
+                        </div>
+                        <div class="info-box-progress">
+                            <div class="progress progress-xs progress-squared bs-n">
+                                <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="panel info-box panel-white">
+                    <div class="panel-body">
+
+                        <div class="info-box-stats">
+                            <p class="counter" th:utext="${allTracks}"></p>
+                            <span class="info-box-title">All Your Tracks</span>
+                        </div>
+                        <div class="info-box-icon">
+                            <i class="icon-music-tone-alt"></i>
+                        </div>
+
+                        <div class="info-box-progress">
+                            <div class="progress progress-xs progress-squared bs-n">
+                                <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="panel info-box panel-white">
+                    <div class="panel-body">
+                        <div class="info-box-stats">
+                            <p class="counter" th:utext="${allArtists}"></p>
+                            <span class="info-box-title">All Your Added Artists</span>
+                        </div>
+                        <div class="info-box-icon">
+                            <i class="icon-user-follow"></i>
+                        </div>
+                        <div class="info-box-progress">
+                            <div class="progress progress-xs progress-squared bs-n">
+                                <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="panel info-box panel-white">
+                    <div class="panel-body">
+                        <div class="info-box-stats">
+                            <p class="counter" th:utext="${allAlbums}"></p>
+                            <span class="info-box-title">All Your Added Albums</span>
+                        </div>
+                        <div class="info-box-icon">
+                            <i class="icon-volume-2"></i>
+                        </div>
+                        <div class="info-box-progress">
+                            <div class="progress progress-xs progress-squared bs-n">
+                                <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="panel info-box panel-white">
+                    <div class="panel-body">
+                        <div class="info-box-stats">
+                            <p class="counter" th:utext="${allImages}"></p>
+                            <span class="info-box-title">All Your Added Images</span>
+                        </div>
+                        <div class="info-box-icon">
+                            <i class="icon-camera"></i>
+                        </div>
+                        <div class="info-box-progress">
+                            <div class="progress progress-xs progress-squared bs-n">
+                                <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="panel info-box panel-white">
+                    <div class="panel-body">
+                        <div class="info-box-stats">
+                            <p class="counter" th:utext="${allBiographies}"></p>
+                            <span class="info-box-title">All Your Added Biographies</span>
+                        </div>
+                        <div class="info-box-icon">
+                            <i class="icon-pencil"></i>
+                        </div>
+                        <div class="info-box-progress">
+                            <div class="progress progress-xs progress-squared bs-n">
+                                <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- Row -->
+
     </div>
     <copyright th:replace="admin/copyrightFooter:: content"></copyright>
 </div>

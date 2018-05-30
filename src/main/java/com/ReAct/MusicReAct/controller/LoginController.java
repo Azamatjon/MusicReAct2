@@ -98,18 +98,19 @@ public class LoginController {
     private StorageService storageService;
 
 
-    @RequestMapping(value = "/testsd", method = RequestMethod.GET)
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    @ResponseBody
     String employeesPageable() {
 
-        List<User> users = userRepository.findTop3ByOrderByIdDesc();
+        Pageable top = new PageRequest(0, 6);
 
-        Iterator<User> us = users.iterator();
-        //System.out.println(users.);
-        do {
-            System.out.println("email: " + us.next().getEmail());
-        } while (us.hasNext());
+        Page<Artist> artists = artistRepository.tops(top);
 
-        return "login";
+        for (Artist a:artists.getContent()) {
+            System.out.println("Artist name: " + a.getName());
+        }
+
+        return "test";
     }
 
 
@@ -803,7 +804,7 @@ public class LoginController {
                             modelAndView.addObject("trackRepository", trackRepository);
                             modelAndView.addObject("albumRepository", albumRepository);
                             if (pageable != null){
-                                Page artists = artistRepository.findAll(pageable);
+                                Page artists = (user.isAdmin()) ? artistRepository.findAll(pageable) : artistRepository.findAllByUser(user, pageable);
                                 Pagination pgn = new Pagination(artists, pageable, 5);
                                 modelAndView.addObject("pages", pgn.getPages());
 
@@ -844,7 +845,7 @@ public class LoginController {
                         case "noAction":
                             modelAndView.addObject("trackRepository", trackRepository);
                             if (pageable != null){
-                                Page artists = albumRepository.findAll(pageable);
+                                Page artists = (user.isAdmin()) ? albumRepository.findAll(pageable) : albumRepository.findAllByUser(user, pageable);
                                 Pagination pgn = new Pagination(artists, pageable, 5);
 
                                 modelAndView.addObject("currentPage", pgn.getPageNumber());
@@ -882,7 +883,7 @@ public class LoginController {
 
                         case "noAction":
                             if (pageable != null){
-                                Page artists = artistRepository.findAllByBiographyIsNotNull(pageable);
+                                Page artists = (user.isAdmin()) ? artistRepository.findAllByBiographyIsNotNull(pageable) : artistRepository.findAllByUserAndBiographyIsNotNull(user, pageable);
                                 Pagination pgn = new Pagination(artists, pageable, 5);
 
                                 modelAndView.addObject("currentPage", pgn.getPageNumber());
@@ -990,7 +991,7 @@ public class LoginController {
 
                         case "noAction":
                             if (pageable != null){
-                                Page<Track> tracks_ = trackRepository.findAllByIsVerified(1, pageable);
+                                Page<Track> tracks_ = (user.isAdmin()) ? trackRepository.findAllByIsVerified(1, pageable) : trackRepository.findAllByUserAndIsVerified(user, 1, pageable);
                                 Pagination pgn = new Pagination(tracks_, pageable, 5);
 
                                 modelAndView.addObject("currentPage", pgn.getPageNumber());
@@ -1057,7 +1058,7 @@ public class LoginController {
 
                         case "noAction":
                             if (pageable != null){
-                                Page artists = artistRepository.findAllWhereHasGallery(pageable);
+                                Page artists = (user.isAdmin()) ? artistRepository.findAllWhereHasGallery(pageable) : artistRepository.findAllWhereHasGalleryUser(user, pageable);
 
                                 Pagination pgn = new Pagination(artists, pageable, 5);
 
@@ -1073,6 +1074,35 @@ public class LoginController {
                     }
                     break;
                 default:
+                    List<Track> tracks = (user.isAdmin()) ? trackRepository.findAllByIsVerified(1) : trackRepository.findAllByUserAndIsVerified(user, 1);
+                    Integer listens = 0;
+                    Integer downloads = 0;
+                    for (Track track:tracks) {
+                        listens += track.getListens();
+                        downloads += track.getDownloads();
+                    }
+
+                    if (user.isAdmin()){
+
+                        modelAndView.addObject("allTracksListen", listens);
+                        modelAndView.addObject("allTracksDownloads", downloads);
+                        modelAndView.addObject("allTracks", tracks.size());
+
+                        modelAndView.addObject("allArtists", artistRepository.findAll().size());
+                        modelAndView.addObject("allAlbums", albumRepository.findAll().size());
+                        modelAndView.addObject("allImages", galleryRepository.findAll().size());
+                        modelAndView.addObject("allBiographies", artistRepository.findAllByBiographyIsNotNull().size());
+                    } else {
+                        modelAndView.addObject("allTracksListen", listens);
+                        modelAndView.addObject("allTracksDownloads", downloads);
+                        modelAndView.addObject("allTracks", tracks.size());
+
+                        modelAndView.addObject("allArtists", artistRepository.findAllByUser(user).size());
+                        modelAndView.addObject("allAlbums", albumRepository.findAllByUser(user).size());
+                        modelAndView.addObject("allImages", galleryRepository.findAllByUser(user).size());
+                        modelAndView.addObject("allBiographies", artistRepository.findAllByUserAndBiographyIsNotNull(user).size());
+                    }
+
                     break;
             }
 

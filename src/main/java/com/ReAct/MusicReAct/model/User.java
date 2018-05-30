@@ -152,10 +152,6 @@ public class User {
         return "empty";
     }
 
-    public String getAvatar(){
-        return "/avatars/" + ((this.getImage() == null)?"default_avatar.png":this.getImage());
-    }
-
     public Set<Track> getFavoriteTracks() {
         return favoriteTracks;
     }

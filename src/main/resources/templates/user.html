@@ -9,40 +9,31 @@
 
 <content th:fragment="content">
 
-	<!-- =============== START BREADCRUMB ================ -->
-	<section class="no-mb">
-		<div class="row">
-			<div class="col-sm-12">
-				<div class="breadcrumb-fullscreen-parent phone-menu-bg">
-					<div class="breadcrumb breadcrumb-fullscreen alignleft small-description overlay almost-black-overlay" style="background-image: url('/assets/img/ma_bg.jpg');" data-stellar-background-ratio="0.5" data-stellar-vertical-offset="0">
-						<div id="home" style="position: absolute;left: 0;top: 0;">
-							<div class="intro-header">
-								<div class="js-height-full star" style="height: 955px;">
-									<div class="star-pattern-1 js-height-full" style="height: 994px;"></div>
-									<div class="col-sm-12">
-										<div class="starTitle">
-											<h4>Com Students of AIU</h4>
-											<div class="grid__item">
-												<h1>
-													<a class="link link-yaku" href="#">
 
-														<span>R</span><span>E</span><span>A</span><span>C</span><span>T</span>
-													</a>
-												</h1>
-											</div>
-											<h4>Final Project</h4>
-										</div>
-										<canvas class="cover" width="1920" height="955"></canvas>
-									</div>
-								</div>
-							</div>
-						</div>
+<!-- =============== START BREADCRUMB ================ -->
+<section class="no-mb">
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="before-FullscreenSlider"></div>
+			<div class="breadcrumb-fullscreen-parent phone-menu-bg">
+				<div class="breadcrumb breadcrumb-fullscreen alignleft small-description overlay almost-black-overlay" th:style="'background-image: url(' + ${userD.getImage()} + ');'" data-stellar-background-ratio="0.5" data-stellar-vertical-offset="0">
+					<div class="breadTxt">
+						<h1 th:utext="${userD.getName()} + ' ' + ${userD.getLastName()}">
+
+						</h1>
+						<p th:utext="'User added ' + ${userAlbums.size()} + ' albums, ' + ${userArtists.size()} + ' artists, ' + ${userBiographies.size()} + ' biographies and ' +  ${userTracks.size()}  + ' tracks'">
+
+						</p>
+						<a href="#content" data-easing="easeInOutQuint" data-scroll="" data-speed="900" data-url="false">
+							Go Below <i class="fa fa-angle-down"></i>
+						</a>
 					</div>
 				</div>
 			</div>
 		</div>
-	</section>
-	<!-- =============== END BREADCRUMB ================ -->
+	</div>
+</section>
+<!-- =============== END BREADCRUMB ================ -->
 
 
 
@@ -52,7 +43,7 @@
 			<div class="row">
 				<div class="col-sm-12">
 					<div class="sectionTitle paddingBottom">
-						<h2><a href="/topArtists">Top Tracks</a></h2>
+						<h2>User Uploaded Last Tracks</h2>
 					</div><!-- end sectionTtile -->
 				</div><!-- end col-sm-12 -->
 			</div>
@@ -66,7 +57,7 @@
 								<span class="about-available" style="display: block;">Action</span>
 							</div>
 
-							<div class="trak-item" th:data-audio="${track.getListenLink()}" th:data-artist="${track.getArtist().getName()}" th:data-thumbnail="${track.getImage()}" th:data-id="'trak-' + ${track.getId()}" th:each="track: ${topTracks}">
+							<div class="trak-item" th:data-audio="${track.getListenLink()}" th:data-artist="${track.getArtist().getName()}" th:data-thumbnail="${track.getImage()}" th:data-id="'trak-' + ${track.getId()}" th:each="track: ${userLastTracks}">
 								<audio preload="metadata" th:src="${track.getListenLink()}" th:title="${track.getName()}"></audio>
 
 
@@ -128,7 +119,7 @@
 			<div class="row">
 				<div class="col-sm-12">
 					<div class="sectionTitle paddingBottom">
-						<h2><a href="/topAlbums">Top Albums</a></h2>
+						<h2>User Added Last Albums</h2>
 					</div><!-- end sectionTtile -->
 				</div><!-- end col-sm-12 -->
 			</div>
@@ -136,7 +127,7 @@
 
 
 				<ul class="list-feature col-md-12 col-xs-12 col-sm-12">
-					<li class="col-md-3 col-sm-3 col-xs-12" th:each="album: ${lastAlbums}">
+					<li class="col-md-3 col-sm-3 col-xs-12" th:each="album: ${userLastAlbums}">
 						<div class="album-icon">
 							<span class="thumbs-album">
 								<a th:href="'/album?id=' + ${album.getId()}"><img style="width: 270px; height: 270px;" th:src="${album.getImage()}" class="attachment-album-thumbnail wp-post-image" alt="album-cover-1"></a>
@@ -160,14 +151,14 @@
 			<div class="row">
 				<div class="col-sm-12">
 					<div class="sectionTitle paddingBottom">
-						<h2><a href="/topArtists">Top Artists</a></h2>
+						<h2>User Added Last Artists</h2>
 					</div><!-- end sectionTtile -->
 				</div><!-- end col-sm-12 -->
 			</div>
 			<div class="row">
 				<div class="aqura-filter-content">
 					<ul class="clearfix">
-						<li class="col-sm-4 col-xs-12" th:each="artist: ${topArtists}">
+						<li class="col-sm-4 col-xs-12" th:each="artist: ${userLastArtists}">
 							<div class="blogBox">
 
 								<div class="owl-carousel" th:if="${galleryRepository.findAllByArtist(artist).size() > 0}">
@@ -209,7 +200,7 @@
 		<div class="container" style="padding:0;">
 			<div class="sectionTitle paddingBottom">
 				<span class="heading-t3"></span>
-				<h2>Last Uploaded Gallery Images</h2>
+				<h2>Last Uploaded Gallery Images By User</h2>
 				<span class="heading-b3"></span>
 			</div>
 			<div class="col-sm-12">
@@ -220,7 +211,7 @@
 					<div class="single-photo-album-container">
 						<div class="row">
 							<!-- Single Album Article -->
-							<article class="col-sm-4" th:each="image : ${lastGallery}">
+							<article class="col-sm-4" th:each="image : ${userLastGallery}">
 								<!-- Single Album Contant Container -->
 								<figure>
 									<!-- Single Album Image -->
@@ -241,6 +232,7 @@
 		</div><!-- end container -->
 	</section>
 	<!-- =============== END GALLERY SECTION ================ -->
+
 
 </content>
 

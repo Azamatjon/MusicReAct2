@@ -1,0 +1,176 @@
+
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+
+
+
+<content th:fragment="content">
+
+
+
+    <section class="no-mb">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="breadcrumb-fullscreen-parent phone-menu-bg">
+                    <div class="breadcrumb breadcrumb-fullscreen alignleft small-description overlay almost-black-overlay" style="background-image: url('/assets/img/albums/search_background.jpg');" data-stellar-background-ratio="0.5" data-stellar-vertical-offset="0">
+                        <div class="breadTxt">
+                            <h1>
+                                Search Results
+                            </h1>
+                            <p th:utext="'Were found ' + ${searchAlbumResult.size()} + ' albums, ' + ${searchArtistResult.size()} + ' artists and ' +  ${searchTrackResult.size()}  + ' tracks'">
+
+                            </p>
+                            <a href="#content" data-easing="easeInOutQuint" data-scroll="" data-speed="900" data-url="false">
+                                See <i class="fa fa-angle-down"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- =============== START BLOG FILTER ================ -->
+    <section class="aquraFilter paddingGrid albumFilter" id="content">
+        <div class="container">
+            <!-- start blog-filter-category -->
+            <div class="categories">
+                <ul class="clearfix" data-option-key="filter">
+                    <li><i class="fa fa-filter"></i></li>
+                    <li> <a href="#" data-option-value=".track" th:id="${isTrackActive}">Tracks</a></li>
+                    <li> <a href="#" data-option-value=".album" th:id="${isArtistActive}">Albums</a></li>
+                    <li> <a href="#" data-option-value=".artist" th:id="${isAlbumActive}">Artists</a></li>
+                </ul>
+            </div><!--end categories-->
+            <!-- end blog-filter-category -->
+
+            <!-- start filter -->
+            <div class="aqura-filter-content list-albums">
+                <ul class="list-feature clearfix">
+
+                <li class="track">
+                    <div class="jp-playlist" th:if="${searchTrackResult.size() > 0}">
+                        <div class="about-list clearfix">
+                            <span class="about-name" style="width: 60%;">NAME</span>
+                            <span class="about-length">LENGTH</span>
+                            <span class="about-available" style="display: block;">Action</span>
+                        </div>
+
+                        <div class="trak-item" th:data-audio="${track.getListenLink()}" th:data-artist="${track.getArtist().getName()}" th:data-thumbnail="${track.getImage()}" th:data-id="'trak-' + ${track.getId()}" th:each="track: ${searchTrackResult}">
+                            <audio preload="metadata" th:src="${track.getListenLink()}" th:title="${track.getName()}"></audio>
+
+
+
+                            <div class="additional-button">
+                                <div class="center-y-table">
+
+                                    <a th:href="${track.getDownloadLink()}" download>
+                                        <i class="fa fa-download"></i>
+                                    </a>
+
+                                    <div th:data-id="${track.getId()}" th:class="'favorite' + ${(userFavorites.contains(track)) ? ' favorited' : ' not-favorited'}">
+                                        <i class="fa fa-heart"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="additional-button">
+                                <div class="center-y-table">
+
+                                    <div class="ffv">
+                                        <i class="fa fa-arrow-circle-down"></i> <span th:utext="${track.getDownloads()}"></span>
+                                    </div>
+
+                                    <div class="ffv">
+                                        <i class="fa fa-headphones"></i> <span th:utext="${track.getListens()}"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="play-pause-button">
+                                <div class="center-y-table">
+                                    <i class="fa fa-play"></i>
+                                </div>
+                            </div>
+                            <div class="name-artist">
+                                <div class="center-y-table">
+                                    <h2 th:utext="${track.getArtist().getName() + ' - ' + track.getName()}"> </h2>
+                                </div>
+                            </div>
+                            <time class="trak-duration" th:utext="${track.getFormattedDuration()}">
+
+                            </time>
+                        </div>
+                    </div>
+</li>
+
+                    <li class="col-md-3 col-sm-3 col-xs-12 album" th:each="album: ${searchAlbumResult}">
+                        <div class="album-icon">
+							<span class="thumbs-album">
+								<a th:href="'/album?id=' + ${album.getId()}"><img style="width: 270px; height: 270px;" th:src="${album.getImage()}" class="attachment-album-thumbnail wp-post-image" alt="album-cover-1"></a>
+							</span>
+                            <span class="disk" th:style="'background: url(' + ${album.getImage()} + ') no-repeat center center; border-radius: 100px;  background-size: cover; '"></span>
+                        </div><!-- END ALBUM ICON -->
+                        <div class="name">
+                            <h3 th:utext="${album.getName()}"></h3>
+                            <p><a th:href="'artist?id=' + ${album.getArtist().getId()}" th:utext="${album.getArtist().getName()}"></a> </p>
+                        </div><!-- end name -->
+                    </li>
+
+
+                    <li class="col-sm-4 col-xs-12 artist" th:each="artist: ${searchArtistResult}">
+                        <div class="blogBox">
+
+                            <div class="owl-carousel" th:if="${galleryRepository.findTop10ByArtistOrderByIdDesc(artist).size() > 0}">
+                                <div class="item" th:each="image: ${galleryRepository.findTop10ByArtistOrderByIdDesc(artist)}">
+                                    <img th:src="${image.getImage()}" alt="">
+                                </div>
+                            </div>
+
+                            <div class="imgBox" th:if="${galleryRepository.findTop10ByArtistOrderByIdDesc(artist).size() == 0}"><img th:src="${artist.getImage()}" alt="box-img"></div>
+
+                            <div class="blogBoxContent">
+                                <div class="blogHeader">
+                                    <h1><a th:href="'/artist?id=' + ${artist.getId()}" th:utext="${artist.getName()}"></a></h1>
+                                </div>
+                                <div class="admin-list clearfix">
+                                    <ul>
+                                        <li th:utext="${artist.getFormattedBirthDate()}"></li>
+
+                                    </ul>
+                                </div><!-- end admin-list -->
+                                <div class="blogParagraph">
+                                    <p th:utext="${artist.getShortBiography(200)}"></p>
+                                </div><!--end blogParagraph  -->
+                                <div class="rmButton">
+                                    <a th:href="'/artist?id=' + ${artist.getId()}">Read More</a>
+                                </div>
+                            </div><!-- end blogBoxContent -->
+                        </div><!-- end blogBox -->
+                    </li><!-- end col-sm-4 -->
+
+                </ul>
+            </div><!-- end aqura-filter-cotent -->
+            <!-- end filter -->
+        </div><!-- end container -->
+    </section>
+    <!-- =============== END BLOG FILTER ================ -->
+
+
+
+
+</content>
+
+<sc th:if="${cssSwitcher.isPermitted()}" th:fragment="endScript">
+    <script>
+        $( document ).ready(function() {
+            $('#defaultFilter').click();
+        });
+    </script>
+</sc>
+</html>

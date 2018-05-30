@@ -212,6 +212,10 @@ public class Track {
         return downloads;
     }
 
+    public int getListens() {
+        return listened;
+    }
+
     public void setDownloads(int downloads) {
         this.downloads = downloads;
     }

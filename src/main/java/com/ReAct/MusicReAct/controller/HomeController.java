@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -90,37 +91,68 @@ public class HomeController {
     @Autowired
     private StorageService storageService;
 
-    @RequestMapping(value={"/"}, method = RequestMethod.GET)
-    public ModelAndView indexPage(){
-        ModelAndView modelAndView = new ModelAndView();
 
+
+    public ModelAndView getCommonData(){
+        ModelAndView modelAndView = new ModelAndView();
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findUserByEmail(auth.getName());
 
+        Pageable topAlbums = new PageRequest(0, 4);
+        Page<Album> lastAlbums = albumRepository.tops(topAlbums);
+        modelAndView.addObject("lastAlbums", lastAlbums.getContent());
+
+
+        Pageable top = new PageRequest(0, 6);
+        Page<Artist> topArtists = artistRepository.tops(top);
+
+        modelAndView.addObject("topArtists", topArtists);
+
+        modelAndView.addObject("galleryRepository", galleryRepository);
+
+        Pageable topTracks = new PageRequest(0, 50);
+        modelAndView.addObject("topTracks", trackRepository.tops(topTracks));
+
         if (user != null){
             modelAndView.addObject("user", user);
-
             modelAndView.addObject("isLoggedIn", true);
 
             List<Track> userTracks = trackRepository.findAllByUserAndIsVerified(user, 1);
-            List<Album> lastAlbums = albumRepository.findTop4ByOrderByIdDesc();
 
-            modelAndView.addObject("favoriteTracks", user.getFavoriteTracks());
-            modelAndView.addObject("albums", lastAlbums);
+            modelAndView.addObject("userTracks", userTracks);
 
-
-
+            modelAndView.addObject("userFavorites", user.getFavoriteTracks());
 
             modelAndView.addObject("userTracksNumber", userTracks.size());
 
-
-
         } else {
+            modelAndView.addObject("userFavorites", new ArrayList<Track>());
             modelAndView.addObject("isLoggedIn", false);
         }
+        return modelAndView;
+    }
 
-        modelAndView.setViewName("index");
+
+
+
+    @RequestMapping(value={"/"}, method = RequestMethod.GET)
+    public ModelAndView indexPage(){
+        ModelAndView modelAndView = new ModelAndView();
+
+        modelAndView.addObject("page", "home");
+
+        modelAndView.addAllObjects(getCommonData().getModelMap());
+
+
+        Pageable top = new PageRequest(0, 6);
+        Page<Artist> topArtists = artistRepository.tops(top);
+        modelAndView.addObject("lastGallery", galleryRepository.findTop9ByOrderByIdDesc(top));
+
+
+        CssSwitcher cssSwitcher = new CssSwitcher();
+        modelAndView.addObject("cssSwitcher", cssSwitcher);
+        modelAndView.setViewName("default");
         return modelAndView;
     }
 
@@ -129,31 +161,8 @@ public class HomeController {
     public ModelAndView albumPage(@RequestParam(value = "id", required = false) Integer id){
         ModelAndView modelAndView = new ModelAndView();
 
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByEmail(auth.getName());
-
-        if (user != null){
-            modelAndView.addObject("user", user);
-
-            modelAndView.addObject("isLoggedIn", true);
-
-            List<Track> userTracks = trackRepository.findAllByUserAndIsVerified(user, 1);
-            List<Album> lastAlbums = albumRepository.findTop4ByOrderByIdDesc();
-
-            System.out.println("size: " + lastAlbums.size());
-
-
-
-
-
-            modelAndView.addObject("userTracksNumber", userTracks.size());
-
-
-
-        } else {
-            modelAndView.addObject("isLoggedIn", false);
-        }
+        modelAndView.addObject("page", "album");
+        modelAndView.addAllObjects(getCommonData().getModelMap());
 
 
         Album album = albumRepository.getOne(id);
@@ -163,7 +172,43 @@ public class HomeController {
 
         }
 
-        modelAndView.setViewName("album");
+        CssSwitcher cssSwitcher = new CssSwitcher();
+        modelAndView.addObject("cssSwitcher", cssSwitcher);
+        modelAndView.setViewName("default");
+        return modelAndView;
+    }
+
+    @RequestMapping(value={"/user"}, method = RequestMethod.GET)
+    public ModelAndView userPage(@RequestParam(value = "id", required = false) Integer id){
+        ModelAndView modelAndView = new ModelAndView();
+
+        modelAndView.addObject("page", "user");
+        modelAndView.addAllObjects(getCommonData().getModelMap());
+
+
+        User user = userRepository.getOne(id);
+        if (user != null){
+            modelAndView.addObject("userD", user);
+
+            modelAndView.addObject("userAlbums", albumRepository.findAllByUser(user));
+
+            modelAndView.addObject("userArtists", artistRepository.findAllByUser(user));
+
+            modelAndView.addObject("userTracks", trackRepository.findAllByUserAndIsVerified(user, 1));
+            modelAndView.addObject("userBiographies", artistRepository.findAllByUserAndBiographyIsNotNull(user));
+
+            Pageable top = new PageRequest(0, 50);
+
+            modelAndView.addObject("userLastTracks", trackRepository.findTop50ByUserAndIsVerifiedOrderByIdDesc(user, 1));
+            modelAndView.addObject("userLastAlbums", albumRepository.findTop50ByUserOrderByIdDesc(user));
+            modelAndView.addObject("userLastArtists", artistRepository.findTop50ByUserOrderByIdDesc(user));
+            modelAndView.addObject("userLastGallery", galleryRepository.findTop50ByUserOrderByIdDesc(user));
+
+        }
+
+        CssSwitcher cssSwitcher = new CssSwitcher();
+        modelAndView.addObject("cssSwitcher", cssSwitcher);
+        modelAndView.setViewName("default");
         return modelAndView;
     }
 
@@ -173,31 +218,8 @@ public class HomeController {
     public ModelAndView artistPage(@RequestParam(value = "id", required = false) Integer id){
         ModelAndView modelAndView = new ModelAndView();
 
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByEmail(auth.getName());
-
-        if (user != null){
-            modelAndView.addObject("user", user);
-
-            modelAndView.addObject("isLoggedIn", true);
-
-            List<Track> userTracks = trackRepository.findAllByUserAndIsVerified(user, 1);
-            List<Album> lastAlbums = albumRepository.findTop4ByOrderByIdDesc();
-
-            System.out.println("size: " + lastAlbums.size());
-
-
-
-
-
-            modelAndView.addObject("userTracksNumber", userTracks.size());
-
-
-
-        } else {
-            modelAndView.addObject("isLoggedIn", false);
-        }
+        modelAndView.addObject("page", "artist");
+        modelAndView.addAllObjects(getCommonData().getModelMap());
 
 
         Artist artist = artistRepository.getOne(id);
@@ -205,7 +227,7 @@ public class HomeController {
             modelAndView.addObject("artist", artist);
             modelAndView.addObject("albums", albumRepository.findAllByArtist(artist));
 
-            modelAndView.addObject("gallery", galleryRepository.findAllByArtist(artist));
+            modelAndView.addObject("gallery", galleryRepository.findTop10ByArtistOrderByIdDesc(artist));
             modelAndView.addObject("lastTracks", trackRepository.findTop10ByArtistAndIsVerifiedOrderByIdDesc(artist, 1));
 
             modelAndView.addObject("numberOfTracksByAlbum", trackRepository);
@@ -216,36 +238,79 @@ public class HomeController {
 
         }
 
-        modelAndView.setViewName("artist");
+        CssSwitcher cssSwitcher = new CssSwitcher();
+        modelAndView.addObject("cssSwitcher", cssSwitcher);
+        modelAndView.setViewName("default");
         return modelAndView;
     }
 
 
 
+
+
+    @RequestMapping(value={"/search"}, method = RequestMethod.GET)
+    public ModelAndView artistPage(@RequestParam(value = "query", required = false) String query){
+        ModelAndView modelAndView = new ModelAndView();
+
+        modelAndView.addObject("page", "search");
+        modelAndView.addAllObjects(getCommonData().getModelMap());
+
+        List<Album> albums = albumRepository.searchAlbums(query);
+        List<Artist> artists = artistRepository.searchArtists(query);
+        List<Track> tracks = trackRepository.searchTracks(query);
+
+        modelAndView.addObject("searchAlbumResult", albums);
+        modelAndView.addObject("searchArtistResult", artists);
+        modelAndView.addObject("searchTrackResult", tracks);
+
+
+        if (tracks.size() > 0){
+            modelAndView.addObject("isTrackActive", "defaultFilter");
+        } else if (artists.size() > 0) {
+            modelAndView.addObject("isArtistActive", "defaultFilter");
+        } else {
+            modelAndView.addObject("isAlbumActive", "defaultFilter");
+        }
+        for (Track track: trackRepository.searchTracks(query)) {
+            System.out.println("track: " + track.getArtist().getName());
+        }
+
+        CssSwitcher cssSwitcher = new CssSwitcher();
+        modelAndView.addObject("cssSwitcher", cssSwitcher);
+        modelAndView.setViewName("default");
+        return modelAndView;
+    }
+
+
+
+
+    @RequestMapping(value={"/gallery"}, method = RequestMethod.GET)
+    public ModelAndView galleryPage(@RequestParam(value = "id", required = false) Integer id){
+        ModelAndView modelAndView = new ModelAndView();
+
+        modelAndView.addObject("page", "gallery");
+        modelAndView.addAllObjects(getCommonData().getModelMap());
+
+
+        Artist artist = artistRepository.getOne(id);
+        if (artist != null){
+            modelAndView.addObject("artist", artist);
+
+            modelAndView.addObject("gallery", galleryRepository.findAllByArtist(artist));
+        }
+
+        CssSwitcher cssSwitcher = new CssSwitcher();
+        modelAndView.addObject("cssSwitcher", cssSwitcher);
+        modelAndView.setViewName("default");
+        return modelAndView;
+    }
+
     @RequestMapping(value={"/albums"}, method = RequestMethod.GET)
     public ModelAndView albumsPage(@RequestParam(value = "artist_id", required = false) Integer id){
         ModelAndView modelAndView = new ModelAndView();
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByEmail(auth.getName());
-
-        if (user != null){
-            modelAndView.addObject("user", user);
-
-            modelAndView.addObject("isLoggedIn", true);
-
-            List<Track> userTracks = trackRepository.findAllByUserAndIsVerified(user, 1);
-            List<Album> lastAlbums = albumRepository.findTop4ByOrderByIdDesc();
-
-            System.out.println("size: " + lastAlbums.size());
-
-            modelAndView.addObject("userTracksNumber", userTracks.size());
-
-
-
-        } else {
-            modelAndView.addObject("isLoggedIn", false);
-        }
+        modelAndView.addObject("page", "allAlbums");
+        modelAndView.addAllObjects(getCommonData().getModelMap());
 
         if (id != null){
             Artist artist = artistRepository.getOne(id);
@@ -256,17 +321,76 @@ public class HomeController {
                 String separatedBiography = (artist.getBiography() != null) ? Jsoup.parse(artist.getBiography()).text():"";
                 modelAndView.addObject("shortBiography", (separatedBiography.length() > 450) ? separatedBiography.substring(0,450) + "...":(artist.getBiography()!= null || !separatedBiography.isEmpty())?separatedBiography:null);
             }
-            modelAndView.setViewName("artistAlbums");
+            modelAndView.addObject("page", "artistAlbums");
         } else {
             modelAndView.addObject("albums", albumRepository.findAll());
-            modelAndView.setViewName("allAlbums");
+            modelAndView.addObject("page", "allAlbums");
         }
 
-
+        CssSwitcher cssSwitcher = new CssSwitcher();
+        modelAndView.addObject("cssSwitcher", cssSwitcher);
+        modelAndView.setViewName("default");
 
         return modelAndView;
     }
 
+
+
+
+    @RequestMapping(value={"/topAlbums"}, method = RequestMethod.GET)
+    public ModelAndView topAlbumsPage(){
+        ModelAndView modelAndView = new ModelAndView();
+
+        modelAndView.addAllObjects(getCommonData().getModelMap());
+        modelAndView.addObject("page", "topAlbums");
+
+
+
+        modelAndView.addObject("topAlbums", albumRepository.tops());
+
+        CssSwitcher cssSwitcher = new CssSwitcher();
+        modelAndView.addObject("cssSwitcher", cssSwitcher);
+        modelAndView.setViewName("default");
+
+        return modelAndView;
+    }
+
+
+    @RequestMapping(value={"/topTracks"}, method = RequestMethod.GET)
+    public ModelAndView topTracksPage(){
+        ModelAndView modelAndView = new ModelAndView();
+
+        modelAndView.addAllObjects(getCommonData().getModelMap());
+        modelAndView.addObject("page", "topTracks");
+
+
+
+        modelAndView.addObject("topTracksD", trackRepository.tops());
+
+        CssSwitcher cssSwitcher = new CssSwitcher();
+        modelAndView.addObject("cssSwitcher", cssSwitcher);
+        modelAndView.setViewName("default");
+
+        return modelAndView;
+    }
+
+    @RequestMapping(value={"/tracks"}, method = RequestMethod.GET)
+    public ModelAndView allTracksPage(){
+        ModelAndView modelAndView = new ModelAndView();
+
+        modelAndView.addAllObjects(getCommonData().getModelMap());
+        modelAndView.addObject("page", "allTracks");
+
+
+
+        modelAndView.addObject("allTracksD", trackRepository.findAllByIsVerified(1));
+
+        CssSwitcher cssSwitcher = new CssSwitcher();
+        modelAndView.addObject("cssSwitcher", cssSwitcher);
+        modelAndView.setViewName("default");
+
+        return modelAndView;
+    }
 
 
 
@@ -275,34 +399,12 @@ public class HomeController {
     public ModelAndView artistsPage(@RequestParam(value = "by", required = false) String by){
         ModelAndView modelAndView = new ModelAndView();
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByEmail(auth.getName());
+        modelAndView.addObject("page", "allArtists");
+        modelAndView.addAllObjects(getCommonData().getModelMap());
 
-        if (user != null){
-            modelAndView.addObject("user", user);
-
-            modelAndView.addObject("isLoggedIn", true);
-
-            List<Track> userTracks = trackRepository.findAllByUserAndIsVerified(user, 1);
-            List<Album> lastAlbums = albumRepository.findTop4ByOrderByIdDesc();
-
-            System.out.println("size: " + lastAlbums.size());
-
-
-
-
-
-            modelAndView.addObject("userTracksNumber", userTracks.size());
-
-
-
-        } else {
-            modelAndView.addObject("isLoggedIn", false);
-        }
         modelAndView.addObject("galleryRepository", galleryRepository);
 
         ArrayList<String> enLetters = new ArrayList<>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
-
         modelAndView.addObject("ENLetters", enLetters);
 
         if (by != null){
@@ -312,9 +414,29 @@ public class HomeController {
             modelAndView.addObject("artists", artistRepository.findAll());
         }
 
-        modelAndView.setViewName("allArtists");
+        CssSwitcher cssSwitcher = new CssSwitcher();
+        modelAndView.addObject("cssSwitcher", cssSwitcher);
+        modelAndView.setViewName("default");
+
+        return modelAndView;
+    }
 
 
+
+    @RequestMapping(value={"/topArtists"}, method = RequestMethod.GET)
+    public ModelAndView topArtistsPage(){
+        ModelAndView modelAndView = new ModelAndView();
+
+        modelAndView.addObject("page", "topArtists");
+        modelAndView.addAllObjects(getCommonData().getModelMap());
+
+        modelAndView.addObject("galleryRepository", galleryRepository);
+
+        modelAndView.addObject("topArtists", artistRepository.tops());
+
+        CssSwitcher cssSwitcher = new CssSwitcher();
+        modelAndView.addObject("cssSwitcher", cssSwitcher);
+        modelAndView.setViewName("default");
 
         return modelAndView;
     }

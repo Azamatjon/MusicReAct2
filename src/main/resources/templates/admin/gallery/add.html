@@ -3,16 +3,6 @@
       xmlns:th="http://www.thymeleaf.org">
 
 <div class="page-inner" th:fragment="content">
-    <div class="page-title">
-        <h3>Form Elements</h3>
-        <div class="page-breadcrumb">
-            <ol class="breadcrumb">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="#">Forms</a></li>
-                <li class="active">Form Elements</li>
-            </ol>
-        </div>
-    </div>
     <div id="main-wrapper">
         <div class="row">
             <div class="col-md-12">
@@ -21,7 +11,7 @@
                         <h4 class="panel-title">Add Tracks</h4>
                     </div>
                     <div class="panel-body">
-                        <div class="form-group">
+                        <div class="form-group clearfix">
                             <label for="input-folg" class="col-sm-2 control-label">Select artist</label>
                             <div class="col-sm-10">
                                 <select id="input-folg" class="js-tokenizer-artist js-states form-control" name="save_from" functional="true" tabindex="-1" style="display: none; width: 100%">
@@ -30,6 +20,8 @@
                                 <p class="help-block">Will be shown Artists that don't have biographies.</p>
                             </div>
                         </div>
+
+
                         <div class="form-group galleryDz">
                             <form action="/mp3upload" method="post" enctype="multipart/form-data" class="dropzone" id="myDropzone">
                                 <div class="fallback">

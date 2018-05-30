@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <!-- Title -->
-    <title>Modern | Profile</title>
+    <title>MusicReact | Profile</title>
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
     <meta charset="UTF-8">
     <meta name="author" content="Crypto07" />
@@ -58,7 +58,7 @@
                 </a>
             </div>
             <div class="logo-box">
-                <a href="/admin/home" class="logo-text"><span>Modern</span></a>
+                <a href="/admin/home" class="logo-text"><span>MusicReact</span></a>
             </div>
 
             <!-- Logo Box -->
@@ -161,6 +161,8 @@
                             <ul class="dropdown-menu dropdown-list" role="menu">
                                 <li role="presentation"><a th:href="@{/admin/home(goTo='profile')}"><i class="fa fa-user"></i>Profile</a></li>
                                 <li role="presentation" class="divider"></li>
+                                <li role="presentation"><a href="/"><i class="fa fa-link"></i>Go to the site</a></li>
+
                                 <li role="presentation"><a href="javascript: void(0)" id="lockScreen"><i class="fa fa-lock"></i>Lock screen</a></li>
                                 <li role="presentation"><a th:href="@{/logout}"><i class="fa fa-sign-out m-r-xs"></i>Log out</a></li>
                             </ul>
@@ -200,19 +202,19 @@
                 </div>
             </div>
             <ul class="menu accordion-menu">
-                <li>
-                    <a href="index.html" class="waves-effect waves-button">
+                <li class="active">
+                    <a href="/admin/home" class="waves-effect waves-button">
                         <span class="menu-icon glyphicon glyphicon-home"></span>
                         <p>Dashboard</p>
                     </a>
                 </li>
-                <li class="active">
+                <li>
                     <a href="/admin/home?goTo=profile" class="waves-effect waves-button">
                         <span class="menu-icon glyphicon glyphicon-user"></span>
                         <p>Profile</p>
                     </a>
                 </li>
-                <li class="droplink">
+                <li class="droplink" th:if="${user.isAdmin()}">
                     <a href="#" class="waves-effect waves-button">
                         <span class="menu-icon glyphicon glyphicon-list"></span>
                         <p>Users</p>
@@ -435,38 +437,6 @@
                         <i class="glyphicon glyphicon-user"></i>
                         </span>
                 <p>Profile</p>
-            </a>
-        </li>
-        <li data-menu="inbox">
-            <a href="javsacript:void(0);">
-                        <span>
-                        <i class="glyphicon glyphicon-envelope"></i>
-                        </span>
-                <p>Mailbox</p>
-            </a>
-        </li>
-        <li data-menu="#">
-            <a href="javsacript:void(0);">
-                        <span>
-                        <i class="glyphicon glyphicon-tasks"></i>
-                        </span>
-                <p>Tasks</p>
-            </a>
-        </li>
-        <li data-menu="#">
-            <a href="javsacript:void(0);">
-                        <span>
-                        <i class="glyphicon glyphicon-cog"></i>
-                        </span>
-                <p>Settings</p>
-            </a>
-        </li>
-        <li data-menu="calendar">
-            <a href="javsacript:void(0);">
-                        <span>
-                        <i class="glyphicon glyphicon-calendar"></i>
-                        </span>
-                <p>Calendar</p>
             </a>
         </li>
     </ul>

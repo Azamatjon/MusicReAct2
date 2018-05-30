@@ -8,16 +8,6 @@
             width: 35px;
         }
     </style>
-    <div class="page-title">
-        <h3>Form Elements</h3>
-        <div class="page-breadcrumb">
-            <ol class="breadcrumb">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="#">Forms</a></li>
-                <li class="active">Form Elements</li>
-            </ol>
-        </div>
-    </div>
     <div id="main-wrapper">
         <div class="row">
             <div class="col-md-12">
@@ -41,7 +31,7 @@
                             <tbody th:each="user : ${users}" th:remove="tag">
                                 <tr>
                                     <th scope="row" th:text="${user.getId()}">*</th>
-                                    <td><img th:src="${user.getAvatar()}" class="img-circle small-img" alt=""></td>
+                                    <td><img th:src="${user.getImage()}" class="img-circle small-img" alt=""></td>
                                     <td th:text="${user.getEmail()}"></td>
                                     <td th:text="${user.getName()}"></td>
                                     <td th:text="${user.getLastName()}"></td>
